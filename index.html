@@ -3578,7 +3578,7 @@ function titleInfo(){$('#best').innerHTML='perfil: '+PROF.cur+(META.best?'  |  r
 $('#tmenu').onclick=e=>{const b=e.target.closest('.mi');if(!b)return;initAudio();if(AC)AC.resume();const a=b.dataset.a;if(a==='start'){$('#title').hidden=true;newGame();SFX.down()}else if(a==='yard')openMeta();else if(a==='album')openAlbum();else if(a==='ward')openWard();else if(a==='prof')openProf();else if(a==='ach')openAch();else if(a==='rank')openRank();else if(a==='cont')runResume();else if(a==='tut')tutStart();else openHow()};
 function openHow(){$('#title').hidden=true;$('#howbox').innerHTML='<h2>COMO JOGAR</h2><div class="keys">'+
  [[['W','A','S','D'],'nadar'],[['MOUSE'],'mirar e atirar (ou as setas)'],[['ESPAÇO 2x'],'APARAR: dê o impulso e aperte de novo bem no FIM dele. Só projétil ROXO pode ser aparado, e ele volta com tudo no inimigo'],[['ESPAÇO'],'impulso; passar raspando num ataque é esquiva perfeita'],[['Q'],'bomba'],[['F'],'sonar: deixa os bichos tontos e mostra o mapa'],[['E'],'trocar de arma'],[['M'],'liga e desliga o mapa'],[['ESC'],'pausa']].map(r=>'<div>'+r[0].map(k=>'<kbd>'+k+'</kbd>').join('')+'<span>'+r[1]+'</span></div>').join('')+
- '</div><p class="say">🎮 Controle de Xbox ou PlayStation: analógico esquerdo nada, direito mira e atira (ou gatilho RT/R2). A/✕ impulso (aperte de novo no fim pra APARAR), B/○ bomba, X/□ sonar, Y/△ troca arma.</p><p class="say">No celular, o dedo esquerdo nada e o direito mira e atira.<br>O ar acaba rápido. As colunas de bolhas enchem o tanque.</p><div class="bot"><button class="btn nav sel" id="howback">VOLTAR</button></div>';$('#how').hidden=false;$('#howback').onclick=()=>{$('#how').hidden=true;$('#title').hidden=false}}
+ '</div><p class="say">🎮 Controle de Xbox ou PlayStation: analógico esquerdo nada, direito mira e atira, RT/R2 também atira (pra frente, se o direito estiver solto). A/✕ ou LT/L2 impulso (duas vezes seguidas = APARAR), RB/R1 ou B/○ bomba, X/□ sonar, LB/L1 ou Y/△ troca arma, Start pausa.</p><p class="say">No celular, o dedo esquerdo nada e o direito mira e atira.<br>O ar acaba rápido. As colunas de bolhas enchem o tanque.</p><div class="bot"><button class="btn nav sel" id="howback">VOLTAR</button></div>';$('#how').hidden=false;$('#howback').onclick=()=>{$('#how').hidden=true;$('#title').hidden=false}}
 function newGame(){p=newPlayer();p.mhp+=MU('hp');p.hp=p.mhp;p.mo2+=10*MU('o2');p.o2=p.mo2;p.gold+=20*MU('gold');p.bombs+=MU('bomb');depth=1;mod=MODS.normal;pickQ=[];pets=[];FX={};fxT={};
  openDeal(startRun)}
 function startRun(){recalc();applyCardStart();recalc();newLevel();state='play';$('#hud').hidden=$('#abil').hidden=$('#pbtn').hidden=$('#tb').hidden=false;mouse.down=false;
@@ -3831,7 +3831,7 @@ function diverDraw(g,S,t,kick,mvv,rc,fire,ad,bend){ad=ad||0;bend=bend||0;const s
  Ln(1.8,-5.4,hx+1.6,hy+1.2,'#3a4a5a',.8);g.restore()}
 drawDiver=function(){if(p.hp<=0)return;const a=p.aim,sp=hyp(p.vx,p.vy),mvv=Math.min(1,sp/60),t=time,S=skin(),tc=skItem('trail',S.trail)[2][0];
  const fdt=Math.min(.05,Math.max(0,time-(p._dt0||time)));p._dt0=time;p.kph=(p.kph||0)+fdt*(4+mvv*10);const kick=p.kph;
- const shoot=p.fireT>0||(mouse&&mouse.down)||!!(typeof stick!=='undefined'&&stick&&stick.fire);if(p.ba===undefined)p.ba=a;let tg=shoot?a:sp>=14?Math.atan2(p.vy,p.vx):(mouse.used?a:p.ba);p.ba=lerpA(p.ba,tg,Math.min(1,fdt*(shoot?16:8)));const dd=0;
+ const shoot=p.fireT>0||(mouse&&mouse.down)||(typeof GP!=='undefined'&&GP.on&&(GP.aimStick||GP.fire))||!!(touch&&touch.a);if(p.ba===undefined)p.ba=a;let tg=shoot?a:sp>=14?Math.atan2(p.vy,p.vx):(mouse.used?a:p.ba);p.ba=lerpA(p.ba,tg,Math.min(1,fdt*(shoot?16:8)));const dd=0;
  const ba=p.ba+Math.sin(kick)*.04*(.4+mvv)-p.bend*.5;
  for(const q of p.tr){ctx.globalAlpha=q.l*2.2;disc(q.x,q.y,3.5,tc)}ctx.globalAlpha=1;if(S.trail!=='bolhas'&&Math.random()<.3+mvv*.4)pt.push({x:p.x-Math.cos(p.ba)*9+R(4)-2,y:p.y-Math.sin(p.ba)*9+R(4)-2,vx:-Math.cos(p.ba)*20+R(10)-5,vy:-Math.sin(p.ba)*20-6,life:.6,ml:.6,c:S.trail==='fogo'?pick(['#ff8a3a','#ffd45e','#ff5d3a']):tc,s:1});
  if(p.inv>0&&Math.floor(time*20)%2&&p.dashing<=0)ctx.globalAlpha=.4;
@@ -3971,7 +3971,7 @@ logoInit();
 /* ================= CONTROLE (Xbox / PlayStation / genérico) ================= */
 const GP={on:0,idx:-1,m:null,aim:null,as:0,fire:0,prev:[],kind:'xbox',nt:0,lastHp:0,ax:[0,0,0,0]};
 function padKind(id){id=(id||'').toLowerCase();return /054c|playstation|dualsense|dualshock|sony|ps4|ps5/.test(id)?'ps':'xbox'}
-const PADL={xbox:{D:'A',B:'B',S:'X',W:'Y'},ps:{D:'✕',B:'○',S:'□',W:'△'},kb:{D:'ESP',B:'Q',S:'F',W:'E'}};
+const PADL={xbox:{D:'A',B:'RB',S:'X',W:'LB'},ps:{D:'✕',B:'R1',S:'□',W:'L1'},kb:{D:'ESP',B:'Q',S:'F',W:'E'}};
 function padLabels(k){const L=PADL[k];for(const c of'DBSW'){const u=document.querySelector('#ab'+c+' u');if(u)u.textContent=L[c]}}
 function padToast(msg){let t=$('#padtoast');if(!t){t=document.createElement('div');t.id='padtoast';t.style.cssText='position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:300;background:#0c1c26ee;border:2px solid #7fe9ff;color:#dff;padding:8px 16px;font:16px "VT323",monospace;font-size:22px;box-shadow:0 0 0 2px #000;pointer-events:none;transition:opacity .4s';document.body.appendChild(t)}
  t.innerHTML=msg;t.style.opacity=1;clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity=0,2600)}
@@ -3988,9 +3988,8 @@ function padPoll(){const L=navigator.getGamepads?navigator.getGamepads():[];let 
  const lm=dz(g.axes[0]||0,g.axes[1]||0,.18),ra=dz(g.axes[2]||0,g.axes[3]||0,.25);
  let dp=null;const dx=(now[15]?1:0)-(now[14]?1:0),dy=(now[13]?1:0)-(now[12]?1:0);if(dx||dy)dp=[dx,dy];
  if(lm||ra||now.some(Boolean))mouse.used=false;
- if(state==='play'){GP.m=lm||dp;GP.aim=ra?Math.atan2(ra[1],ra[0]):(GP.aim!==null&&now[7]?GP.aim:null);GP.as=ra&&Math.hypot(ra[0],ra[1])>.55;GP.fire=now[7];
-  if(GP.fire&&GP.aim===null)GP.aim=p.aim;
-  if(hit(0)||hit(5))dash();if(hit(1)||hit(4))bomb();if(hit(2)||hit(6))sonar();if(hit(3))swapW();if(hit(9))pause();if(hit(8)){OPT.mm^=1;saveMeta();drawMM()}
+ if(state==='play'){const mv=lm||dp;GP.m=mv;GP.aimStick=!!ra;GP.aim=ra?Math.atan2(ra[1],ra[0]):mv?Math.atan2(mv[1],mv[0]):(now[7]?p.aim:null);GP.as=!!(ra&&Math.hypot(ra[0],ra[1])>.5);GP.fire=now[7];
+  if(hit(0)||hit(6))dash();if(hit(1)||hit(5))bomb();if(hit(2))sonar();if(hit(3)||hit(4))swapW();if(hit(9))pause();if(hit(8)){OPT.mm^=1;saveMeta();drawMM()}
   if(p&&GP.lastHp&&p.hp<GP.lastHp)padRumble(.8,.6,200);GP.lastHp=p?p.hp:0}
  else{GP.m=null;GP.aim=null;GP.fire=0;GP.lastHp=0;const t=performance.now(),ny=lm?(Math.abs(lm[1])>.6?Math.sign(lm[1]):0):0,nx=lm?(Math.abs(lm[0])>.6?Math.sign(lm[0]):0):0;
   const v=dy||ny,h=dx||nx;if((v||h)&&t>GP.nt){GP.nt=t+(GP.held?130:260);GP.held=1;padKey(v<0||(!v&&h<0)?'ArrowUp':'ArrowDown')}else if(!v&&!h){GP.held=0;GP.nt=0}
@@ -4311,7 +4310,7 @@ for(const[id,fn]of[['#bdash',()=>dash()],['#bbomb',()=>bomb()],['#bsonar',()=>so
 const TUT={on:0,step:-1,ids:new Set,c:{},fails:0};
 {const _b=bomb;bomb=function(){const n=p&&p.bombs;_b();if(p&&p.bombs<n)TUT.c.bomb=1};const _s=sonar;sonar=function(){_s();TUT.c.son=1}}
 function tutK(){const g=GP.on,ps=GP.kind==='ps',tc=typeof isTouch!=='undefined'&&isTouch&&!g;
- return{move:g?['ANALÓGICO ESQ.']:tc?['DEDO ESQUERDO']:['W','A','S','D'],shoot:g?['ANALÓGICO DIR.']:tc?['DEDO DIREITO']:['MOUSE: CLIQUE'],dash:g?[ps?'✕':'A']:tc?['IMPULSO']:['ESPAÇO'],bomb:g?[ps?'○':'B']:tc?['BOMBA']:['Q'],sonar:g?[ps?'□':'X']:tc?['SONAR']:['F']}}
+ return{move:g?['ANALÓGICO ESQ.']:tc?['DEDO ESQUERDO']:['W','A','S','D'],shoot:g?['ANALÓGICO DIR.',(ps?'R2':'RT')]:tc?['DEDO DIREITO']:['MOUSE: CLIQUE'],dash:g?[ps?'✕':'A']:tc?['IMPULSO']:['ESPAÇO'],bomb:g?[ps?'R1':'RB']:tc?['BOMBA']:['Q'],sonar:g?[ps?'□':'X']:tc?['SONAR']:['F']}}
 const kb=L=>L.map(x=>'<kbd>'+x+'</kbd>').join(' ');
 function tutSpawn(id,n,dist){const out=[];for(let i=0;i<n;i++){for(let t=0;t<40;t++){const a=Math.random()*TAU,d=dist||80+Math.random()*30,x=p.x+Math.cos(a)*d,y=p.y+Math.sin(a)*d;if(!blocked(x,y,10)){const e=addE(id,x,y);e.ag=1;e.giant=0;e.tier=0;TUT.ids.add(e);out.push(e);break}}}return out}
 const tutAlive=()=>en.filter(e=>TUT.ids.has(e)&&!e.dead&&e.hp>0).length;
