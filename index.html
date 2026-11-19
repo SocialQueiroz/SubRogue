@@ -135,9 +135,9 @@ canvas.face{width:96px;height:96px;image-rendering:pixelated;border:3px solid #0
 #hint canvas.rface{width:52px;height:52px;image-rendering:pixelated;border:2px solid #000;background:radial-gradient(#5a9ab0,#2a5a6a);flex:none}#hint .rb b{display:block;font-size:17px;color:var(--gold);margin-bottom:1px;letter-spacing:1px}
 @media(max-width:560px){.rc2{width:150px;height:222px}.rc2 .art{width:110px;height:70px}.rc2 .art img{width:46px;height:46px}.rc2 .ttl{font-size:17px}.rc2 .txt{font-size:15px}canvas.face.big{width:84px;height:84px}}
 #title{background:linear-gradient(180deg,transparent 40%,#000a)}
-.logo{flex-direction:column;align-items:center;line-height:1;margin:0 0 10px;text-shadow:none;color:transparent}
-.logo em{font:clamp(14px,3vw,24px) "Press Start 2P";font-style:normal;color:#ffe0a0;letter-spacing:10px;text-shadow:0 3px 0 #6a2a1a,0 6px 0 #000;margin-bottom:12px}
-.logo .l2{display:flex;font:clamp(28px,7.5vw,68px) "Press Start 2P";background:linear-gradient(#e8fdff,#7fe9ff 40%,#1a7ab0 75%,#0a2a5a);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 4px 0 #04182a) drop-shadow(0 8px 0 #000) drop-shadow(0 0 18px #3ac8ff88)}
+.logo{flex-direction:column;align-items:center;line-height:1;margin:0 0 10px;text-shadow:none;color:#bff4ff}
+.logo em{font:clamp(14px,3vw,24px) "Press Start 2P";font-style:normal;color:#ffe0a0;letter-spacing:10px;text-shadow:0 3px 0 #6a2a1a,0 6px 0 #000;margin-bottom:22px;padding-top:6px}
+.logo .l2{display:flex;font:clamp(28px,7.5vw,68px) "Press Start 2P";color:#bff4ff;text-shadow:0 2px 0 #7fe9ff,0 4px 0 #3ab0e0,0 6px 0 #1a7ab0,0 8px 0 #0a3a6a,0 11px 0 #04182a,0 14px 0 #000,0 0 22px #3ac8ff88}
 .logo .l2 span{display:inline-block;animation:bob 2.8s ease-in-out infinite}.logo .sp{width:.5em}
 .sub{font-size:28px;color:#ffe0c0;text-shadow:2px 2px 0 #000,0 0 12px #000}
 #tmenu{background:#020c18b0;border:3px solid #000;box-shadow:inset 0 0 0 2px #2c4f5a;padding:10px 26px 12px 8px}
@@ -171,6 +171,9 @@ kbd{font:9px "Press Start 2P";display:inline-block;min-width:24px;padding:5px 5p
 .keys div{display:flex;align-items:center;gap:6px;margin:8px 0;font-size:22px}.keys span{margin-left:8px;color:#cfe0e4}
 @media(pointer:coarse){#tb{display:flex}#combo{top:20%}#abil{display:none}#pbtn{display:block}}
 @media(max-width:560px){.metal,.wood{padding:18px 14px}.slot{width:62px;height:76px}.slot img{width:38px;height:38px}.face{width:72px;height:72px}.bubble{min-height:72px;font-size:20px}.gate{width:100%;flex-direction:row;gap:12px;text-align:left}.arch{width:64px;height:68px;margin:0;flex:none}.arch img{width:34px;height:34px}.gate>div:last-child{flex:1}h2{font-size:36px}.mi{font-size:28px}}
+#title{justify-content:flex-start}
+@media(max-height:540px){.logo em{font-size:13px;margin-bottom:16px;letter-spacing:6px;text-shadow:0 2px 0 #6a2a1a,0 4px 0 #000}.logo .l2{font-size:clamp(22px,6vw,46px);text-shadow:0 2px 0 #3ab0e0,0 4px 0 #1a7ab0,0 6px 0 #04182a,0 8px 0 #000,0 0 16px #3ac8ff88}.logo{margin-bottom:6px}#title .sub{font-size:19px;margin-bottom:10px}#tmenu .mi{font-size:22px}}
+@media(max-height:430px){#tmenu{display:grid;grid-template-columns:auto auto;column-gap:18px}#title .sub{margin-bottom:6px}}
 </style>
 </head>
 <body>
