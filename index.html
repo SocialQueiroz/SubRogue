@@ -3742,13 +3742,13 @@ ICO.parry=`
 ...kyyyYk...
 ....kyYk....
 .....kk.....`;
-const PARRY_WIN=.12,PARRY_LATE=.11,PARRY_EARLY=.06,PURP='#b04aff';
+const PARRY_WIN=.22,PARRY_AFTER=.26,PARRY_R=16,PURP='#b04aff';
 const _dashO=dash;
 dash=function(){if(state!=='play'||!p||p.hp<=0)return;const t=time-(p.dst||-9),L=p.dlen||.17;
- if(p.dst&&!p.ptry&&t<L+PARRY_LATE){p.ptry=1;if(t>=L-PARRY_EARLY)doParry();else{p.pfail=.3;ftxt(p.x,p.y-12,'CEDO!','#9a6ac0');SFX.no&&SFX.no()}return}
+ if(p.dst&&t<.04)return;if(p.dst&&!p.ptry&&t<L+PARRY_AFTER){p.ptry=1;doParry();return}
  const was=p.dashing;_dashO();if(p.dashing>0&&!(was>0)){p.dst=time;p.dlen=p.dashing;p.ptry=0}};
 function tryParry(){}
-function doParry(){p.pt=PARRY_WIN;p.pfx=.42;p.pwon=0;SFX.dash();tickParry(0)}
+function doParry(){p.pt=PARRY_WIN;p.pfx=.3;p.pwon=0;p.dashing=0;p.vx*=.25;p.vy*=.25;SFX.dash();tickParry(0)}
 function goldOrb(e,x,y,a,sp){pj.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:3.5,d:1+Math.floor(depth/40),life:5,e:1,kind:'orb',c:PURP,t:0,gold:1,pur:1});if(!PARRY.seen){PARRY.seen=1;setTimeout(()=>radio('Tá vendo a bola ROXA? Essa dá pra APARAR! Dá o impulso e aperta de novo bem no FIM dele. Se acertar, ela volta com tudo no bicho. As outras bolas não: dessas, foge!'),400)}}
 const PARRY={seen:0,streak:0};
 function parryTarget(x,y){let b=null,bd=1e9;for(const o of en){if(o.dead)continue;const d=hyp(o.x-x,o.y-y)-(o.S.boss?o.r*2:0);if(d<bd&&(o.S.boss||o.S.part||d<260)){bd=d;b=o}}return b}
@@ -3769,7 +3769,7 @@ function parryLunge(e){const B=e.S.part?e.par:e;e.pur=0;const a=Math.atan2(e.y-p
  p.vx=-Math.cos(a)*140;p.vy=-Math.sin(a)*140;parryFlash((e.x+p.x)/2,(e.y+p.y)/2,!!(B&&B.S.boss));ftxt(p.x,p.y-14,'CHUTE APARADO!!',PURP);parryWin(1)}
 function lungeMark(){for(const e of en){if(e.dead||e.S.neutral)continue;if(e.st!==e._lst){const L=PLUNGE[e.st];if(L&&!PLUNGE[e._lst])e.pur=Math.random()<(window.TUTP?1:e.S.boss?.5:.4)?1:0;else if(!L)e.pur=0;e._lst=e.st;
   if(e.pur&&!PARRY.seenL){PARRY.seenL=1;setTimeout(()=>radio('Bicho brilhando ROXO vindo pra cima de você? Esse avanço dá pra APARAR: dá o impulso e aperta de novo no fim, que você gira e devolve com um chute!'),200)}}}}
-function tickParry(dt){if(!p)return;lungeMark();if(p.pt>0)for(const e of en){if(e.pur&&!e.dead&&hyp(e.x-p.x,e.y-p.y)<e.r+p.r+9){parryLunge(e);p.pt=0;break}}if(p.pfx>0)p.pfx-=dt;if(p.pfail>0)p.pfail-=dt;if(p.pt>0){p.pt-=dt;for(const q of pj){if(!q.e||!q.pur)continue;if(hyp(q.x-p.x,q.y-p.y)<p.r+q.r+7){reflectShot(q);p.pt=0;break}}if(p.pt<=0&&!p.pwon)PARRY.streak=0}if(p.pt<=0)p.pwon=0}
+function tickParry(dt){if(!p)return;lungeMark();if(p.pt>0)for(const e of en){if(e.pur&&!e.dead&&hyp(e.x-p.x,e.y-p.y)<e.r+p.r+PARRY_R){parryLunge(e);p.pt=0;break}}if(p.pfx>0)p.pfx-=dt;if(p.pfail>0)p.pfail-=dt;if(p.pt>0){p.pt-=dt;for(const q of pj){if(!q.e||!q.pur)continue;if(hyp(q.x-p.x,q.y-p.y)<p.r+q.r+PARRY_R){reflectShot(q);p.pt=0;break}}if(p.pt<=0&&!p.pwon)PARRY.streak=0}if(p.pt<=0)p.pwon=0}
 function drawParryFx(){for(const e of en)if(e.pur&&!e.dead){const g=.5+.5*Math.sin(time*20);wglow(e.x,e.y,e.r*2.2+6,PURP,.45+.25*g);ctx.globalAlpha=.6+.3*g;ctx.strokeStyle='#d8a8ff';ctx.lineWidth=1;ctx.beginPath();ctx.arc(e.x,e.y,e.r+3+g*2,0,TAU);ctx.stroke();ctx.globalAlpha=1;if(Math.random()<.5)pt.push({x:e.x+R(e.r*2)-e.r,y:e.y+R(e.r*2)-e.r,vx:-(e.vx||0)*.2,vy:-(e.vy||0)*.2,life:.35,ml:.35,c:pick([PURP,'#e0b8ff']),s:1})}for(const e of en)if(e.giant&&!e.dead&&e.x>camx-60&&e.x<camx+VW+60&&e.y>camy-60&&e.y<camy+VH+60){const g=.5+.5*Math.sin(time*5);ctx.globalAlpha=.25+.3*g;ctx.strokeStyle='#ff3a3a';ctx.lineWidth=1;ctx.beginPath();ctx.arc(e.x,e.y,e.r+5+g*2,0,TAU);ctx.stroke();ctx.globalAlpha=1}
  for(const q of pj){if(!q.pur&&!q.pary)continue;if(q.pur&&q.e){const g=.5+.5*Math.sin(time*14);wglow(q.x,q.y,10,PURP,.5);ctx.globalAlpha=.5+.5*g;ctx.strokeStyle='#e0b8ff';ctx.beginPath();ctx.arc(q.x,q.y,q.r+2+g,0,TAU);ctx.stroke();ctx.globalAlpha=1;disc(q.x,q.y,q.r+.6,'#3a0a5a');disc(q.x,q.y,q.r,PURP);disc(q.x-1,q.y-1,1.2,'#f0d8ff')}
   else if(q.pary){ctx.globalAlpha=.6;pl(q.x,q.y,q.x-q.vx*.03,q.y-q.vy*.03,q.c,2);ctx.globalAlpha=1}}}
@@ -3831,16 +3831,15 @@ function diverDraw(g,S,t,kick,mvv,rc,fire,ad,bend){ad=ad||0;bend=bend||0;const s
  Ln(1.8,-5.4,hx+1.6,hy+1.2,'#3a4a5a',.8);g.restore()}
 drawDiver=function(){if(p.hp<=0)return;const a=p.aim,sp=hyp(p.vx,p.vy),mvv=Math.min(1,sp/60),t=time,S=skin(),tc=skItem('trail',S.trail)[2][0];
  const fdt=Math.min(.05,Math.max(0,time-(p._dt0||time)));p._dt0=time;p.kph=(p.kph||0)+fdt*(4+mvv*10);const kick=p.kph;
- const shoot=p.fireT>0||(mouse&&mouse.down)||!!(typeof stick!=='undefined'&&stick&&stick.fire);let tg=sp>14?Math.atan2(p.vy,p.vx):a;if(shoot)tg=lerpA(tg,a,.55);
- if(p.ba===undefined)p.ba=a;p.ba=lerpA(p.ba,tg,Math.min(1,fdt*7));let dd=Math.atan2(Math.sin(a-p.ba),Math.cos(a-p.ba));if(shoot&&Math.abs(dd)>1.25){p.ba=lerpA(p.ba,a,Math.min(1,fdt*10));dd=Math.atan2(Math.sin(a-p.ba),Math.cos(a-p.ba))}dd=cl(dd,-1.25,1.25);p.add=(p.add||0)+((shoot||mouse.used?dd:0)-(p.add||0))*Math.min(1,fdt*10);dd=p.add;
- const om=fdt>0?Math.atan2(Math.sin(p.ba-(p._pba===undefined?p.ba:p._pba)),Math.cos(p.ba-(p._pba===undefined?p.ba:p._pba)))/fdt:0;p._pba=p.ba;p.bend=(p.bend||0)+(cl(-om*.09,-.4,.4)-(p.bend||0))*Math.min(1,fdt*8);const ba=p.ba+Math.sin(kick)*.04*(.4+mvv)-p.bend*.5;
+ const shoot=p.fireT>0||(mouse&&mouse.down)||!!(typeof stick!=='undefined'&&stick&&stick.fire);if(p.ba===undefined)p.ba=a;let tg=shoot?a:sp>=14?Math.atan2(p.vy,p.vx):(mouse.used?a:p.ba);p.ba=lerpA(p.ba,tg,Math.min(1,fdt*(shoot?16:8)));const dd=0;
+ const ba=p.ba+Math.sin(kick)*.04*(.4+mvv)-p.bend*.5;
  for(const q of p.tr){ctx.globalAlpha=q.l*2.2;disc(q.x,q.y,3.5,tc)}ctx.globalAlpha=1;if(S.trail!=='bolhas'&&Math.random()<.3+mvv*.4)pt.push({x:p.x-Math.cos(p.ba)*9+R(4)-2,y:p.y-Math.sin(p.ba)*9+R(4)-2,vx:-Math.cos(p.ba)*20+R(10)-5,vy:-Math.sin(p.ba)*20-6,life:.6,ml:.6,c:S.trail==='fogo'?pick(['#ff8a3a','#ffd45e','#ff5d3a']):tc,s:1});
  if(p.inv>0&&Math.floor(time*20)%2&&p.dashing<=0)ctx.globalAlpha=.4;
- const ftg=Math.cos(p.ba)<0?-1:1;p.fs=p.fs===undefined?ftg:p.fs+(ftg-p.fs)*Math.min(1,fdt*9);const flip=p.fs<0,rc=p.fireT>0?Math.min(1.5,p.fireT*8):0,fr=p.fireT>0&&p.fireT>WP[p.wp].cd*.6?1:0,by=Math.sin(kick*.5)*.5*(1-mvv);
- if(p.pfx>0){const k=1-p.pfx/.42,sp=k<.72?1-Math.pow(1-k/.72,2.2):1,dir=p.fs<0?-1:1,A=ba+sp*TAU*dir,tuck=k<.72?Math.sin(k/.72*Math.PI)*1.05:0,ext=k>=.6?Math.sin((k-.6)/.4*Math.PI):0;window.DPF=1;
+ const cb=Math.cos(p.ba);if(p.fs===undefined)p.fs=cb<0?-1:1;const ftg=cb<-.25?-1:cb>.25?1:(p.fs<0?-1:1);p.fs+=(ftg-p.fs)*Math.min(1,fdt*24);const flip=p.fs<0,rc=p.fireT>0?Math.min(1.5,p.fireT*8):0,fr=p.fireT>0&&p.fireT>WP[p.wp].cd*.6?1:0,by=Math.sin(kick*.5)*.5*(1-mvv);
+ if(p.pfx>0){const k=1-p.pfx/.3,sp=k<.72?1-Math.pow(1-k/.72,2.2):1,dir=p.fs<0?-1:1,A=ba+sp*TAU*dir,tuck=k<.72?Math.sin(k/.72*Math.PI)*1.05:0,ext=k>=.6?Math.sin((k-.6)/.4*Math.PI):0;window.DPF=1;
   ctx.save();ctx.translate(p.x,p.y-Math.sin(k*Math.PI)*2);ctx.rotate(A);const sq=1-tuck*.12;ctx.scale(.92*sq,(dir<0?-.92:.92)*(1+tuck*.06));diverDraw(ctx,S,t,kick*2+k*9,1,rc,0,0,-tuck*dir*dir+ext*.25);ctx.restore();window.DPF=0;
   if(ext>.2){const fx=p.x-Math.cos(A)*12,fy=p.y-Math.sin(A)*12;wglow(fx,fy,9,'#b04aff',.6*ext);if(Math.random()<.6)pt.push({x:fx+R(4)-2,y:fy+R(4)-2,vx:R(30)-15,vy:R(30)-15,life:.25,ml:.25,c:pick(['#b04aff','#e0b8ff']),s:1})}}
- else{const fsy=p.fs,ty=Math.abs(fsy)<.35?(.35-Math.abs(fsy))*1.2:0;ctx.save();ctx.translate(p.x,p.y+by);ctx.rotate(ba);ctx.scale(.92*(1-ty*.25),.92*(Math.abs(fsy)<.08?.08*Math.sign(fsy||1):fsy));diverDraw(ctx,S,t,kick,mvv,rc,fr,flip?-dd:dd,flip?-p.bend:p.bend);ctx.restore()}
+ else{const fsy=p.fs,ty=Math.abs(fsy)<.35?(.35-Math.abs(fsy))*1.2:0;ctx.save();ctx.translate(p.x,p.y+by);ctx.rotate(ba);ctx.scale(.92,.92*(fsy<0?-1:1)*Math.max(.6,Math.abs(fsy)));diverDraw(ctx,S,t,kick,mvv,rc,fr,flip?-dd:dd,flip?-p.bend:p.bend);ctx.restore()}
  if(Math.random()<.04+mvv*.02)pt.push({x:p.x+Math.cos(a)*7,y:p.y+Math.sin(a)*7-2,vx:R(6)-3,vy:-18-R(14),life:1.4,ml:2,c:'#cfefff',bub:1+RI(2)});
  if(P('shield')&&p.shT<=0){ctx.strokeStyle='rgba(150,255,255,.6)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(p.x,p.y,9+Math.sin(time*4),0,TAU);ctx.stroke()}};
 /* vestiário */
@@ -4309,39 +4308,56 @@ speak=function(box,text,extra){if(!box)return;const cv=box.closest('.keeper,#hin
 /* botões de toque chamam as versões novas (impulso com aparar) */
 for(const[id,fn]of[['#bdash',()=>dash()],['#bbomb',()=>bomb()],['#bsonar',()=>sonar()],['#bswap',()=>swapW()]]){const el=$(id);if(el){const nb=el.cloneNode(true);el.replaceWith(nb);tb(id,fn)}}
 /* ================= TUTORIAL COM O TIÃO ================= */
-const TUT={on:0,step:-1,ids:new Set,c:{}};
+const TUT={on:0,step:-1,ids:new Set,c:{},fails:0};
 {const _b=bomb;bomb=function(){const n=p&&p.bombs;_b();if(p&&p.bombs<n)TUT.c.bomb=1};const _s=sonar;sonar=function(){_s();TUT.c.son=1}}
 function tutK(){const g=GP.on,ps=GP.kind==='ps',tc=typeof isTouch!=='undefined'&&isTouch&&!g;
- return{move:g?'o analógico esquerdo':tc?'o dedo esquerdo':'W A S D',aim:g?'o analógico direito':tc?'o dedo direito':'o mouse',shoot:g?'empurrando o analógico direito (ou '+(ps?'R2':'RT')+')':tc?'arrastando o dedo direito':'o botão esquerdo do mouse',
-  dash:g?(ps?'✕':'A'):tc?'o botão de impulso':'ESPAÇO',bomb:g?(ps?'○':'B'):tc?'o botão de bomba':'Q',sonar:g?(ps?'□':'X'):tc?'o botão de sonar':'F'}}
-function tutSpawn(id,n,dist){for(let i=0;i<n;i++){for(let t=0;t<30;t++){const a=Math.random()*TAU,d=dist||70+Math.random()*30,x=p.x+Math.cos(a)*d,y=p.y+Math.sin(a)*d;if(!blocked(x,y,8)){const e=addE(id,x,y);e.ag=1;e.giant=0;TUT.ids.add(e);break}}}}
+ return{move:g?['ANALÓGICO ESQ.']:tc?['DEDO ESQUERDO']:['W','A','S','D'],shoot:g?['ANALÓGICO DIR.']:tc?['DEDO DIREITO']:['MOUSE: CLIQUE'],dash:g?[ps?'✕':'A']:tc?['IMPULSO']:['ESPAÇO'],bomb:g?[ps?'○':'B']:tc?['BOMBA']:['Q'],sonar:g?[ps?'□':'X']:tc?['SONAR']:['F']}}
+const kb=L=>L.map(x=>'<kbd>'+x+'</kbd>').join(' ');
+function tutSpawn(id,n,dist){const out=[];for(let i=0;i<n;i++){for(let t=0;t<40;t++){const a=Math.random()*TAU,d=dist||80+Math.random()*30,x=p.x+Math.cos(a)*d,y=p.y+Math.sin(a)*d;if(!blocked(x,y,10)){const e=addE(id,x,y);e.ag=1;e.giant=0;e.tier=0;TUT.ids.add(e);out.push(e);break}}}return out}
 const tutAlive=()=>en.filter(e=>TUT.ids.has(e)&&!e.dead&&e.hp>0).length;
+function tutArena(){map.fill(0);const cx=MW/2,cy=MH/2,rx=Math.min(MW*.3,46),ry=Math.min(MH*.3,30);for(let x=0;x<MW;x++)for(let y=0;y<MH;y++){const dx=(x-cx)/rx,dy=(y-cy)/ry;if(x<2||y<2||x>MW-3||y>MH-3||dx*dx+dy*dy>1)map[x+y*MW]=1}
+ paint();en=[];pj=[];mines=[];curs=[];therm=[];vents=[];chests=[];hz=[];barrels=[];bigs=[];lairs=[];cavs=[];if(typeof flow!=='undefined')flow.fill(0);flowN=0;seen.fill(1);exit.x=exit.y=-99999;
+ p.x=cx*TS;p.y=cy*TS;p.vx=p.vy=0;for(const q of p.sp){q.x=p.x;q.y=p.y}camx=p.x-VW/2;camy=p.y-VH/2}
 const TST=[
- {o:'Nadar',m:k=>'Bem-vindo a bordo, marujo! Seu Tião vai te ensinar tudo. Primeiro, nade por aí usando '+k.move+'.',i(){TUT.p0=[p.x,p.y]},ok:()=>hyp(p.x-TUT.p0[0],p.y-TUT.p0[1])>90},
- {o:'Derrote 3 peixes',m:k=>'Isso aí! Agora mire com '+k.aim+' e atire '+k.shoot+'. Acerta esses peixinhos!',i(){tutSpawn('sardinha',3);TUT.k0=p.kills||0},ok:()=>tutAlive()===0||(p.kills||0)-TUT.k0>=3},
- {o:'Dê um impulso',m:k=>'Boa pontaria! Agora o IMPULSO: aperte '+k.dash+'. Durante o impulso nada te acerta.',i(){TUT.d0=p.dst||0},ok:()=>(p.dst||0)!==TUT.d0},
- {o:'Apare uma bola roxa',m:k=>'Agora o mais importante: APARAR! Só o que é ROXO dá pra aparar. Quando a bola roxa chegar, dê o impulso ('+k.dash+') e aperte DE NOVO bem no FIM dele. Se apertar cedo, não vale!',
-  i(){TUT.pa=p.st.parry||0;TUT.ot=1},t(dt){TUT.ot-=dt;if(TUT.ot<=0){TUT.ot=2.4;for(let k=0;k<20;k++){const a=Math.random()*TAU,x=p.x+Math.cos(a)*95,y=p.y+Math.sin(a)*95;if(!blocked(x,y,4)&&los(x,y,p.x,p.y)){goldOrb(null,x,y,Math.atan2(p.y-y,p.x-x),52);break}}}},ok:()=>(p.st.parry||0)>TUT.pa},
- {o:'Chute um avanço roxo',m:k=>'APARADO! Viu como ela voltou com tudo? Agora um bicho vai avançar brilhando ROXO. Mesma coisa: impulso e aperta de novo no fim. Você gira e devolve com um chute!',
-  i(){TUT.pa=p.st.parry||0;window.TUTP=1;tutSpawn('moreia',1,90)},t(){if(tutAlive()===0)tutSpawn('moreia',1,90)},ok:()=>(p.st.parry||0)>TUT.pa,e(){window.TUTP=0}},
- {o:'Jogue uma bomba',m:k=>'Que chute! Lembra: laser e bala que não é roxa NÃO dá pra aparar. Dessas, foge. Agora a BOMBA: aperte '+k.bomb+'.',i(){p.bombs=Math.max(p.bombs,1);TUT.c.bomb=0;en=en.filter(e=>!TUT.ids.has(e))},ok:()=>TUT.c.bomb},
- {o:'Use o sonar',m:k=>'Bum! Agora o SONAR: aperte '+k.sonar+'. Ele mostra o mapa em volta e acha a saída.',i(){TUT.c.son=0;p.son=0},ok:()=>TUT.c.son},
- {o:'Pronto!',m:k=>'Última coisa: de olho no AR, a barra azul. Bolha e coluna de bolhas enchem o tanque. Desça pelas fendas, junte ouro e compre coisa boa na minha loja. Você tá pronto, marujo! Voltando pro barco...',i(){TUT.end=7},t(dt){TUT.end-=dt;if(TUT.end<=0)tutFinish()},ok:()=>false}];
-function tutObj(){let e=$('#tutobj');if(!e){e=document.createElement('div');e.id='tutobj';e.style.cssText='position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:120;background:#0c1c26e8;border:2px solid #ffd45e;box-shadow:0 0 0 2px #000;padding:6px 14px;font:22px "VT323",monospace;color:#ffe;pointer-events:none;white-space:nowrap';document.body.appendChild(e)}
- const S=TST[TUT.step];e.innerHTML=S?'<span style="color:#ffd45e;font-size:15px;letter-spacing:2px">TUTORIAL '+(TUT.step+1)+'/'+TST.length+'</span> &nbsp;'+S.o:'';e.style.display=TUT.on&&S?'':'none'}
-function tutSay(m){radio(m);clearTimeout(hintT)}
-function tutNext(){const P0=TST[TUT.step];if(P0&&P0.e)P0.e();TUT.step++;const S=TST[TUT.step];if(!S)return tutFinish();if(TUT.step>0){SFX.lvl();burst(p.x,p.y,'#ffd45e',14,120,2)}S.i&&S.i();TUT.wait=.6;tutSay(S.m(tutK()));tutObj()}
-function tutStart(){$('#title').hidden=true;initAudio();if(AC)AC.resume();p=newPlayer();depth=1;mod=MODS.normal;pickQ=[];pets=[];FX={};fxT={};recalc();newLevel();
- en=[];mines=[];hz=[];if(typeof curs!=='undefined')curs=[];p.need=1e9;PARRY.seen=1;PARRY.seenL=1;state='play';$('#hud').hidden=$('#abil').hidden=$('#pbtn').hidden=$('#tb').hidden=false;mouse.down=false;TUT.on=1;TUT.step=-1;TUT.ids=new Set;setTimeout(tutNext,400)}
-function tutFinish(){if(!TUT.on)return;TUT.on=0;window.TUTP=0;tutObj();const first=!META.tut;META.tut=1;if(first){META.pearls+=30}saveMeta();state='title';$('#hud').hidden=$('#abil').hidden=$('#pbtn').hidden=$('#tb').hidden=true;$('#hint').style.opacity=0;
- titleBG();$('#title').hidden=false;titleInfo();padToast('🎓 Tutorial concluído!'+(first?' +30 pérolas':''))}
-const _titleBGT=titleBG;titleBG=function(){if(TUT.on&&state!=='play'){TUT.on=0;window.TUTP=0;tutObj()}_titleBGT()};
+ {o:'Nade um pouco',k:K=>kb(K.move),m:()=>'Bem-vindo a bordo, marujo! Eu sou o Seu Tião e vou te ensinar a sobreviver lá embaixo. Primeiro, nade por aí.',i(){TUT.p0=[p.x,p.y]},ok:()=>hyp(p.x-TUT.p0[0],p.y-TUT.p0[1])>80},
+ {o:'Derrote os 3 peixes',k:K=>kb(K.shoot),m:()=>'Isso aí! Agora mira e atira nesses peixinhos. Eles não mordem... muito.',i(){tutSpawn('sardinha',3,70);TUT.k0=p.kills||0},ok:()=>tutAlive()===0||(p.kills||0)-TUT.k0>=3},
+ {o:'Dê um impulso',k:K=>kb(K.dash),m:()=>'Boa pontaria! Agora o IMPULSO. Enquanto você tá no impulso, nada te acerta.',i(){TUT.d0=p.dst||0},ok:()=>(p.dst||0)!==TUT.d0},
+ {o:'Apare a bola ROXA',k:K=>kb(K.dash)+' depois '+kb(K.dash),m:()=>'Agora o mais importante: APARAR! Só o que é ROXO pode ser aparado. Quando a bola roxa chegar perto, aperte o impulso DUAS VEZES rapidinho. Você gira e chuta ela de volta!',
+  i(){TUT.pa=p.st.parry||0;TUT.ot=.8;TUT.hp=p.hp},t(dt){TUT.ot-=dt;if(TUT.ot<=0&&!pj.some(q=>q.e&&q.pur)){TUT.ot=1.2;const sx=p.x+120,sy=p.y-10;goldOrb(null,sx,sy,Math.atan2(p.y-sy,p.x-sx),42)}tutAssist();tutFail('Dica: espera a bola chegar BEM pertinho de você, aí aperta o impulso duas vezes seguidas, rápido!')},ok:()=>(p.st.parry||0)>TUT.pa},
+ {o:'Chute o avanço ROXO',k:K=>kb(K.dash)+' depois '+kb(K.dash),m:()=>'APARADO! Viu como ela voltou com tudo? Agora uma moreia vai avançar brilhando ROXO. Mesma coisa: quando ela chegar, impulso duas vezes!',
+  i(){TUT.pa=p.st.parry||0;window.TUTP=1;pj=[];TUT.hp=p.hp;tutSpawn('moreia',1,110)},t(){if(tutAlive()===0)tutSpawn('moreia',1,110);tutAssist();tutFail('Dica: a moreia pisca e avança. Quando ela estiver chegando, impulso duas vezes!')},ok:()=>(p.st.parry||0)>TUT.pa,e(){window.TUTP=0;en=en.filter(e=>!TUT.ids.has(e))}},
+ {o:'Jogue uma bomba',k:K=>kb(K.bomb),m:()=>'Que chute! Lembra: laser e bala que NÃO é roxa não dá pra aparar. Dessas, desvia. Agora joga uma BOMBA.',i(){p.bombs=Math.max(p.bombs,1);TUT.c.bomb=0},ok:()=>TUT.c.bomb},
+ {o:'Use o sonar',k:K=>kb(K.sonar),m:()=>'Bum! Agora o SONAR. Ele mostra o mapa em volta e aponta a saída da fenda.',i(){TUT.c.son=0;p.son=0},ok:()=>TUT.c.son},
+ {o:'Pronto pra mergulhar!',k:()=>'',m:()=>'Última coisa: de olho no AR, a barra azul. Bolhas enchem o tanque. Desce pelas fendas, junta ouro e passa na minha loja. Você tá pronto, marujo!',i(){TUT.end=6.5},t(dt){TUT.end-=dt;if(TUT.end<=0)tutFinish(1)},ok:()=>false}];
+function tutAssist(){let near=0;for(const q of pj)if(q.e&&q.pur&&hyp(q.x-p.x,q.y-p.y)<46)near=1;for(const e of en)if(e.pur&&hyp(e.x-p.x,e.y-p.y)<e.r+46)near=1;
+ if(near){slowT=Math.max(slowT,.06);if(!TUT.now||time-TUT.now>.5){TUT.now=time;ftxt(p.x,p.y-16,'AGORA!','#e0b8ff')}}const tk=document.querySelector('#tutbox .tkey');if(tk)tk.classList.toggle('hot',near)}
+function tutFail(tip){if(p.hp<TUT.hp){TUT.fails++;TUT.hp=p.hp;if(TUT.fails===2||TUT.fails===5)tutSay(tip)}TUT.hp=Math.min(TUT.hp,p.hp)}
+function tutBox(){let e=$('#tutbox');if(!e){document.body.insertAdjacentHTML('beforeend','<div id="tutbox"><div class="tbox">'+faceCv('face')+'<div class="tcol"><div class="rb"></div><div class="tobj"></div><div class="tkey"></div></div></div><small>ESC sai do tutorial</small></div>');e=$('#tutbox')}e.style.display=TUT.on?'':'none';return e}
+function tutSay(m){const b=tutBox(),rb=b.querySelector('.rb');rb.dataset.who='SEU TIÃO  ·  LIÇÃO '+(TUT.step+1)+' DE '+TST.length;speak(rb,m)}
+function tutNext(){const P0=TST[TUT.step];if(P0&&P0.e)P0.e();TUT.step++;const S=TST[TUT.step];if(!S)return tutFinish(1);if(TUT.step>0){SFX.lvl();burst(p.x,p.y,'#ffd45e',16,120,2);ftxt(p.x,p.y-18,'BOA!','#ffd45e')}TUT.fails=0;S.i&&S.i();TUT.wait=.8;
+ const b=tutBox();b.querySelector('.tobj').innerHTML='<span>OBJETIVO</span> '+S.o;b.querySelector('.tkey').innerHTML=S.k(tutK());tutSay(S.m())}
+function tutStart(){$('#title').hidden=true;initAudio();if(AC)AC.resume();p=newPlayer();depth=1;mod=MODS.normal;pickQ=[];pets=[];FX={};fxT={};recalc();newLevel();tutArena();
+ p.need=1e9;PARRY.seen=1;PARRY.seenL=1;state='play';$('#hud').hidden=$('#abil').hidden=$('#pbtn').hidden=$('#tb').hidden=false;mouse.down=false;TUT.on=1;TUT.step=-1;TUT.ids=new Set;document.body.classList.add('tut');tutBox();setTimeout(tutNext,300)}
+function tutFinish(done){if(!TUT.on)return;TUT.on=0;window.TUTP=0;document.body.classList.remove('tut');tutBox();const first=done&&!META.tut;if(done)META.tut=1;if(first)META.pearls+=30;saveMeta();state='title';$('#hud').hidden=$('#abil').hidden=$('#pbtn').hidden=$('#tb').hidden=true;$('#pause').hidden=true;
+ titleBG();$('#title').hidden=false;titleInfo();padToast(done?'🎓 Tutorial concluído!'+(first?' +30 pérolas':''):'Tutorial encerrado')}
+const _titleBGT=titleBG;titleBG=function(){if(TUT.on&&state!=='play'){TUT.on=0;window.TUTP=0;document.body.classList.remove('tut');tutBox()}_titleBGT()};
+addEventListener('keydown',e=>{if(TUT.on&&e.key==='Escape'){e.stopImmediatePropagation();e.preventDefault();tutFinish(0)}},true);
 let tutLast=performance.now();(function tutLoop(){requestAnimationFrame(tutLoop);const now=performance.now(),dt=Math.min(.05,(now-tutLast)/1000);tutLast=now;if(!TUT.on)return;
- if(state==='shop'||state==='route'){$('#shop').hidden=true;$('#route').hidden=true;state='play';newLevel();en=[];}
- if(state!=='play')return;p.hp=Math.max(p.hp,1);if(p.hp<=1){p.hp=p.mhp;p.inv=1.5}p.o2=Math.max(p.o2,p.mo2*.6);
- const S=TST[TUT.step];if(!S)return;if(S.t)S.t(dt);if(TUT.wait>0){TUT.wait-=dt;return}if(S.ok())tutNext()})();
-
+ if(state==='shop'||state==='route'){$('#shop').hidden=true;$('#route').hidden=true;state='play'}
+ if(state!=='play')return;p.o2=Math.max(p.o2,p.mo2*.7);const S=TST[TUT.step];if(!S)return;if(S.t)S.t(dt);if(TUT.wait>0){TUT.wait-=dt;return}if(S.ok())tutNext()})();
 {const _die=die;die=function(){if(TUT.on){p.hp=p.mhp;p.inv=2;state='play';ftxt(p.x,p.y-14,'O TIÃO TE SALVOU!','#ffd45e');return}_die()}}
+{const st=document.createElement('style');st.textContent=`
+body.tut #hint{display:none !important}
+#tutbox{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:140;width:min(760px,calc(100vw - 24px));pointer-events:none}
+#tutbox .tbox{display:flex;gap:12px;align-items:flex-start;background:linear-gradient(#10202aee,#081218ee);padding:10px 12px;box-shadow:0 0 0 2px #000,0 0 0 4px #c8a060,0 0 0 6px #000,0 10px 30px #000a}
+#tutbox canvas{width:84px;height:84px;image-rendering:pixelated;flex:none;box-shadow:0 0 0 2px #000,0 0 0 4px #2c4f5a}
+#tutbox .tcol{flex:1;min-width:0}
+#tutbox .rb{font-size:21px;line-height:1.2;color:#eef;min-height:52px}#tutbox .rb b{display:block;font:10px "Press Start 2P";color:#ffd45e;letter-spacing:1px;margin-bottom:6px}
+#tutbox .tobj{margin-top:6px;font-size:20px;color:#bff4ff}#tutbox .tobj span{font:9px "Press Start 2P";color:#000;background:#ffd45e;padding:3px 6px;margin-right:6px}
+#tutbox .tkey{margin-top:6px;font-size:18px;color:#9ab}#tutbox kbd{font:11px "Press Start 2P";color:#fff;background:#2a3a48;padding:5px 8px;box-shadow:0 0 0 2px #000,0 3px 0 2px #000;display:inline-block;margin:2px}
+#tutbox .tkey.hot kbd{background:#7a2ac0;animation:tkb .25s steps(2) infinite}@keyframes tkb{50%{background:#c870ff}}
+#tutbox small{display:block;text-align:right;color:#8ab;font-size:15px;margin-top:4px;text-shadow:0 1px 0 #000}
+@media(max-width:560px){#tutbox canvas{width:56px;height:56px}#tutbox .rb{font-size:18px}}`;document.head.appendChild(st)}
 
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
