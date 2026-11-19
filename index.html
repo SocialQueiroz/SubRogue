@@ -4167,17 +4167,17 @@ function whale(t){const g=AC.createGain();g.gain.setValueAtTime(.0001,t);g.gain.
  const o=AC.createOscillator();o.type='sine';const f0=160+Math.random()*120;o.frequency.setValueAtTime(f0,t);o.frequency.linearRampToValueAtTime(f0*1.5,t+1.1);o.frequency.linearRampToValueAtTime(f0*.8,t+3);
  const v=AC.createOscillator(),vg=AC.createGain();v.frequency.value=5;vg.gain.value=6;v.connect(vg);vg.connect(o.frequency);o.connect(g);o.start(t);v.start(t);o.stop(t+3.3);v.stop(t+3.3)}
 const AR=[0,1,2,1,0,2,1,2],AR2=[0,2,1,2,0,1,2,1];
-sched=function(){if(!AC||AC.state!=='running')return;if(!A2)a2Init();const bm=bossOn(),zi=zone,Z=bm?MUSB:MUS[zi],sd=60/Z.bpm/2,now=AC.currentTime,cmb=combat(),deep=zi>2;
- lpf.frequency.setTargetAtTime(Z.cut,now,.8);cmbBus.gain.setTargetAtTime((cmb||bm)&&OPT.mus?1.2:0,now,cmb?.25:1.2);A2.wg.gain.setTargetAtTime(bm?.015:.05+zi*.008,now,2);
+sched=function(){if(!AC||AC.state!=='running')return;if(!A2)a2Init();const bm=bossOn(),zi=zone,Z=bm?MUSB:MUS[zi],now=AC.currentTime,cmb=combat(),deep=zi>2,df=Math.min(1,Math.max(0,(depth-1)/100)),sd=60/(Z.bpm*(1-df*.25))/2;
+ lpf.frequency.setTargetAtTime(Math.max(380,Z.cut*(1.25-df*.8)),now,1.5);cmbBus.gain.setTargetAtTime((cmb||bm)&&OPT.mus?1.2:0,now,cmb?.25:1.2);A2.wg.gain.setTargetAtTime(bm?.015:.035+df*.11,now,2);
  const dt=sd*1.5;A2.dl.delayTime.setTargetAtTime(dt,now,.1);A2.dr.delayTime.setTargetAtTime(dt,now,.1);
  while(mnext<now+.2){const s=mstep%64,st=s&7,bar=(s>>3)%4,ch=Z.ch[bar],t=mnext,ph=(mstep>>6)%4;
-  if(st===0)for(let i=0;i<ch.length;i++)padV(mtof(Z.key+ch[i]),t,sd*8,.035,deep?700:1100);
+  if(st===0){for(let i=0;i<ch.length;i++)padV(mtof(Z.key+ch[i]-Math.round(df*5)),t,sd*8,.03+df*.02,1400-df*900);if(df>.15){const g=env(musBus,t,sd*3,sd*9,.03+df*.09);osc('sine',mtof(Z.key+ch[0]-36),t,sd*10,g);osc('triangle',mtof(Z.key+ch[0]-24)*1.003,t,sd*10,env(musBus,t,sd*3,sd*9,.015+df*.03))}}
   if(Z.bs.includes(st)){const f=mtof(Z.key+ch[0]-24+(st===6?12:0)),L=deep?sd*7:sd*2.4,g=env(musBus,t,.012,L,.32);osc('sine',f,t,L,g);osc('triangle',f,t,L,env(musBus,t,.01,L*.4,.06))}
-  if(!bm&&(!deep||st%2===0)){const pat=ph%2?AR2:AR,n=ch[pat[st]%ch.length]+12+(ph===3&&st>4?12:0);pluck(mtof(Z.key+n),t,deep?.025:.04,A2.arp,deep?.6:.3)}
+  if(!bm&&Math.random()<1-df*.65&&(!deep||st%2===0)){const pat=ph%2?AR2:AR,n=ch[pat[st]%ch.length]+12+(ph===3&&st>4?12:0);pluck(mtof(Z.key+n),t,deep?.025:.04,A2.arp,deep?.6:.3)}
   const m=Z.mel[s];if(m!=='.'&&!(ph===1&&bar===3)){const o=ph===2?24:12;bell(mtof(Z.key+Z.sc[+m]+o),t,.11,A2.mel,deep?2.8:1.4)}
   if(ph===3&&st===4&&bar%2===1)bell(mtof(Z.key+Z.sc[RI(Z.sc.length)]+24),t,.05,A2.mel,2);
   if(Z.k.includes(st))kick(t,.3,musBus);if(Z.h.includes(st))nz(t,.035,'highpass',7500,.045,musBus);if(st===4&&!deep)nz(t,.09,'bandpass',2200,.05,musBus);
-  if(deep&&s===0&&Math.random()<.55)whale(t+sd*2);
+  if(s===0&&Math.random()<.1+df*.8)whale(t+sd*2);if(df>.4&&st===0&&Math.random()<df*.3)nz(t,sd*6,'bandpass',90+R(60),.05*df,musBus);
   if(zi>=2&&s===32&&Math.random()<.5){bell(1568,t,.05,rev,1.8);bell(1568,t+sd*3,.025,rev,1.8)}
   /* combate */
   if(st%4===0)kick(t,.65,cmbBus);if(st%4===2){nz(t,.12,'bandpass',1800,.22,cmbBus);osc('triangle',190,t,.08,env(cmbBus,t,.002,.07,.18))}
@@ -4430,7 +4430,7 @@ let pits=[];const PIT={busy:0,warned:0};
 const _nlP=newLevel;newLevel=function(){_nlP.apply(this,arguments);pits=[];PIT.busy=0;
  if(depth<2||mod===MODS.lair||(typeof TUT!=='undefined'&&TUT.on))return;const L=curs.filter(c=>c.P&&!c.lair&&c.L>160).sort((a,b)=>b.L-a.L);let pitDone=depth<3;
  for(const c of L){const e=c.P[c.P.length-1];if(!pitDone&&Math.random()<.55){pitDone=1;c.neg=1;c.str*=1.4;c.r*=1.15;pits.push({x:e[0],y:e[1],r:20,c,t:R(9)});continue}
-  const r=Math.random();if(r<.22)bigs.push({x:e[0],y:e[1]});else if(r<.85)chests.push({x:e[0],y:e[1]})}};
+  if(Math.random()<.85){chests.push({x:e[0],y:e[1]});if(Math.random()<.35)chests.push({x:e[0]+R(16)-8,y:e[1]+R(16)-8})}}};
 function pitGo(){if(PIT.busy||state!=='play')return;PIT.busy=1;p.inv=4;shake=18;flash=.6;SFX.roar();burst(p.x,p.y,'#ff3a3a',30,200,2);ftxt(p.x,p.y-16,'PRESSÃO NEGATIVA!','#ff5a5a');
  radio(pick(['A fossa te cuspiu pra cima! Você voltou uma fenda, marujo!','PRESSÃO NEGATIVA! Volta tudo pra cima! Eu avisei da correnteza vermelha!','Que azar! A fossa te jogou uma fenda pra cima.']));
  setTimeout(()=>fadeTo(()=>{depth=Math.max(1,depth-1);mod=MODS.normal;newLevel();state='play';$('#hud').hidden=false;$('#abil').hidden=false;banner('SUGADO PRA CIMA',M(depth));if(typeof runSnap==='function')runSnap()}),650)}
@@ -4454,6 +4454,62 @@ restock=function(){const own=p.items||[],eq=EQUIP.filter(o=>!own.includes(o.id))
  const rl=RELICS.filter(o=>!(p.relics||[]).includes(o.id)).sort(()=>Math.random()-.5);const nr=shop.boss?2:Math.random()<.6?1:0;for(const o of rl.slice(0,nr+(Math.random()<.2?1:0)))shop.peds.push({k:'relic',o});
  for(const d of shop.peds)d.sold=0};
 {const st=document.createElement('style');st.textContent='#shopbox .peds{flex-wrap:wrap;justify-content:center;gap:14px 12px}#shopbox .hc{width:150px;height:244px}#shopbox .hc-art{height:70px}#shopbox .hc-art img{width:50px;height:50px}#shopbox .hc-name{font-size:10px}#shopbox .hc-txt{font-size:15px}#shopbox .hc-lore{display:none}#shopbox .ped .price{top:-4px;right:-12px;font-size:11px}#shopbox .ped .plb{margin-bottom:14px}#shopbox{max-width:1080px}';document.head.appendChild(st)}
+
+/* ================= RODADA: dificuldade, HUD, loja de 3, raridades ================= */
+/* corações numa linha só + barra de oxigênio clara */
+{const st=document.createElement('style');st.textContent=`#hearts{flex-wrap:nowrap !important;max-width:none !important}#hearts.m12 img{width:15px;height:13px}#hearts.m18 img{width:12px;height:11px}
+#o2b{height:24px !important;margin-top:6px;box-shadow:0 0 0 2px #2a8ac0 !important}#o2b i{background:linear-gradient(#bff4ff,#3ab0ff 60%,#1a6aa0) !important}#o2b b{font-size:15px !important;line-height:20px;letter-spacing:1px;text-shadow:0 1px 0 #000,0 0 4px #000}
+#o2b::before{content:'';position:absolute;left:-26px;top:1px;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff 0 18%,#9fe8ff 22%,#3ab0ff 60%,#1a5a8a);box-shadow:0 0 0 2px #000}
+#o2b{margin-left:28px}#o2b.low{animation:o2low .5s steps(2) infinite}@keyframes o2low{50%{box-shadow:0 0 0 2px #ff3a3a !important}}
+.dfo{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}.dfo .btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 10px;font-size:12px}.dfo .btn small{font:16px "VT323",monospace;color:#3a2410;letter-spacing:0}.dfo .btn .hh{display:flex;gap:1px}.dfo .btn .hh img{width:12px;height:11px;image-rendering:pixelated}.dfo .btn.sel{outline:3px solid #fff}`;document.head.appendChild(st)}
+(function o2Loop(){requestAnimationFrame(o2Loop);if(!p||state==='title')return;const b=$('#o2b b');if(b){const t='OXIGÊNIO '+Math.ceil(p.o2);if(b.textContent!==t)b.textContent=t}const o=$('#o2b');if(o)o.classList.toggle('low',p.o2<p.mo2*.25);const h=$('#hearts');if(h){h.classList.toggle('m12',p.mhp>12&&p.mhp<=18);h.classList.toggle('m18',p.mhp>18)}})();
+/* dificuldade */
+const DIFFS={facil:{n:'FÁCIL',h:10,hp:.8,dm:.75,d:'Pra aprender. Bichos mais fracos.'},medio:{n:'MÉDIO',h:7,hp:1,dm:1,d:'O mergulho como ele é.'},dificil:{n:'DIFÍCIL',h:5,hp:1.3,dm:1.35,d:'Bichos mais duros e que mordem mais.'},insano:{n:'INSANO',h:3,hp:1.7,dm:1.8,d:'Só pra quem já zerou. Boa sorte.'}};
+let DIFF=DIFFS.medio;
+document.body.insertAdjacentHTML('beforeend','<div class="ov" id="diffo" hidden><div class="metal" id="diffbox" style="max-width:640px;text-align:center"></div></div>');
+const _ngD=newGame;newGame=function(){$('#title').hidden=true;const cur=(META&&META.diff)||'medio',b=$('#diffbox');
+ b.innerHTML='<h2>DIFICULDADE</h2><p class="say">Escolha o quanto o fundo do mar vai te castigar.</p><div class="dfo">'+Object.keys(DIFFS).map(k=>{const D=DIFFS[k];return'<button class="btn nav'+(k===cur?' sel':'')+'" data-df="'+k+'">'+D.n+'<span class="hh">'+Array.from({length:D.h},()=>img('hfull',12)).join('')+'</span><small>'+D.h+' corações · '+D.d+'</small></button>'}).join('')+'</div><div class="bot"><button class="btn nav" id="dfback">VOLTAR</button></div>';
+ $('#diffo').hidden=false;b.onclick=e=>{const t=e.target.closest('[data-df]');if(t){const k=t.dataset.df;DIFF=DIFFS[k];META.diff=k;saveMeta();$('#diffo').hidden=true;_ngD();p.diff=k;p.mhp=DIFF.h+MU('hp');p.hp=p.mhp;SFX.down()}else if(e.target.closest('#dfback')){$('#diffo').hidden=true;state='title';$('#title').hidden=false}}};
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#diffo').hidden){$('#dfback').click()}});
+const _addD=addE;addE=function(){const e=_addD.apply(this,arguments);if(e&&e.S&&!e.S.part&&e.S.id!=='part'&&DIFF.hp!==1){e.hp*=DIFF.hp;e.mhp*=DIFF.hp}return e};
+const _hurtD=hurtP;hurtP=function(d,src){return _hurtD(Math.max(1,Math.round(d*DIFF.dm)),src)};
+{const _rr=runResume;runResume=function(){const k=META.run&&META.run.p&&META.run.p.diff;DIFF=DIFFS[k]||DIFFS.medio;_rr()}}
+{const _tu=tutStart;tutStart=function(){DIFF=DIFFS.facil;_tu()}}
+/* loja: só 3 itens, um de cada categoria */
+restock=function(){const own=p.items||[],eq=EQUIP.filter(o=>!own.includes(o.id)),wn=Object.keys(WP).filter(k=>!p.wps.includes(k)&&(!WP[k].meta||MU(WP[k].meta))),up=p.wps.filter(k=>p.wl[k]<10);shop.peds=[];
+ const fd=FOOD.filter(o=>o.ok());if(fd.length)shop.peds.push({k:'food',o:pick(fd)});
+ if(wn.length&&(Math.random()<.5||!up.length)){const k=pick(wn);shop.peds.push({k:'weapon',w:k,o:{n:WP[k].n,t:WP[k].t+'. '+(p.wps.length<2?'Vai pro segundo espaço.':'Substitui: '+WP[p.wp].n+'.'),ic:WP[k].ic,r:1,kind:'weapon'}})}
+ else if(up.length){const k=pick(up);shop.peds.push({k:'up',w:k,o:{n:WP[k].n+' nível '+(p.wl[k]+1),t:'Mais 18% de dano e 6% de cadência para o '+WP[k].n+'.',ic:WP[k].ic,r:p.wl[k]>=6?2:1,kind:'weapon'}})}
+ if(eq.length)shop.peds.push({k:'equip',o:pick(eq)});for(const d of shop.peds)d.sold=0};
+{const st=document.createElement('style');st.textContent='#shopbox .peds{flex-wrap:nowrap !important}#shopbox .hc{width:184px !important;height:286px !important}#shopbox .hc-art{height:96px !important}#shopbox .hc-art img{width:68px !important;height:68px !important}#shopbox .hc-name{font-size:12px !important}#shopbox .hc-txt{font-size:17px !important}#shopbox .hc-lore{display:block !important}';document.head.appendChild(st)}
+/* fala do Tião pra cada item (ao passar o mouse/selecionar) */
+const ILN={food:['{n}? Isso enche a barriga e a vida.','{n} fresquinho, pescado hoje cedo. Mais ou menos hoje.','Sem {n} ninguém aguenta o fundo, marujo.'],weapon:['{n}! Essa aí faz estrago de verdade.','Já matei um tubarão com uma {n}. Mentira, mas podia.','Com {n} na mão, até moreia pensa duas vezes.'],up:['Afio sua arma rapidinho: {n}.','Mais dano, mais cadência. {n} vale o preço.'],equip:['{n}: equipamento de profissional, isso.','Comprei {n} de um mergulhador aposentado. Aposentado mesmo.','Esse {n} aí já salvou meu couro uma vez.','{n}? Bom pra quem quer voltar inteiro.'],relic:['{n}... isso aí tem história. Sinistra.']};
+$('#shopbox').addEventListener('navsel',e=>{const i=e.target.dataset.p;const d=shop.peds&&shop.peds[+i];if(!d||d.sold)return;const L=ILN[d.k]||ILN.equip;const ln=(d.o.line)||pick(L).replace('{n}',d.o.n);setTimeout(()=>say(ln,d.o.t),0)});
+/* raridade: artefatos fortes demais sobem de nível */
+for(const k of PK){if(/rastro de espinhos/i.test(k.n))k.r=Math.max(k.r,1);if(/drone/i.test(k.n))k.r=Math.max(k.r,2);if(/estilha/i.test(k.n))k.r=Math.max(k.r,2)}
+
+/* ================= CATÁLOGO DE ARTEFATOS: 300 comuns, 200 raros, 70 épicos, 30 lendários ================= */
+const PFAM=[['dmg','Tiros {v}% mais fortes',.04,'spear',1],['spd','Nada {v}% mais rápido',.03,'fin',1],['dashcd','Impulso recarrega {v}% mais rápido',.04,'hourglass',1],['sonarcd','Sonar recarrega {v}% mais rápido',.06,'sonar',1],
+ ['gold','Bichos deixam {v}% mais ouro',.05,'coin',1],['magnet','Ímã de moedas {v}% mais forte',.15,'magnet',1],['dodge','{v}% de chance de não levar dano',.015,'shield',1],['o2drain','O ar acaba {v}% mais devagar',-.03,'bubbles',1],
+ ['lampLen','Lanterna {v}% mais longa',.06,'lamp',1],['lampWide','Lanterna {v}% mais larga',.06,'eye',1],['light','Enxerga {v}% mais longe no escuro',.04,'eye',1],['burn','Tiros queimam ({v}% de chance)',.05,'fire',1],
+ ['poison','Tiros envenenam ({v}% de chance)',.05,'drop',1],['kbRes','{v}% menos empurrão ao levar dano',.06,'anchor',1],['curRes','{v}% menos efeito das correntezas',.05,'anchor',1],['bossDmg','{v}% mais dano em chefes',.05,'spear',1],
+ ['combo','Combo dura {v}% mais',.06,'hourglass',1],['luck','Sorte {v}% maior nos artefatos',.06,'pearl',1],['heartPlus','Corações curam {v}% mais',.12,'medkit',1],['price','Loja {v}% mais barata',-.03,'coin',1]];
+const PADJ=[['Rachado','Velho','Simples','Gasto','de Lata','Torto','do Cais','Remendado','de Cobre','Enferrujado','de Pescador','do Recife','Salgado','Pequeno','de Osso'],
+ ['Polido','Afiado','de Prata','do Capitão','Reforçado','das Correntes','de Coral Vivo','Encantado','do Farol','de Marfim'],
+ ['Abissal','do Leviatã','das Profundezas','da Fossa','Assombrado','de Âmbar Negro','Sem Fundo'],['de Poseidon','do Fim do Mundo','Primordial','Eterno','da Cila']];
+const PNOUN=['Amuleto','Dente','Anel','Escama','Concha','Talismã','Medalhão','Olho','Espinho','Pérola','Bússola','Âncora','Coral','Nó de Marinheiro','Sino','Fóssil','Barbatana','Tentáculo','Cristal','Moeda'];
+const PMUL=[1,2.4,4.5,8],PMAX=[5,3,2,1],PCNT=[300,200,45,15];
+{const used=new Set(PK.map(k=>k.n));let id=0;const fmt=(f,v)=>f[1].replace('{v}',Math.round(Math.abs(v)*100));
+ for(let r=0;r<4;r++){let made=0,tries=0;while(made<PCNT[r]&&tries<20000){tries++;const nst=r===0?1:r===1?(Math.random()<.4?2:1):r===2?2+(Math.random()<.4?1:0):3,fams=[];
+   while(fams.length<nst){const f=pick(PFAM);if(!fams.includes(f))fams.push(f)}const fx={},tx=[];
+   for(const f of fams){const v=+(f[2]*PMUL[r]*(0.85+Math.random()*.3)*(nst>1?.8:1)).toFixed(3);fx[f[0]]=v;tx.push(fmt(f,v))}
+   const n=pick(PNOUN)+' '+pick(PADJ[r]);if(used.has(n))continue;used.add(n);
+   PK.push({id:'g'+r+'_'+(id++),n,t:tx.join('. ')+'.',r,max:PMAX[r],ic:fams[0][3],fx,gen:1});made++}}}
+/* artefatos antigos com mecânica especial sobem de raridade; os comuns ficam só com bônus simples */
+for(const k of PK){if(k.gen)continue;const simple=['dmg','rate','spd','hp','o2'].includes(k.id);if(!simple&&k.r<3)k.r=Math.min(3,k.r+1)}
+/* sorteio com chance de lendário */
+rollPerks=function(n,minR){const lk=MU('luck')+F('luck'),out=[];if(F('allRare'))minR=Math.max(minR||0,1);for(let t=0;t<80&&out.length<n;t++){const q=Math.random();let ra=q<.02+.01*lk?3:q<.09+.05*lk?2:q<.36+.08*lk?1:0;if(minR)ra=Math.max(ra,minR);
+  let pool=PK.filter(k=>!k.off&&k.r===ra&&P(k.id)<k.max&&!out.includes(k));if(!pool.length)pool=PK.filter(k=>!k.off&&P(k.id)<k.max&&!out.includes(k));if(!pool.length)break;out.push(pick(pool))}return out};
 
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
