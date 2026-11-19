@@ -4440,9 +4440,10 @@ const _tcP=tickCurs;tickCurs=function(dt){_tcP(dt);if(!p||state!=='play')return;
  if(!PIT.warned)for(const q of pits)if(curNear(q.c,p.x,p.y)){PIT.warned=1;radio('Essa correnteza VERMELHA leva pra uma fossa de pressão negativa! Se cair lá, você volta uma fenda pra cima! SAI DE LADO!');break}};
 const _dcP=drawCurs;drawCurs=function(vx0,vy0,vx1,vy1){_dcP(vx0,vy0,vx1,vy1);
  for(const c of curs){if(!c.neg||!c.P)continue;const P=c.P;ctx.lineCap='round';ctx.strokeStyle='#ff2a3a';ctx.globalAlpha=.09+.04*Math.sin(time*4);ctx.lineWidth=c.r*2;ctx.beginPath();ctx.moveTo(P[0][0],P[0][1]);for(let i=1;i<P.length;i++)ctx.lineTo(P[i][0],P[i][1]);ctx.stroke();ctx.globalAlpha=1;ctx.lineCap='butt'}
- for(const q of pits){if(q.x<vx0-60||q.x>vx1+60||q.y<vy0-60||q.y>vy1+60)continue;wglow(q.x,q.y,60,'#ff2a3a',.35+.15*Math.sin(time*3));disc(q.x,q.y,q.r+4,'#1a0206');disc(q.x,q.y,q.r,'#000');
-  for(let k=0;k<4;k++){ctx.strokeStyle=k%2?'#ff3a4a':'#8a1020';ctx.globalAlpha=.7;ctx.lineWidth=2;ctx.beginPath();const rr=q.r*(1-k*.2),a0=q.t*(3+k)+k;ctx.arc(q.x,q.y,rr,a0,a0+Math.PI*1.2);ctx.stroke()}ctx.globalAlpha=1;
-  ctx.fillStyle='#ffb0b0';ctx.font='6px monospace';}};
+ for(const q of pits){if(q.x<vx0-90||q.x>vx1+90||q.y<vy0-90||q.y>vy1+90)continue;const T=time;wglow(q.x,q.y,80,'#ff2a3a',.25+.1*Math.sin(T*3));
+  for(let arm=0;arm<5;arm++){ctx.lineCap='round';for(let j=0;j<26;j++){const k=j/26,ang=arm*TAU/5+T*2.2+k*5.5,rr=q.r*.3+k*58;const x=q.x+Math.cos(ang)*rr,y=q.y+Math.sin(ang)*rr*.62;ctx.globalAlpha=(1-k)*.55;ctx.fillStyle=k<.3?'#2a0006':j%3?'#a01828':'#ff6a6a';ctx.fillRect(Math.round(x),Math.round(y),k<.5?2:1,k<.5?2:1)}}
+  ctx.globalAlpha=1;for(let i=5;i>=0;i--){ctx.globalAlpha=.25+.12*i;ctx.fillStyle=i%2?'#3a040c':'#12000a';ctx.beginPath();ctx.ellipse(q.x,q.y,q.r*(.35+i*.14),q.r*(.22+i*.09),T*.6+i,0,TAU);ctx.fill()}
+  ctx.globalAlpha=1;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(q.x,q.y,q.r*.35,q.r*.22,0,0,TAU);ctx.fill();ctx.strokeStyle='#ff3a4a';ctx.lineWidth=1;ctx.globalAlpha=.6+.3*Math.sin(T*6);ctx.beginPath();ctx.ellipse(q.x,q.y,q.r*1.05,q.r*.66,0,0,TAU);ctx.stroke();ctx.globalAlpha=1}};
 /* baús pequenos agora soltam coisas */
 function chestBonus(c){const r=Math.random();if(r<.16)drop(c.x,c.y,'relic');else if(r<.42)drop(c.x,c.y,'heart');else if(r<.62)drop(c.x,c.y,'pearl');else if(r<.75){p.bombs=Math.min(6,p.bombs+1);ftxt(c.x,c.y-10,'+1 BOMBA','#ffd45e')}if(Math.random()<.25)drop(c.x,c.y,'pearl')}
 /* loja cheia */

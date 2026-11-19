@@ -23,7 +23,7 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [ ] Paredes explodíveis que funcionem de verdade (explodiu, dá pra passar) e levem a baús
 - [ ] Mais blocos interagíveis com explosão (rocha rachada, barris, cristais, etc.)
 - [ ] Mais coisas interagíveis no cenário
-- [ ] Redemoinho de pressão negativa: visual ruim, refazer
+- [x] Redemoinho de pressão negativa: refeito como espiral vermelha girando
 
 ## Música
 - [x] Trilha muda em degradê gradual conforme a profundidade (não ficar na mesmice)
