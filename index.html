@@ -3288,7 +3288,7 @@ addEventListener('resize',resize);resize();
 function hole(x,y,r,a){if(!isFinite(x+y+r))return;if(x<-r||y<-r||x>VW+r||y>VH+r)return;const g=dctx.createRadialGradient(x,y,r*.2,x,y,r);g.addColorStop(0,'rgba(0,0,0,'+(a||1)+')');g.addColorStop(1,'rgba(0,0,0,0)');dctx.fillStyle=g;dctx.fillRect(x-r,y-r,r*2,r*2)}
 function glow(x,y,r,c,a){if(!isFinite(x+y+r))return;if(x<-r||y<-r||x>VW+r||y>VH+r)return;const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,c);g.addColorStop(1,'rgba(0,0,0,0)');ctx.globalAlpha=a;ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2)}
 function render(){if(state==='title'){titleScene();return}const z=ZN[zone];
- const bb=boss&&boss.S.myth&&boss.ag&&!boss.dead?.4:0,bx=bb?cl((boss.x-p.x)*bb,-VW*.34,VW*.34):0,by=bb?cl((boss.y-p.y)*bb,-VH*.34,VH*.34):0,tx=cl(p.x+bx+Math.cos(p.aim)*18-VW/2,-20,MW*TS-VW+20),ty=cl(p.y+by+Math.sin(p.aim)*18-VH/2,-20,MH*TS-VH+20);camx+=(tx-camx)*.12;camy+=(ty-camy)*.12;
+ const bb=boss&&boss.S.myth&&boss.ag&&!boss.dead?.4:0,bx=bb?cl((boss.x-p.x)*bb,-VW*.34,VW*.34):0,by=bb?cl((boss.y-p.y)*bb,-VH*.34,VH*.34):0,tx=cl(p.x+bx+Math.cos(p.aim)*18-VW/2,0,MW*TS-VW),ty=cl(p.y+by+Math.sin(p.aim)*18-VH/2,0,MH*TS-VH);camx+=(tx-camx)*.12;camy+=(ty-camy)*.12;
  const ox=-Math.round(camx+(Math.random()-.5)*shake*OPT.shake),oy=-Math.round(camy+(Math.random()-.5)*shake*OPT.shake);
  const g=ctx.createLinearGradient(0,0,0,VH);g.addColorStop(0,z.top);g.addColorStop(1,z.bot);ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);
  ctx.drawImage(farC,Math.round(ox*.5),Math.round(oy*.5));
@@ -4458,7 +4458,7 @@ restock=function(){const own=p.items||[],eq=EQUIP.filter(o=>!own.includes(o.id))
 /* ================= RODADA: dificuldade, HUD, loja de 3, raridades ================= */
 /* corações numa linha só + barra de oxigênio clara */
 {const st=document.createElement('style');st.textContent=`#hearts{flex-wrap:nowrap !important;max-width:none !important}#hearts.m12 img{width:15px;height:13px}#hearts.m18 img{width:12px;height:11px}
-#o2b{height:24px !important;margin-top:6px;box-shadow:0 0 0 2px #2a8ac0 !important}#o2b i{background:linear-gradient(#bff4ff,#3ab0ff 60%,#1a6aa0) !important}#o2b b{font-size:15px !important;line-height:20px;letter-spacing:1px;text-shadow:0 1px 0 #000,0 0 4px #000}
+#o2b{height:24px !important;margin-top:6px;box-shadow:0 0 0 2px #2a8ac0 !important}#o2b i{background:linear-gradient(#bff4ff,#3ab0ff 60%,#1a6aa0) !important}#o2b b{font:9px "Press Start 2P" !important;white-space:nowrap;line-height:20px !important;letter-spacing:1px;text-shadow:0 1px 0 #000,0 0 4px #000}
 #o2b::before{content:'';position:absolute;left:-26px;top:1px;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff 0 18%,#9fe8ff 22%,#3ab0ff 60%,#1a5a8a);box-shadow:0 0 0 2px #000}
 #o2b{margin-left:28px}#o2b.low{animation:o2low .5s steps(2) infinite}@keyframes o2low{50%{box-shadow:0 0 0 2px #ff3a3a !important}}
 .dfo{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}.dfo .btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 10px;font-size:12px}.dfo .btn small{font:16px "VT323",monospace;color:#3a2410;letter-spacing:0}.dfo .btn .hh{display:flex;gap:1px}.dfo .btn .hh img{width:12px;height:11px;image-rendering:pixelated}.dfo .btn.sel{outline:3px solid #fff}`;document.head.appendChild(st)}
