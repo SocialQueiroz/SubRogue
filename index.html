@@ -1544,7 +1544,7 @@ function newLevel(){zone=zoneOf(depth);en=[];pj=[];co=[];pt=[];clouds=[];vents=[
  const spot=min=>{for(let t=0;t<600;t++){const i=fl[RI(fl.length)];if(!used.has(i)&&dm[i]>=min){used.add(i);return{x:(i%MW)*TS+8,y:((i-i%MW)/MW)*TS+8}}}return null};
  for(let i=0;i<Math.max(2,5-Math.floor(depth/25))+Math.round(F('vents'))+(mod.vents||0);i++){const s=spot(6);if(s)vents.push(s)}for(let i=0;i<3+RI(2)+(mod.chest||0)+Math.round(F('chest'));i++){const s=spot(10);if(s)chests.push(s)}
  if(depth>1){const n=Math.min(14,Math.round((1+depth*.25)*(mod.mine||1)));for(let i=0;i<n;i++){const s=spot(8);if(s)mines.push({x:s.x+R(6)-3,y:s.y+R(6)-3,ph:R(9),fuse:0,vx:R(14)-7,vy:R(14)-7})}}
- {const n=mod.cur||(depth>2?2+(depth>25?1:0):0);for(let i=0;i<n;i++){const s=spot(7);if(!s)continue;const c=genCurrent(s);if(c)curs.push(c)}}
+ {const n=mod.cur||(depth>=2?3+(depth>15?1:0)+(depth>40?1:0):0);for(let i=0;i<n;i++){const s=spot(7);if(!s)continue;const c=genCurrent(s);if(c)curs.push(c)}}
  if(zone>=2||mod.therm){let n=(zone>=2?2+RI(3):0)+(zone===5?4:0)+(mod.therm||0);for(let t=0;t<800&&n>0;t++){const i=fl[RI(fl.length)],tx=i%MW,ty=(i-tx)/MW;if(dm[i]>=8&&!used.has(i)&&WL(tx,ty+1)&&!WL(tx,ty-1)){used.add(i);therm.push({x:tx*TS+8,y:ty*TS+TS,t:R(4)});n--}}}
  const pool=Object.values(SP).filter(s=>!s.boss&&!s.neutral&&s.d<=depth&&s.d>=depth-30).sort((a,b)=>a.d-b.d),groups=mod.noEnemy?0:Math.min(30,Math.round(Math.min(26,7+depth*.2)*(mod.en||1)*Math.max(.3,1+F('ecount'))));
  for(let i=0;i<groups;i++){if(en.length>54)break;const s=spot(11);if(!s)break;const S=pool[Math.max(RI(pool.length),RI(pool.length))],n=Math.round(((S.grp||1)+(S.grp&&depth>S.d+2?2:0))*(S.grp?(mod.school||1):1));
@@ -2392,7 +2392,7 @@ function update(dt){time+=dt;p.st.t+=dt;tickBeat(dt);mythPost(dt);tickParry(dt);
  if(ax||ay){p.aim=Math.atan2(ay,ax);firing=true;mouse.used=false}else if(touch.a){if(hyp(touch.a.dx,touch.a.dy)>.25){p.aim=Math.atan2(touch.a.dy,touch.a.dx);firing=true}}else if(mouse.used)p.aim=Math.atan2(mouse.y/zoom+camy-p.y,mouse.x/zoom+camx-p.x);if(GP.aim!==null){p.aim=GP.aim;if(GP.as||GP.fire)firing=true}else if(!(ax||ay)&&!touch.a&&!mouse.used&&(p.ix||p.iy))p.aim=Math.atan2(p.iy,p.ix)
  const spd=92*(1+.1*P('spd'))*(1+.06*(p.up.spd||0))*(p.slow>0?.55:1)*Math.max(.4,1+F('spd'))*(p.r>5?.88:p.r<3?1.15:1);
  if(p.dashing>0){p.dashing-=dt;p.vx=p.ddx*330;p.vy=p.ddy*330;p.tr.push({x:p.x,y:p.y,l:.25});const dd=3*P('dashd')+3*F('dashDmg');if(dd)for(const e of en.slice())if(!p.dh.has(e)&&hyp(e.x-p.x,e.y-p.y)<e.r+9){p.dh.add(e);dmgE(e,dd*dmgMul(),Math.atan2(p.ddy,p.ddx),3,'fx')}if(p.dashing<=0)onDashEnd()}
- else{p.vx+=ix*spd*7*dt;p.vy+=iy*spd*7*dt;{const cf=curAt(p.x,p.y);if(cf){const cr=1-.7*Math.min(1,F('curRes'));p.vx+=cf[0]*2.6*dt*cr;p.vy+=cf[1]*2.6*dt*cr;hint('cur','Correnteza! Ela te leva junto. Aproveita pra fugir ou nada pro lado pra sair.')}}{const f=flowAt(p.x,p.y);if(f){const cr=1-.6*Math.min(1,F('curRes'));p.vx+=f[0]*3*dt*cr;p.vy+=f[1]*3*dt*cr}}const k=Math.exp(-7*dt);p.vx*=k;p.vy*=k}
+ else{p.vx+=ix*spd*7*dt;p.vy+=iy*spd*7*dt;{const cf=curAt(p.x,p.y);if(cf){const cr=1-.7*Math.min(1,F('curRes'));p.vx+=cf[0]*2.6*dt*cr;p.vy+=cf[1]*2.6*dt*cr;hint('cur','CORRENTEZA! Contra ela não dá pra nadar. Nada pro LADO pra sair, ou dá um impulso!')}}{const f=flowAt(p.x,p.y);if(f){const cr=1-.6*Math.min(1,F('curRes'));p.vx+=f[0]*3*dt*cr;p.vy+=f[1]*3*dt*cr}}const k=Math.exp(-7*dt);p.vx*=k;p.vy*=k}
  if(p.grab){const g=p.grab;g.t-=dt;if(g.e.dead||g.t<=0)p.grab=null;else{const dx=g.e.x-p.x,dy=g.e.y-p.y,l=hyp(dx,dy)||1;p.vx=dx/l*150;p.vy=dy/l*150;if(l<g.e.r+p.r+4){p.grab=null;hurtP(2,g.e)}}}
  updHook(dt);move(p,p.vx*dt,p.vy*dt,p.r);const v=hyp(p.vx,p.vy);if(v>8){const k=Math.min(1,dt*10);p.fx+=(p.vx/v-p.fx)*k;p.fy+=(p.vy/v-p.fy)*k}
  p.sp[0].x=p.x;p.sp[0].y=p.y;for(let i=1;i<4;i++){const a=p.sp[i-1],b=p.sp[i];let qx=b.x-a.x,qy=b.y-a.y,l=hyp(qx,qy)||1;b.x=a.x+qx/l*3;b.y=a.y+qy/l*3}
@@ -3218,7 +3218,7 @@ MY.bolho={ax:26,ay:19,pil:4,
 function genCurrent(s){let x=s.x,y=s.y,a=R(TAU);const P=[[x,y]];
  for(let i=0;i<44;i++){let best=a,bs=-1;for(const da of[0,-.3,.3,-.65,.65,-1.05,1.05]){const t=a+da;let ok=0;for(let k=1;k<=5;k++){if(blocked(x+Math.cos(t)*k*9,y+Math.sin(t)*k*9,7))break;ok++}const sc=ok*10-Math.abs(da)*7+R(5);if(sc>bs){bs=sc;best=t}}
   if(bs<22)break;a=best+R(.24)-.12;x+=Math.cos(a)*11;y+=Math.sin(a)*11;P.push([x,y])}
- if(P.length<14)return null;return mkCur(P,13+R(8),62+depth*1.5,0)}
+ if(P.length<14)return null;return mkCur(P,18+R(10),240+depth*2.5,0)}
 function mkCur(P,r,str,lair){for(let it=0;it<3;it++)for(let i=1;i<P.length-1;i++){P[i][0]=(P[i-1][0]+P[i][0]*2+P[i+1][0])/4;P[i][1]=(P[i-1][1]+P[i][1]*2+P[i+1][1])/4}
  const T=[],S=[0];let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(let i=0;i<P.length;i++){const q=P[Math.min(P.length-1,i+1)],o=P[Math.max(0,i-1)],dx=q[0]-o[0],dy=q[1]-o[1],l=Math.hypot(dx,dy)||1;T.push([dx/l,dy/l]);if(i)S.push(S[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));x0=Math.min(x0,P[i][0]);y0=Math.min(y0,P[i][1]);x1=Math.max(x1,P[i][0]);y1=Math.max(y1,P[i][1])}
  const L=S[S.length-1],sting=!lair&&depth>=15&&Math.random()<.6;
@@ -4383,6 +4383,47 @@ kdddddddk
 let hLast='';
 (function hLoop(){requestAnimationFrame(hLoop);if(!p||state==='title')return;const e=$('#hearts');if(!e)return;const h=Math.max(0,p.hp|0),m=p.mhp|0,k=h+'/'+m;if(k===hLast)return;
  const prev=hLast?+hLast.split('/')[0]:h;hLast=k;let s='';for(let i=0;i<m;i++)s+='<img class="'+(i<h?'f':'')+(i>=h&&i<prev?' lost':'')+'" src="'+ico(i<h?'hfull':'hempty')+'" alt="">';e.innerHTML=s;e.classList.toggle('low',h<=Math.max(2,m*.25));e.title='VIDA '+h+'/'+m})();
+
+/* ================= SEU TIÃO: muito mais falas ================= */
+const TADD=(o,k,L)=>{o[k]=(o[k]||[]).concat(L)};
+TADD(TL2,'hi',['Senta aí, tira esse pé de pato molhado do meu convés.','Cheiro de alga e medo. Você tá bem, então.','Meu avô dizia: o mar não perdoa, mas às vezes esquece.','Trouxe ouro ou só história?','Hoje o café tá com gosto de sal. Igual todo dia.','Mergulhador vivo é cliente bom. Mergulhador morto não paga fiado.','Ouvi uns barulhos estranhos lá de baixo ontem. Não ouvi nada, esquece.','Essa loja aqui já foi um bote salva-vidas. Hoje salva bolso.','Pode olhar à vontade. Pegar sem pagar, aí não.','Já perdi três dentes e um barco pra esse mar. O dente eu não ligo.','Se ver uma luz bonita lá embaixo, NÃO chega perto.','Tô velho, mas o olho ainda acha pechincha.','Pressão boa é a do meu café. A de lá embaixo, não.','Voltou com todos os dedos? Conta aí.','Diz que no fundo tem uma cidade inteira. Diz.','O segredo é respirar devagar. E correr rápido.','Comprei esse estoque de um pirata. Não pergunte qual.','Tô sentindo que hoje você desce mais fundo.']);
+TADD(TL2,'rich',['Olha só, o bolso tá pesado! Vai afundar mais rápido.','Com esse ouro todo dava pra comprar meu barco. Não tá à venda.','Rico assim, até o tubarão te cumprimenta.','Gasta, que lá embaixo ouro não serve de boia.','Tá com cara de quem achou um baú de naufrágio.']);
+TADD(TL2,'poor',['Bolso furado, hein? Os peixes deixam moeda, sabia?','Fiado eu não faço. Nem pra sobrinho.','Quebra uns barris lá embaixo, sempre tem moeda.','Com esse dinheiro, só posso te dar um conselho: não morre.','Tá pobre igual eu na juventude. Eu tinha um barco, pelo menos.']);
+TADD(TL2,'hurt',['Rapaz, você tá sangrando no meu convés.','Tá todo mordido! Compra um curativo, pelo amor.','Desse jeito você não passa da próxima fenda.','Ô, vai com calma, a vida não volta de graça.','Já vi defunto com cara melhor.']);
+TADD(TL2,'boss',['Lá embaixo tem coisa GRANDE. Eu senti o barco tremer.','A próxima fenda é a toca de um monstro. Se prepara.','Leva bomba, leva cura, leva coragem. Leva tudo.','Lembra: o que brilha ROXO dá pra aparar. Usa isso no bicho grande.','Se o bicho cansar, aproveita e bate com tudo.','Meu irmão desceu pra ver esse bicho. Nunca subiu.']);
+TADD(TL2,'buy',['Boa escolha! Essa aí já salvou muito mergulhador.','Negócio fechado. Sem devolução.','Isso aí vale cada moeda. Quase cada.','Ótimo! Agora tenta não perder lá embaixo.','Hehe, eu ia usar isso no fim de semana.','Vendido! Pode levar com cuidado.','Tá aprendendo a gastar, hein?']);
+TADD(TL2,'roll',['Vou ver o que tem no fundo do baú...','Opa, deixa eu revirar a tralha aqui.','Troquei. Mas não reclama depois.','Estoque novo, cheirinho de maresia.']);
+TADD(TL2,'sold',['Esse já foi. Chegou tarde.','Vendido, marujo. Era o último.','Acabou. Volta na próxima subida.']);
+TADD(TL2,'relic',['Isso aí é relíquia de verdade. Cuidado com ela.','Peguei de um navio que afundou sozinho. Esquisito.','Dizem que dá sorte. Ou azar. Depende.']);
+TADD(TL,'yard',['Estaleiro do Tião: aqui o barco fica forte e você também.','Pérola boa vira reforma boa.','Cada melhoria aqui vale pra todos os mergulhos.','Esse casco já aguentou tempestade de verdade.','Pérola se acha em baú, em elite e em chefe. Vai buscar.','Investe no tanque. Ar é vida, marujo.','Com mais vida você aguenta mais mordida. Óbvio, né.']);
+TADD(TL,'buy',['Martelada aqui, prego ali... pronto!','Ficou novinho. Quase.','Isso vai te ajudar muito lá embaixo.']);
+TADD(TL,'max',['Esse já tá no máximo. Não tem mais o que apertar.','Mais que isso, só milagre.']);
+/* rádio durante o mergulho */
+const RAD={amb:[['Tá ouvindo? Esse silêncio aí embaixo é que me assusta.','Respira devagar, marujo. O tanque agradece.','Peixe pequeno em cardume é problema grande.','Se o ar apertar, procura coluna de bolha.','Barril quebrado é moeda no bolso.','Fica longe das minas velhas, elas balançam na corrente.','Lembra: bala roxa você apara. As outras, desvia.','Contra correnteza não adianta nadar. Vai de lado!','Já tô fazendo o café pra quando você subir.','Tem baú escondido em parede oca. Bate nas paredes!','Viu um bicho piscando roxo? Espera ele chegar e apara!','Combo alto dá mais ouro. Não para de atirar.'],
+ ['Água tá ficando escura, hein? Liga essa lanterna.','Aí já é mar aberto. Tubarão gosta de lá.','Cuidado com as águas-vivas, elas não pedem desculpa.','A essa altura eu já tinha voltado. Mas eu sou velho.','Sente o frio? É o fundo chamando.'],
+ ['Zona do crepúsculo... aqui os bichos começam a brilhar.','Tem coisa aí que caça pela luz. Cuidado com a lanterna.','Daqui pra baixo, meu rádio começa a chiar.','Se ouvir um canto bonito, não segue.'],
+ ['Meia-noite eterna. Aqui o sol nunca chegou.','Os bichos daí nunca viram gente. Melhor assim.','Tô te ouvindo mal... fala alto se precisar.','Aqui embaixo, até a pressão tem dente.'],
+ ['Abismo... eu nunca desci tanto. Você é doido.','O rádio quase não pega aí. Fica vivo.','Dizem que no abismo o mar respira.','Se encontrar meu irmão aí, fala que ele me deve dinheiro.'],
+ ['Fossa hadal... ninguém volta igual daí.','Tô rezando aqui em cima, viu?','Essa pressão esmaga submarino. E você aí, de pé de pato.'],
+ ['Onze mil metros... marujo, você tá no fim do mundo.','Se tiver alguma coisa lá no fundo, ela já sabe que você chegou.']],
+ zone:['Entrou no {z}. Olho aberto!','{z}! Daqui pra frente é outra conversa.','Bem-vindo ao {z}, marujo. Não fica muito tempo.'],
+ o2:['O AR TÁ ACABANDO! Procura bolha, rápido!','Tanque no fim! Sobe ou acha uma coluna de bolha!','Respira devagar, o ar tá quase zerado!'],
+ hp:['Você tá muito machucado! Pega um coração!','Desse jeito não volta! Cuidado!','Foge um pouco, recupera o fôlego!'],
+ boss:['Derrubou o bicho! Eu vi daqui o mar ferver!','HAHA! Esse monstro nunca mais assusta ninguém!','Que coisa linda! Conta pra todo mundo no porto!'],
+ combo:['Que sequência! Não para!','Isso é que é mergulhador!','Combo bonito, hein!']};
+const RS={t:40+R(30),lz:-1,o2:0,hp:0,bk:0,cb:0,lv:-1};
+(function radLoop(){setTimeout(radLoop,1000);try{if(state!=='play'||!p||(typeof TUT!=='undefined'&&TUT.on))return;const H=$('#hint');const busy=H&&+getComputedStyle(H).opacity>.1;
+ if(RS.lv!==depth){RS.lv=depth;RS.o2=0;RS.hp=0}
+ if(zone!==RS.lz){const first=RS.lz<0;RS.lz=zone;if(!first&&!busy){radio(pick(RAD.zone).replace('{z}',ZN[zone].n.toLowerCase()));return}}
+ if(!RS.o2&&p.o2<p.mo2*.22){RS.o2=1;radio(pick(RAD.o2));return}
+ if(!RS.hp&&p.hp<=Math.max(2,p.mhp*.25)){RS.hp=1;radio(pick(RAD.hp));return}
+ const bk=Object.keys(META.bk||{}).length;if(bk>RS.bk){const was=RS.bk;RS.bk=bk;if(was||bk===1){setTimeout(()=>radio(pick(RAD.boss)),1800);return}}
+ if(p.combo>=30&&RS.cb<30){RS.cb=p.combo;if(!busy)radio(pick(RAD.combo));return}if(p.combo<5)RS.cb=0;
+ if(boss||busy)return;RS.t--;if(RS.t<=0){RS.t=45+R(40);const pool=RAD.amb[0].concat(RAD.amb[Math.min(RAD.amb.length-1,zone+1)]||[]);radio(pick(pool))}}catch(e){}})();
+RS.bk=Object.keys((META&&META.bk)||{}).length;
+/* fala do Tião na tela de fim */
+{const _so=showOver;showOver=function(nb){_so(nb);const b=$('#overbox'),L=nb?['NOVO RECORDE! Vou pendurar sua foto no barco.','Mais fundo que todo mundo! Eu sabia!']:depth<5?['Tão cedo? Nem molhou o cabelo direito.','Acontece. Até eu me afoguei no primeiro dia.']:depth<20?['Foi bonito enquanto durou. Sobe, toma um café.','O mar ganhou essa. A próxima é sua.','Respira. Amanhã tem mais fenda.']:['Foi longe, marujo. Muito longe.','Poucos chegam onde você chegou. Orgulho!','O fundo te conhece agora. Volta mais forte.'];
+ if(b)b.insertAdjacentHTML('afterbegin','<p class="say" style="color:#ffe0a0;margin:0 0 8px">Seu Tião: "'+pick(L)+'"</p>')}}
 
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
