@@ -33,3 +33,5 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 
 ## Bugs vistos
 - [x] Baú grande aparecia quebrado (retângulo marrom) no fim das correntezas — trocado por baús pequenos
+- [x] Bordas do mapa mostravam água vazia fora do mapa — câmera presa dentro do mapa
+- [x] Rótulo OXIGÊNIO quebrando em 2 linhas
