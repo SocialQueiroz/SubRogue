@@ -35,3 +35,12 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Baú grande aparecia quebrado (retângulo marrom) no fim das correntezas — trocado por baús pequenos
 - [x] Bordas do mapa mostravam água vazia fora do mapa — câmera presa dentro do mapa
 - [x] Rótulo OXIGÊNIO quebrando em 2 linhas
+
+## Tubarões-baleia e Orca (pedido novo)
+- [x] Renderizadores próprios do tubarão-baleia e da orca (prévia enviada)
+- [ ] Cutscene aos 300 m e a cada 1000 m: chegar perto/atirar → bando de tubarões-baleia para na frente, brinca e fala ("tá indo bem... raro ver alguém com sua determinação")
+- [ ] Toda cutscene termina com eles fugindo de uma orca
+- [ ] 0,1% por corrida: caminho secreto para luta secreta contra a Orca (conquista própria)
+
+## Banco de dados
+- [ ] Usar PocketBase (PocketHost): criar instância, coleções users/saves/scores e ligar no jogo
