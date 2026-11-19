@@ -46,3 +46,8 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [ ] Usar PocketBase (PocketHost): criar instância, coleções users/saves/scores e ligar no jogo
 - [x] Tubarões-baleia soltam coraçõezinhos e regeneram toda a vida
 - [x] Luta secreta da Orca feita
+
+## Orca (feedback novo)
+- [ ] Refazer a luta da Orca como chefe de verdade com VÁRIAS FASES (como os chefes mitológicos: 4 fases, rugido, golpes novos por fase)
+- [ ] Animação da orca melhor (nado, mordida, giro, salto, cauda)
+- [ ] IA inteligente: orcas são caçadoras espertas — cercar, fingir recuar, emboscar, usar ondas/bolhas pra encurralar, prever a posição do jogador, chamar o "grupo" (filhotes) numa fase
