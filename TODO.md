@@ -19,7 +19,7 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 
 ## Conteúdo
 - [ ] Mais inimigos, mais variedade
-- [ ] Ninhos de peixes no fim das correntezas (hoje não existem)
+- [x] Ninhos de peixes no fim das correntezas (soltam peixes, destruíveis, dão moedas e às vezes baú)
 - [ ] Paredes explodíveis que funcionem de verdade (explodiu, dá pra passar) e levem a baús
 - [ ] Mais blocos interagíveis com explosão (rocha rachada, barris, cristais, etc.)
 - [ ] Mais coisas interagíveis no cenário

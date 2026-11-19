@@ -4596,6 +4596,19 @@ function podSay(m,who){let b=$('#podbox');if(!b){document.body.insertAdjacentHTM
 {const _dp=drawParryFx;drawParryFx=function(){_dp();const P=POD;if(!P)return;P.S=P.S||0;for(const s of P.sh){const fl=Math.cos(s.a)<0;drawWhaleShark(ctx,s.x,s.y,s.a,70,time*2+s.ph,fl)}
  if(P.st==='orca'){const a=Math.atan2(0,(P.x>p.x?1:-1));drawOrca(ctx,P.ox,P.oy,a,80,time*3,Math.cos(a)<0)}}}
 
+/* ================= NINHOS DE PEIXES NO FIM DAS CORRENTEZAS ================= */
+let nests=[];
+{const _nl=newLevel;newLevel=function(){_nl.apply(this,arguments);nests=[];if(depth<2||mod===MODS.lair||(typeof TUT!=='undefined'&&TUT.on))return;
+ for(const c of curs){if(!c.P||c.lair||c.neg||Math.random()>.45)continue;const e=c.P[c.P.length-1];nests.push({x:e[0],y:e[1],hp:30+depth*4,mhp:30+depth*4,t:2+R(2),kids:[],sp:pick(['sardinha','palhaco','baiacu'].filter(k=>SP[k]))})}}}
+{const _tp=tickParry;tickParry=function(dt){_tp(dt);if(!p||state!=='play')return;for(let i=nests.length-1;i>=0;i--){const n=nests[i];n.kids=n.kids.filter(e=>!e.dead&&e.hp>0);n.t-=dt;
+ if(n.t<=0&&n.kids.length<4&&hyp(p.x-n.x,p.y-n.y)<260){n.t=3.5;const e=addE(n.sp,n.x+R(10)-5,n.y+R(10)-5);if(e){e.ag=1;n.kids.push(e);burst(n.x,n.y,'#cfefff',6,60)}}
+ for(const q of pj){if(q.e||q.nh===n)continue;if(hyp(q.x-n.x,q.y-n.y)<12){n.hp-=q.d||1;q.nh=n;q.life=0;burst(q.x,q.y,'#e8c890',4,50)}}
+ if(n.hp<=0){nests.splice(i,1);SFX.boom();burst(n.x,n.y,'#e8c890',30,160,2);let g=12+depth*2;while(g-->0){const a=R(TAU),s=40+R(90);co.push({x:n.x,y:n.y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,t:'coin',v:1,life:14,ph:R(9)})}if(Math.random()<.5)chests.push({x:n.x,y:n.y});ftxt(n.x,n.y-12,'NINHO DESTRUÍDO!','#ffd45e')}}}}
+{const _dp=drawParryFx;drawParryFx=function(){_dp();for(const n of nests){if(n.x<camx-30||n.x>camx+VW+30||n.y<camy-30||n.y>camy+VH+30)continue;const b=Math.sin(time*2+n.x)*1;
+ disc(n.x,n.y+b,11,OUT);disc(n.x,n.y+b,10,'#6a5434');for(let k=0;k<9;k++){const a=k*TAU/9+time*.3;pl(n.x+Math.cos(a)*4,n.y+b+Math.sin(a)*4,n.x+Math.cos(a)*10,n.y+b+Math.sin(a)*10,'#9a7a4a',1)}
+ for(let k=0;k<5;k++){const a=k*TAU/5+time;disc(n.x+Math.cos(a)*5,n.y+b+Math.sin(a)*4,1.6,'#f4e8c0')}disc(n.x,n.y+b,3,'#2a1a0c');
+ if(n.hp<n.mhp){ctx.fillStyle='#000';ctx.fillRect(n.x-10,n.y-16,20,3);ctx.fillStyle='#ffd45e';ctx.fillRect(n.x-9,n.y-15,18*n.hp/n.mhp,1)}}}}
+
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
 </script>
