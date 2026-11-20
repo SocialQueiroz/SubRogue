@@ -72,3 +72,11 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Relíquia fora de chefe: rara (15% nos primeiros andares) e limitada por corrida — antes ~6 relíquias nos 4 primeiros andares, agora ~0,7
 - [x] Subir de nível mais devagar (nível 4–5 no 4º andar, antes 7–9) e artefatos épicos/lendários raros no começo, ficando comuns só lá no fundo
 - [x] Fenda de descida nunca dentro de correnteza (antes 30% das fendas tinham, agora 0 em 150 testadas); redemoinhos também saem de perto da saída
+
+## Relíquias e itens (feedback novo)
+- [x] 119 relíquias (eram 20): 6 trocam sua arma (espada, sabre, machado, canhão, tridente, arpão elétrico); 12 só aparecem com arma branca (lâmina flamejante, gelo eterno, trovão, vampira, onda cortante, giro de aço, guarda espelhada...); 17 só com a arma certa e mudam o tiro dela; o resto geral, incluindo amaldiçoadas (muito boas com preço)
+- [x] Escolha de relíquia com 3 opções e fala própria do Tião
+- [x] Armas brancas: Espada do Afogado, Sabre de abordagem e Machado de âncora (golpe em arco que quebra tiros comuns)
+- [x] Mais 12 equipamentos e 6 comidas (armas 37, equipamentos 67, comidas 21)
+- [x] Decoração no meio da água: ficaram só as águas-vivas; saíram cardumes, tartarugas, raias, krill, algas soltas, bolhas, lanternas, baleia, neve, tábuas, sargaço, caixas e bola de isca
+- [x] Mais 25 mensagens nas garrafas (outros pescadores)
