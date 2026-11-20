@@ -86,3 +86,9 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Sem tanque: tiradas a armadura, a característica "casca" (85% menos dano) e o "escondida até morrer"; vida menor
 - [x] Golpe: recolhe a cabeça (brilho amarelo) e dá o bote com o pescoço esticando; se errar, fica presa e leva mais dano
 - [x] Com pouca vida: gira no casco (aviso), quica nas paredes mirando em você e derruba outros bichos ("STRIKE!"); depois de 3 quiques fica TONTA de barriga pra cima (dano em dobro) e volta a lutar
+
+## Parry e faca (feedback novo)
+- [x] Parry estilo Cuphead: AA instantâneo = só parry (quase sem dash, devolve a carga); A...A no meio do dash = parry que cancela o dash na hora
+- [x] Faca de mergulho sempre na mão: tecla E alterna entre suas armas e a faca (corpo a corpo, mais arriscado)
+- [x] Dificuldade afeta raridade: fácil = mais coisas boas, difícil/insano = menos
+- [ ] Sereia — ver SEREIA_PROMPT.md

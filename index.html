@@ -3742,10 +3742,10 @@ ICO.parry=`
 ...kyyyYk...
 ....kyYk....
 .....kk.....`;
-const PARRY_WIN=.22,PARRY_AFTER=.26,PARRY_R=16,PURP='#b04aff';
+const PARRY_WIN=.26,PARRY_AFTER=.26,PARRY_R=16,PURP='#b04aff';
 const _dashO=dash;
 dash=function(){if(state!=='play'||!p||p.hp<=0)return;const t=time-(p.dst||-9),L=p.dlen||.17;
- if(p.dst&&t<.04)return;if(p.dst&&!p.ptry&&t<L+PARRY_AFTER){p.ptry=1;doParry();return}
+ if(p.dst&&t<=.001)return;if(p.dst&&!p.ptry&&t<L+PARRY_AFTER){p.ptry=1;if(t<.1){p.dch=Math.min((p.dch||0)+1,1+Math.round(F('dashCharges')));p.dashT=0}doParry();return}
  const was=p.dashing;_dashO();if(p.dashing>0&&!(was>0)){p.dst=time;p.dlen=p.dashing;p.ptry=0}};
 function tryParry(){}
 function doParry(){p.pt=PARRY_WIN;p.pfx=.3;p.pwon=0;p.dashing=0;p.vx*=.25;p.vy*=.25;SFX.dash();tickParry(0)}
@@ -3815,7 +3815,7 @@ function diverDraw(g,S,t,kick,mvv,rc,fire,ad,bend){ad=ad||0;bend=bend||0;const s
  E(.2,-.2,5.4,3.9,O);E(.2,-.2,4.7,3.2,su[0]);E(.2,1,4.3,1.8,sd);E(-.6,-1.6,3.2,1,sl);R(-2.6,-.5,4.8,1.1,su[2]);
  Ln(-3,-3.2,-5.5,-3.8,O,1);Ln(1,-3.2,1.6,-4.4,O,1);
  /* braço e arpão */
- const MEL=typeof p!=='undefined'&&p&&p.wp&&typeof WP!=='undefined'&&WP[p.wp]&&WP[p.wp].melee;if(MEL){const sk=p.swT>0?(1-p.swT/p.swD):1,so=p.swT>0?(-1+sk*2)*1.2*(p.swDir||1):-.5,big=p.wp==='machado';g.save();g.translate(1.2,1);g.rotate(ad+so);Ln(0,0,5,1,O,3);Ln(0,0,5,1,su[0],1.9);R(4.5,-.6,1.6,3.2,O);R(4.8,-.3,1,2.6,'#c8a040');if(big){Ln(6,1,15,1,O,2.2);Ln(6,1,15,1,'#6a4a2a',1.2);E(14.5,1,2.6,4.4,O);E(14.5,1,2,3.8,'#aab8c4');E(15.4,1,1,3,'#e8f2f8')}else{const L=p.wp==='sabre'?13:15;g.fillStyle=O;g.beginPath();g.moveTo(6,-.4);g.lineTo(6+L,.6);g.lineTo(6+L+1.5,1.4);g.lineTo(6,2.6);g.closePath();g.fill();g.fillStyle='#c8d6e0';g.beginPath();g.moveTo(6.4,.1);g.lineTo(5.6+L,.9);g.lineTo(6.4,2);g.closePath();g.fill();Ln(6.6,.6,4.5+L,1.1,'#ffffff',.5);if(F('swFire')){E(6+L*.6,1,L*.45,1.8,'#ff8a3a',0);g.globalAlpha*=.6;E(6+L*.6,.6,L*.35,1.2,'#ffd45e',0);g.globalAlpha/=.6}}g.restore()}else{g.save();g.translate(1.2,1);g.rotate(ad);g.translate(-1.2,-1);Ln(1.2,1,6.8-rc,2.4,O,3);Ln(1.2,1,6.8-rc,2.4,su[0],1.9);R(5.2-rc,1.2,8.6,2.2,O);R(5.7-rc,1.6,7.6,1.4,'#4a5a6a');R(5.7-rc,1.6,7.6,.5,'#9aaaba');R(8-rc,2.8,1.2,1.4,O);Ln(13.3-rc,2.3,16.4-rc,2.3,'#e8fbff',1);R(16-rc,1.7,1.5,1.2,'#fff');if(fire>0){E(17.5-rc,2.3,1.6,1.2,'#fff6c0')}g.restore();}
+ const MEL=typeof p!=='undefined'&&p&&p.wp&&typeof WP!=='undefined'&&WP[p.wp]&&WP[p.wp].melee;if(MEL){const sk=p.swT>0?(1-p.swT/p.swD):1,so=p.swT>0?(-1+sk*2)*1.2*(p.swDir||1):-.5,big=p.wp==='machado';g.save();g.translate(1.2,1);g.rotate(ad+so);Ln(0,0,5,1,O,3);Ln(0,0,5,1,su[0],1.9);R(4.5,-.6,1.6,3.2,O);R(4.8,-.3,1,2.6,'#c8a040');if(big){Ln(6,1,15,1,O,2.2);Ln(6,1,15,1,'#6a4a2a',1.2);E(14.5,1,2.6,4.4,O);E(14.5,1,2,3.8,'#aab8c4');E(15.4,1,1,3,'#e8f2f8')}else{const L=p.wp==='faca'?8:p.wp==='sabre'?13:15;g.fillStyle=O;g.beginPath();g.moveTo(6,-.4);g.lineTo(6+L,.6);g.lineTo(6+L+1.5,1.4);g.lineTo(6,2.6);g.closePath();g.fill();g.fillStyle='#c8d6e0';g.beginPath();g.moveTo(6.4,.1);g.lineTo(5.6+L,.9);g.lineTo(6.4,2);g.closePath();g.fill();Ln(6.6,.6,4.5+L,1.1,'#ffffff',.5);if(F('swFire')){E(6+L*.6,1,L*.45,1.8,'#ff8a3a',0);g.globalAlpha*=.6;E(6+L*.6,.6,L*.35,1.2,'#ffd45e',0);g.globalAlpha/=.6}}g.restore()}else{g.save();g.translate(1.2,1);g.rotate(ad);g.translate(-1.2,-1);Ln(1.2,1,6.8-rc,2.4,O,3);Ln(1.2,1,6.8-rc,2.4,su[0],1.9);R(5.2-rc,1.2,8.6,2.2,O);R(5.7-rc,1.6,7.6,1.4,'#4a5a6a');R(5.7-rc,1.6,7.6,.5,'#9aaaba');R(8-rc,2.8,1.2,1.4,O);Ln(13.3-rc,2.3,16.4-rc,2.3,'#e8fbff',1);R(16-rc,1.7,1.5,1.2,'#fff');if(fire>0){E(17.5-rc,2.3,1.6,1.2,'#fff6c0')}g.restore();}
  /* cabeça */
  const hx=5.3,hy=-.8;
  if(hm==='escafandro'){E(hx,hy,5,4.6,O);E(hx,hy,4.3,3.9,'#c8903a');E(hx-1,hy-1.6,2.4,1.2,'#f0c070');E(hx+1.6,hy,2.2,2,O);E(hx+1.6,hy,1.7,1.5,'#7fe9ff');E(hx+1.2,hy-.6,.6,.5,'#fff');E(hx-1.6,hy-2.4,.9,.8,O);E(hx-1.6,hy-2.4,.5,.4,'#7fe9ff');for(const a of[0,1.2,2.4,3.6,4.8])R(hx+Math.cos(a)*3.8-.4,hy+Math.sin(a)*3.4-.4,.8,.8,'#8a5a1a');R(hx-4.6,hy+2.4,3.6,1.6,'#8a5a1a')}
@@ -4509,7 +4509,7 @@ const PMUL=[1,2.4,4.5,8],PMAX=[5,3,2,1],PCNT=[300,200,45,15];
 /* artefatos antigos com mecânica especial sobem de raridade; os comuns ficam só com bônus simples */
 for(const k of PK){if(k.gen)continue;const simple=['dmg','rate','spd','hp','o2'].includes(k.id);if(!simple&&k.r<3)k.r=Math.min(3,k.r+1)}
 /* sorteio com chance de lendário */
-rollPerks=function(n,minR){const lk=MU('luck')+F('luck'),out=[];if(F('allRare'))minR=Math.max(minR||0,1);for(let t=0;t<80&&out.length<n;t++){const q=Math.random();const gD=Math.min(1,(depth+1)/12);let ra=q<.002+.018*gD+.01*lk?3:q<.022+.068*gD+.05*lk?2:q<.17+.19*gD+.08*lk?1:0;if(minR)ra=Math.max(ra,minR);
+rollPerks=function(n,minR){const lk=MU('luck')+F('luck')+diffLuck(),out=[];if(F('allRare'))minR=Math.max(minR||0,1);for(let t=0;t<80&&out.length<n;t++){const q=Math.random();const gD=Math.min(1,(depth+1)/12);let ra=q<.002+.018*gD+.01*lk?3:q<.022+.068*gD+.05*lk?2:q<.17+.19*gD+.08*lk?1:0;if(minR)ra=Math.max(ra,minR);
   let pool=PK.filter(k=>!k.off&&k.r===ra&&P(k.id)<k.max&&!out.includes(k));if(!pool.length)pool=PK.filter(k=>!k.off&&P(k.id)<k.max&&!out.includes(k));if(!pool.length)break;out.push(pick(pool))}return out};
 
 /* ================= ORCA EM PIXEL ART (refeita a partir de fotos) ================= */
@@ -5330,6 +5330,16 @@ NOTES.push('"Dia 12. O peixe-lua me olhou por uma hora. Acho que ele tava com pe
  ['mapa2','Mapa rabiscado','Mostra o mapa inteiro da próxima fenda.',18,'ship',()=>!p.chart,()=>{p.chart=1},'Rabisquei de memória. Confia.']
 ].forEach(a=>FOOD.push({id:a[0],n:a[1],t:a[2],base:a[3],ic:a[4],ok:a[5],use:a[6],kind:'food',r:0,line:a[7]}));
 
+/* ================= FACA SEMPRE À MÃO + RARIDADE PELA DIFICULDADE ================= */
+function diffLuck(){return{facil:.5,medio:0,dificil:-.35,insano:-.6}[(p&&p.diff)||(META&&META.diff)||'medio']||0}
+function diffMul(){return{facil:1.5,medio:1,dificil:.75,insano:.55}[(p&&p.diff)||(META&&META.diff)||'medio']||1}
+WP.faca={n:'Faca de mergulho',t:'Corpo a corpo: arriscado, mas forte. Aperta E pra trocar',d:3.2,cd:.26,melee:1,reach:28,arc:2.1,kb:1.8,ic:'blade',kind:'sword',noshop:1};
+ILINE.faca='Faca de mergulho. Todo mergulhador tem uma na perna.';
+swapW=function(){if(state!=='play'||!p)return;const L=p.wps.concat(p.wps.some(k=>WP[k]&&WP[k].melee)?[]:['faca']);if(L.length<2)return;const i=(L.indexOf(p.wp)+1)%L.length;p.wp=L[i];const j=p.wps.indexOf(p.wp);if(j>=0)p.wi=j;p.fireT=Math.max(p.fireT,.12);SFX.swap();ftxt(p.x,p.y-10,WP[p.wp].n.toUpperCase(),'#ffb347');if(p.wp==='faca'&&!(META.facaTip)){META.facaTip=1;saveMeta();radio('Faca na mão! Bate de pertinho: mais arriscado, mas tem bicho que só cai assim. E troca de volta.')}};
+{const _os=openShop;openShop=function(){if(p&&p.wp==='faca')p.wp=p.wps[p.wi||0]||p.wps[0];return _os.apply(this,arguments)}}
+{const _rs=restock;restock=function(){_rs.apply(this,arguments);for(const d of shop.peds||[])if(d.k==='weapon'&&WP[d.w]&&WP[d.w].noshop)restock();
+ const dm=diffMul();for(const d of shop.peds||[])if(d.k==='equip'){const own=p.items||[],pool=EQUIP.filter(o=>!own.includes(o.id));if(dm>1&&d.o.r===0&&Math.random()<.4){const r=pool.filter(o=>o.r>0);if(r.length)d.o=pick(r)}else if(dm<1&&d.o.r>0&&Math.random()<(1-dm)){const c=pool.filter(o=>o.r===0);if(c.length)d.o=pick(c)}}}}
+
 /* ================= VIDA AMBIENTE NO MEIO DA ÁGUA ================= */
 let AMB=[];
 function ambOpen(m,far){for(let t=0;t<80;t++){const x=(3+RI(MW-6))*TS,y=(3+RI(MH-6))*TS;if(!blocked(x,y,m)&&(!far||hyp(x-p.x,y-p.y)>far))return{x,y}}return null}
@@ -5463,7 +5473,7 @@ $('#metabox').addEventListener('click',e=>{if(e.target.closest('#mback')&&window
  const c=EQUIP.find(o=>o.id==='casco2');if(c){c.t='Mais 1 de vida máxima e 8% de chance de não levar dano.';c.fx={hp:1,dodge:.08};c.r=1}}
 /* --- relíquia fora de chefe fica rara e limitada --- */
 {let bossK=0;const _k=kill;kill=function(e){bossK=e&&e.S&&e.S.boss?1:0;try{return _k.apply(this,arguments)}finally{bossK=0}};
- const _dr=drop;drop=function(x,y,t){if(t==='relic'&&!bossK&&p){const cap=1+Math.floor(depth/6),n=p.relicFree||0,ch=mod===MODS.hunt?.6:depth<4?.15:depth<10?.3:.45;if(n>=cap||Math.random()>ch){return _dr.call(this,x,y,'pearl')}p.relicFree=n+1}return _dr.apply(this,arguments)}}
+ const _dr=drop;drop=function(x,y,t){if(t==='relic'&&!bossK&&p){const dm=diffMul(),cap=1+Math.floor(depth/6)+(dm>1?1:0),n=p.relicFree||0,ch=(mod===MODS.hunt?.6:depth<4?.15:depth<10?.3:.45)*dm;if(n>=cap||Math.random()>ch){return _dr.call(this,x,y,'pearl')}p.relicFree=n+1}return _dr.apply(this,arguments)}}
 /* --- subir de nível mais devagar --- */
 const needFor=l=>Math.round(22+l*11+l*l*1.1);
 gainXp=function(n){if(F('noXP'))return;if(p.need<1e8&&!p.needV2){p.needV2=1;p.need=needFor(p.lvl)}p.xp+=n*Math.max(.2,1+F('xp'));if(p.xp>=p.need&&state==='play'){p.xp-=p.need;p.lvl++;p.need=p.need>=1e8?p.need:needFor(p.lvl);p.lvDmg=(p.lvDmg||0)+F('lvlDmg');openPick('NÍVEL '+p.lvl+'!')}};
