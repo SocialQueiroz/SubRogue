@@ -4669,7 +4669,7 @@ const ORMV=[['stalk','dash','feint','tail'],['carousel','dash','wave','feint','t
 {const _ng=newGame;newGame=function(){_ng.apply(this,arguments);if(p)p.secretOrca=Math.random()<.001}}
 function orcaArena(){tutArena();map.fill(1);const cx=MW/2,cy=MH/2,rx=Math.min(MW/2-3,26),ry=Math.min(MH/2-3,17);for(let x=2;x<MW-2;x++)for(let y=2;y<MH-2;y++){const dx=(x-cx)/rx,dy=(y-cy)/ry;if(dx*dx+dy*dy<1+Math.sin(x*.7+y*.5)*.03)map[x+y*MW]=0}paint();p.x=cx*TS-60;p.y=cy*TS;camx=p.x-VW/2;camy=p.y-VH/2;ORCA_C=[cx*TS,cy*TS]}
 let ORCA_C=[0,0];
-function orcaStart(){orcaArena();pits=[];nests=[];POD=null;SCN=[];const H=(1800+depth*90)*DIFF.hp;ORC={x:p.x+170,y:p.y-20,vx:0,vy:0,r:15,hp:H,mhp:H,ph:0,st:'intro',t:1.6,ang:Math.PI,mouth:0,tail:1,hf:0,calves:[],last:'',mi:0,feint:0};
+function orcaStart(){orcaArena();pits=[];nests=[];POD=null;SCN=[];const H=(1000+depth*85)*DIFF.hp;ORC={x:p.x+170,y:p.y-20,vx:0,vy:0,r:15,hp:H,mhp:H,ph:0,st:'intro',t:1.6,ang:Math.PI,mouth:0,tail:1,hf:0,calves:[],last:'',mi:0,feint:0};
  banner('A ORCA','luta secreta');SFX.roar();document.body.insertAdjacentHTML('beforeend','<div id="orcabar" style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);width:min(460px,72vw);height:12px;background:#000;box-shadow:0 0 0 2px #fff,0 0 0 4px #000;z-index:130"><i style="display:block;height:100%;width:100%;background:linear-gradient(#fff,#8a96a4)"></i><b id="orcaname" style="position:absolute;left:0;right:0;top:-20px;text-align:center;font:10px \'Press Start 2P\';color:#fff;text-shadow:0 2px 0 #000">A ORCA · A CAÇADA</b>'+[1,2,3].map(k=>'<u style="position:absolute;top:-2px;bottom:-2px;width:2px;background:#000;left:'+(k*25)+'%"></u>').join('')+'</div>')}
 function orcaPick(O){const L=ORMV[O.ph].filter(m=>m!==O.last||ORMV[O.ph].length<2);let m=pick(L);if(m==='pack'&&O.calves.filter(c=>c.hp>0).length>=2)m='dash';O.last=m;return m}
 function orcaLead(O,k){return[p.x+p.vx*k,p.y+p.vy*k]}
@@ -6039,6 +6039,17 @@ function evtKelp(E,front){const T=time;for(const s of E.st){const n=Math.ceil(s.
  if(E.k==='whale')glow((E.x0+E.x1)/2+ox,E.fy-10+oy,50,'#f0e8d0',.06)}}
 ACHL.push(['evts','Turista do Abismo','Veja os 5 eventos do fundo: baleia, kelp, salmoura, fumarolas e navios',m=>m.evts&&Object.keys(m.evts).length>=5]);
 
+/* ================= ORCA: correções ================= */
+/* faca, espada, sabre, machado e explosões não machucavam a orca (só tiro); limpava mal a fenda anterior */
+function orcaHit(dm,x,y){const O=ORC;if(!O||O.st==='dying'||O.st==='roar'||(O.alpha!==undefined&&O.alpha<.5))return 0;O.hp-=dm*(O.st==='stun'?1.8:O.st==='tired'?1.6:1);O.hf=.08;burst(x,y,'#fff',4,70);return 1}
+function orcaSeg(x,y){const O=ORC,bx=O.x-Math.cos(O.ang)*40,by=O.y-Math.sin(O.ang)*40,ux=O.x-bx,uy=O.y-by,l2=ux*ux+uy*uy,t=cl(((x-bx)*ux+(y-by)*uy)/l2,0,1);return[bx+ux*t,by+uy*t]}
+{const _sw=swing;swing=function(W){const r=_sw.apply(this,arguments);const O=ORC;if(!O)return r;const L=p.wl[p.wp]||1,dm=W.d*dmgMul()*(1+.22*(L-1)),reach=W.reach*(1+.5*F('swBig')+.4*F('ssize'));
+ const q=orcaSeg(p.x,p.y),d=hyp(q[0]-p.x,q[1]-p.y);let da=Math.atan2(q[1]-p.y,q[0]-p.x)-p.aim;da=Math.atan2(Math.sin(da),Math.cos(da));if(d<reach+O.r&&(Math.abs(da)<=W.arc/2+.3||d<O.r+8))orcaHit(dm,q[0],q[1]);
+ for(const c of O.calves){if(c.hp<=0)continue;const dd=hyp(c.x-p.x,c.y-p.y);if(dd<reach+9){c.hp-=dm;c.hf=.08;if(c.hp<=0){burst(c.x,c.y,'#fff',20,120,2);SFX.kill();ftxt(c.x,c.y-12,'FILHOTE FORA!','#cfe')}}}return r}}
+{const _ex=explode;explode=function(x,y,r,d,hurtsP,own){const res=_ex.apply(this,arguments);const O=ORC;if(O&&(own||!hurtsP)){const rr=r*(1+F('boomSize')),dd=d*(1+F('boomDmg')),q=orcaSeg(x,y);if(hyp(q[0]-x,q[1]-y)<rr+O.r)orcaHit(dd,q[0],q[1]);for(const c of O.calves)if(c.hp>0&&hyp(c.x-x,c.y-y)<rr+9){c.hp-=dd;c.hf=.08}}return res}}
+{const _os=orcaStart;orcaStart=function(){const r=_os.apply(this,arguments);try{EVT=null;SMK=[];ZB=null;HELM=null;SRINGS=[];SNOTES=[];co=[];WTR=[];if(typeof AMB!=='undefined')AMB.length=0;if(typeof nests!=='undefined')nests.length=0;
+ /* a arena não tinha coluna de ar e a luta dura minutos: o ar acabava no meio */
+ vents.length=0;for(const a of[Math.PI*.5,Math.PI*.5+2.1,Math.PI*.5-2.1]){for(let k=0;k<10;k++){const x=ORCA_C[0]+Math.cos(a)*(300-k*24),y=ORCA_C[1]+Math.sin(a)*(200-k*16);if(!blocked(x,y,8)){vents.push({x,y});break}}}}catch(e){}return r}}
 /* ================= A HISTÓRIA DO ZECA: garrafas do irmão do Tião, o capacete e o final da luz ================= */
 STORY.helmet=['Marujo... esse capacete. Esse é o capacete do Zeca. Do meu irmão.','Olha esse amassado do lado. Foi no dia que ele bateu a cabeça no casco do barco e riu uma semana inteira.','A lanterna ainda acende... Como pode? Depois de tanto tempo aí embaixo.','Ele escreveu que o capacete sabe o caminho. Então leva ele com você. Até o fundo.','Mas volta, tá? Eu não aguento perder mais um.'];
 STORY.win2=['Marujo... você chegou no fundo. E o capacete do Zeca tá piscando sozinho.',

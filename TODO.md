@@ -139,3 +139,10 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Cenas agora aceitam outras vozes além do Tião (garrafa e rádio do capacete)
 - [x] Conquistas: "O Capacete do Zeca", "A Luz do Fundo", "Cartas do Zeca"
 - [x] Bug antigo: derrotando o chefe final, se a escolha de relíquia demorasse mais de 2,6 s a vitória era cancelada e o jogo não terminava
+
+## Luta da Orca (revisão)
+- [x] Faca, espada, sabre, machado e explosões (bomba, barril, mina) não davam dano na orca nem nos filhotes: quem jogava de arma branca não conseguia vencer
+- [x] A arena não tinha coluna de ar e o ar acabava no meio da luta (dura minutos): agora tem 3 colunas
+- [x] Sobras da fenda anterior (evento de cenário, garrafa, moedas dentro da rocha, vida ambiente) ficavam na arena
+- [x] Vida ajustada: era 1.800 + 90 por descida (2.880 a 1.200 m, ~2,5 min só atirando com o arpão inicial); agora 1.000 + 85 por descida
+- [x] Testado: as 4 fases, todos os golpes, morte, conquista e volta ao mergulho, sem erro
