@@ -12,16 +12,16 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 
 ## Loja e itens
 - [x] Loja volta a ter SÓ 3 itens: 1 mercearia, 1 arma, 1 equipamento
-- [ ] Variedade vem de um catálogo interno MUITO maior (dobrar itens e interações) — artefatos feitos (300 comuns, 200 raros, 70 épicos, ~23 lendários); falta dobrar equipamentos/comidas/armas
-- [ ] O Tião tem uma fala própria para cada item — hoje fala por categoria com o nome do item; falta fala única por item
+- [x] Catálogo dobrado: armas 17→34, equipamentos 27→55 (saíram os de gancho), comidas 7→15
+- [x] O Tião tem uma fala própria para cada item (armas, equipamentos, comidas e relíquias)
 - [x] Rebalancear raridade dos artefatos: "Rastro de espinhos" e "Drone-baiacu" fortes demais pra comum/rara
-- [ ] Itens com interações legais que mudem o jeito de jogar (sinergias, efeitos que combinam)
+- [x] 15 sinergias entre itens (Tempestade, Brasa Viva, Peste do Fundo, Inverno Abissal, Demolidor...); a loja avisa "★ Combina com..."
 
 ## Conteúdo
 - [x] Mais inimigos e golpes: todos os 213 bichos têm característica real (ver FAUNA.md); já tinha: tartaruga-mordedora, tartaruga-verde, caravela, juba-de-leão, ctenóforo, polvo-gigante, peixe-baú
 - [x] Ninhos de peixes no fim das correntezas (soltam peixes, destruíveis, dão moedas e às vezes baú)
 - [x] Paredes explodíveis: bomba e minas agora abrem buraco na rocha de verdade (antes a bomba não quebrava nada)
-- [ ] Mais blocos interagíveis com explosão (rocha rachada, barris, cristais, etc.)
+- [x] Blocos que reagem a explosão: rocha rachada (moedas/pérola/baú), cristal (estilhaça em espinhos), metano (explode em cadeia), fóssil de amonite (pérolas), gelo de metano (congela)
 - [x] Mais coisas interagíveis no cenário: anêmonas no chão/teto, ouriços, mariscos gigantes, coral-de-fogo, anêmona elétrica, bolsas de ar, pepino-do-mar
 - [x] Redemoinho de pressão negativa: refeito como espiral vermelha girando
 
@@ -61,3 +61,8 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Menu enxuto: Novo jogo, Como jogar, Tutorial, Conquistas (com Ranking e Álbum), Configurações (com Vestiário); estaleiro fora do menu
 - [x] Tutorial obrigatório antes da primeira partida da conta
 - [x] Tião no barco do menu
+
+## História
+- [x] Cutscene do Tião antes da primeira partida (o mergulhador anterior morreu; cada peixe dá dinheiro; descer até o fundo das fossas)
+- [x] Mais cenas: primeira loja, primeiro covil de chefe, primeiro chefe derrubado, primeira morte, 1.000/3.000/6.000/9.000 m (história do irmão do Tião) e vitória
+- [x] Estaleiro (gastar pérolas) voltou: botão na tela de dificuldade

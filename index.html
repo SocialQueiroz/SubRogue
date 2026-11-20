@@ -4990,6 +4990,170 @@ let WTR=[];const NOTES=['"Se alguém achar esta garrafa: o fundo não tem fim. T
 {const _k=kill;kill=function(e){const was=e&&!e.dead&&e.S&&e.S.id==='cavalo';const r=_k.apply(this,arguments);if(was&&Math.random()<.6){ftxt(e.x,e.y-12,'ERA O PAPAI!','#ffd45e');for(let i=0;i<3;i++)pt.push({x:e.x,y:e.y,vx:R(30)-15,vy:-20-R(20),life:2.2,ml:2.2,c:'#e8c050',s:2})}return r}}
 ACHL.push(['moby','Me Chame de Ishmael','Aviste a baleia branca',m=>!!m.moby],['cthulhu','Ele Sonha','Encontre o que dorme no fundo',m=>!!m.cthulhu],['bottle5','Correio do Mar','Ache 5 garrafas com bilhete',m=>(m.bottles||0)>=5]);
 
+/* ================= BLOCOS QUE REAGEM A EXPLOSÃO ================= */
+let XB=[];
+function xbCarve(x,y,tr){const cx=Math.floor(x/TS),cy=Math.floor(y/TS);let n=0;for(let yy=-tr;yy<=tr;yy++)for(let xx=-tr;xx<=tr;xx++){const tx=cx+xx,ty=cy+yy;if(xx*xx+yy*yy<=tr*tr&&tx>1&&ty>1&&tx<MW-2&&ty<MH-2&&map[tx+ty*MW]){map[tx+ty*MW]=0;n++;pt.push({x:tx*TS+8,y:ty*TS+8,vx:R(90)-45,vy:R(90)-45,life:.7,ml:.7,c:'#9a7a5a',s:2})}}if(n)paint()}
+function xbSpots(n){const out=[];for(let t=0;t<n*60&&out.length<n;t++){const x=2+RI(MW-4),y=3+RI(MH-6);if(map[x+y*MW])continue;const dirs=[[0,1],[0,-1],[1,0],[-1,0]].filter(d=>map[x+d[0]+(y+d[1])*MW]);if(!dirs.length)continue;const d=pick(dirs),px=x*TS+TS/2+d[0]*TS/2,py=y*TS+TS/2+d[1]*TS/2;if(hyp(px-p.x,py-p.y)>90&&hyp(px-exit.x,py-exit.y)>40&&!out.some(o=>hyp(o.x-px,o.y-py)<40)&&!XB.some(o=>hyp(o.x-px,o.y-py)<40))out.push({x:px,y:py,nx:-d[0],ny:-d[1]})}return out}
+{const _nl=newLevel;newLevel=function(){_nl.apply(this,arguments);XB=[];if(!p||(typeof TUT!=='undefined'&&TUT.on)||(typeof ORC!=='undefined'&&ORC))return;const add=(k,n,o)=>{for(const s of xbSpots(n))XB.push(Object.assign({k,t:R(9),hp:3},s,o||{}))};
+ add('crack',3+RI(3));add('crystal',1+RI(2)+(zone>=2?1:0));if(depth>=3)add('methane',1+RI(2)+(zone>=3?2:0));if(Math.random()<.45)add('fossil',1);if(zone>=1&&Math.random()<.5)add('ice',1+RI(2))}}
+function xbTrigger(o,why){if(o.dead)return;o.dead=1;const x=o.x,y=o.y;
+ if(o.k==='crack'){xbCarve(x,y,2);burst(x,y,'#b89a6a',22,120,3);SFX.boom();shake=Math.max(shake,5);for(let i=0;i<5+RI(5);i++)co.push({x,y,vx:R(120)-60,vy:R(120)-60,t:'coin',v:2+Math.floor(depth/6),life:10,ph:R(9)});if(Math.random()<.3)drop(x+o.nx*8,y+o.ny*8,'pearl');if(Math.random()<.12&&typeof chests!=='undefined')chests.push({x:x+o.nx*10,y:y+o.ny*10});ftxt(x,y-12,'ROCHA RACHADA!','#e0c080')}
+ else if(o.k==='crystal'){burst(x,y,'#d8a8ff',26,150,2);SFX.zap&&SFX.zap();pring(x,y,12,(2+depth*.08)*dmgMul());ftxt(x,y-12,'CRISTAL ESTILHAÇOU!','#d8a8ff');if(Math.random()<.4)drop(x,y,'heart')}
+ else if(o.k==='methane'){ftxt(x,y-14,'METANO!','#ff9a3a');explode(x,y,34,3+depth*.1,true);for(let i=0;i<4;i++)goo.push({x:x+R(30)-15,y:y+R(20)-10,r:10,life:3,ml:3,c:'#ff7a2a',own:'p',dmg:1});for(const q of XB)if(!q.dead&&q!==o&&hyp(q.x-x,q.y-y)<70)setTimeout(()=>xbTrigger(q,'chain'),180)}
+ else if(o.k==='fossil'){xbCarve(x,y,1);burst(x,y,'#e8dcc0',18,90,2);for(let i=0;i<2;i++)drop(x+R(10)-5,y+R(10)-5,'pearl');for(let i=0;i<8;i++)co.push({x,y,vx:R(100)-50,vy:R(100)-50,t:'coin',v:3+Math.floor(depth/5),life:10,ph:R(9)});ftxt(x,y-14,'FÓSSIL DE AMONITE!','#f0e0b0');radio(pick(['Um fóssil! Isso aí vale uma fortuna no museu, marujo!','Amonite! Bicho de antes dos dinossauros. Guarda que eu vendo.']));SFX.pearl()}
+ else if(o.k==='ice'){xbCarve(x,y,1);burst(x,y,'#cfefff',24,120,2);for(const e of en)if(!e.S.boss&&hyp(e.x-x,e.y-y)<60){e.frz=Math.max(e.frz||0,2)}pt.push({x,y,vx:0,vy:0,life:.4,ml:.4,ring:60,c:'#cfefff'});ftxt(x,y-12,'GELO DE METANO!','#cfefff')}}
+{const _bw=boomWorld;boomWorld=function(x,y,r){_bw.apply(this,arguments);for(const o of XB.slice())if(!o.dead&&hyp(o.x-x,o.y-y)<r+12)xbTrigger(o,'boom');XB=XB.filter(o=>!o.dead)}}
+{const _tp=tickParry;tickParry=function(dt){_tp(dt);if(!p||state!=='play'||!XB.length)return;for(const o of XB){o.t+=dt;if(o.dead)continue;
+  if(o.k==='methane'&&Math.random()<dt*3)bub(o.x+R(8)-4,o.y-2,1);
+  for(const q of pj){if(q.e||q.xb===o)continue;if(hyp(q.x-o.x,q.y-o.y)<8){q.xb=o;if(o.k==='crystal'||o.k==='methane'||o.k==='ice'){o.hp--;q.life=0;burst(o.x,o.y,o.k==='methane'?'#ff9a3a':'#e8d8ff',5,60);if(o.hp<=0||o.k==='methane')xbTrigger(o,'shot')}else if(o.k==='crack'||o.k==='fossil'){q.life=0;burst(o.x,o.y,'#8a7a6a',3,40);if(!o.tip){o.tip=1;ftxt(o.x,o.y-12,'SÓ COM EXPLOSÃO','#c8b090')}}break}}}
+  XB=XB.filter(o=>!o.dead)}}
+{const _dp=drawParryFx;drawParryFx=function(){_dp();for(const o of XB){if(o.x<camx-24||o.x>camx+VW+24||o.y<camy-24||o.y>camy+VH+24)continue;const x=o.x,y=o.y,T=o.t,a=Math.atan2(o.ny,o.nx);ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.rotate(a+Math.PI/2);
+  if(o.k==='crack'){poly([[-9,4],[-7,-3],[-2,-6],[4,-5],[9,-1],[8,5]],OUT);poly([[-8,4],[-6,-2],[-2,-5],[4,-4],[8,-1],[7,4]],'#7a6048');pl(-5,-3,-1,0,'#2a1a10',1);pl(-1,0,-3,3,'#2a1a10',1);pl(-1,0,3,-3,'#2a1a10',1);pl(3,-3,6,0,'#2a1a10',1);if(Math.sin(T*3)>.6){ctx.fillStyle='#ffe07a';ctx.fillRect(2,-1,1,1);ctx.fillRect(-4,1,1,1)}}
+  else if(o.k==='crystal'){wglow(0,-4,14,'#b07aff',.25+.1*Math.sin(T*3));const C=[[-5,0,-7,-9],[0,0,0,-13],[5,0,6,-8]];for(const c of C){poly([[c[0]-2.5,c[1]],[c[2],c[3]],[c[0]+2.5,c[1]]],OUT);poly([[c[0]-1.5,c[1]],[c[2],c[3]+1.5],[c[0]+1.5,c[1]]],o.hp<3?'#c890ff':'#d8b0ff');pl(c[0],c[1]-1,c[2]*.6+c[0]*.4,c[3]*.6,'#fff',1)}}
+  else if(o.k==='methane'){ell(0,0,9,4,0,OUT);ell(0,-.5,8,3,0,'#3a3a20');const pu=1+.08*Math.sin(T*5);ctx.globalAlpha=.75;ell(0,-6*pu,7*pu,5*pu,0,'#e8e070');ctx.globalAlpha=.5;ell(-1,-7*pu,4,2.5,0,'#fff8b0');ctx.globalAlpha=1;ctx.fillStyle='#ff9a3a';ctx.font='5px monospace';if(Math.sin(T*4)>0)ctx.fillText('!',-1,-12)}
+  else if(o.k==='fossil'){ell(0,-2,9,7,0,OUT);ell(0,-2,8,6,0,'#8a7a60');ctx.strokeStyle='#e8dcc0';ctx.lineWidth=1.2;ctx.beginPath();for(let k=0;k<30;k++){const an=k*.42,rr=.4+k*.22;const px=Math.cos(an)*rr,py=-2+Math.sin(an)*rr*.8;k?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.stroke()}
+  else if(o.k==='ice'){wglow(0,-3,12,'#9fe8ff',.2);poly([[-8,1],[-6,-7],[0,-10],[6,-6],[8,1]],OUT);poly([[-7,0],[-5,-6],[0,-9],[5,-5],[7,0]],'#bfe8ff');pl(-3,-5,2,-2,'#fff',1);ctx.globalAlpha=.6;disc(2+Math.sin(T*2),-4,1,'#fff');ctx.globalAlpha=1}
+  ctx.restore()}}}
+
+/* ================= CATÁLOGO DOBRADO + FALA DO TIÃO POR ITEM + SINERGIAS ================= */
+/* --- equipamentos de gancho saem (não existe mais gancho) --- */
+for(let i=EQUIP.length-1;i>=0;i--)if(['carret','ancora'].includes(EQUIP[i].id))EQUIP.splice(i,1);
+/* --- 28 equipamentos novos --- */
+[['luvas','Luvas de couro de tubarão','Tiros 15% mais fortes.',0,'fang',{dmg:.15}],['gatilho','Gatilho de mola','Atira 12% mais rápido.',0,'spring',{rate:.12}],
+['mira','Mira de luneta','10% de chance de crítico.',0,'eye',{crit:.1}],['pontas','Pontas de obsidiana','Críticos fazem 40% mais dano.',1,'shard',{critMult:.4}],
+['cano','Cano longo','Tiros voam 30% mais rápido e mais longe.',0,'spear',{sspd:.3,slife:.25}],['chumbo','Munição de chumbo','Tiros 35% maiores e empurram mais.',0,'bomb',{ssize:.35,knock:.6}],
+['casco2','Casco de tartaruga','Todo golpe que você leva perde 1 de dano (mínimo 1).',2,'shell',{armor:1}],['escafandro','Escafandro antigo','Mais 3 de vida máxima, mas nada 10% mais devagar.',1,'vest',{hp:3,spd:-.1}],
+['guelrinha','Guelras de cultivo','Cada bicho abatido devolve 3 de ar.',0,'bubbles',{killO2:3}],['amuleto','Amuleto de dente','Bicho abatido tem 6% de chance de te curar 1.',1,'fang',{killHeal:.06}],
+['polvora','Pólvora molhada','Bicho abatido explode de leve.',1,'boom',{killBoom:.5}],['quilha','Quilha afiada','O impulso corta quem estiver no caminho.',0,'blade',{dashDmg:1}],
+['bobina','Bobina de cobre','O impulso solta choques em 4 bichos perto.',1,'bolt',{dashZap:1}],['tocha','Tocha de magnésio','O impulso deixa um rastro de fogo.',1,'fire',{dashFire:1}],
+['gelo','Garrafa de nitrogênio','O impulso congela quem estiver perto.',1,'snow',{dashFreeze:1}],['turbina','Turbina de mão','Impulso 35% mais longo.',0,'fin',{dashLen:.35}],
+['capa','Capa de lula','Fica intocável um tempinho depois do impulso.',1,'fog',{dashInv:.35}],['congelador','Arpão refrigerado','Tiros têm 10% de chance de congelar.',1,'snow',{freeze:.1}],
+['ancoral','Âncora de rede','Tiros deixam os bichos lentos.',0,'net',{slowShot:1}],['carrasco','Faca de carrasco','Bicho com menos de 12% de vida morre na hora.',1,'blade',{execute:.12}],
+['arpoeiro','Diário do arpoeiro','Chefes levam 35% mais dano.',1,'skull',{bossDmg:.35}],['tnt','Pavio curto','Explosões 30% maiores e mais fortes.',0,'bombs',{boomSize:.3,boomDmg:.3}],
+['fabrica','Fábrica de bombas','Ganha uma bomba a cada 25 s.',1,'bomb',{bombRegen:1}],['cofre','Cofre de bordo','Juros do barco sobem 5%.',0,'coins',{interest:.05}],
+['cupom','Cupom do Tião','Tudo na loja 12% mais barato.',0,'coin',{price:-.12}],['caderno','Caderno de anotações','Ganha 25% mais experiência.',0,'card',{xp:.25}],
+['moedeiro','Bolsa furada','Todo tiro que acerta tem 8% de chance de soltar moeda.',0,'coin',{hitGold:.08}],['farol','Farolete de proa','Mostra a saída da fenda no mapa.',0,'lamp',{seeExit:1}]
+].forEach(a=>EQUIP.push({id:a[0],n:a[1],t:a[2],r:a[3],ic:a[4],fx:a[5],kind:'equip'}));
+/* --- 8 comidas novas --- */
+[['sopa','Caldo de sururu','Recupera 2 de vida e enche o ar.',16,'food',()=>p.hp<p.mhp||p.o2<p.mo2,()=>{p.hp=Math.min(p.mhp,p.hp+2);p.o2=p.mo2}],
+ ['ar','Cilindro extra','Mais 20 de oxigênio no tanque pra sempre nesta corrida.',40,'tank',()=>p.mo2<300,()=>{p.mo2+=20;p.o2+=20}],
+ ['pinga','Cachaça do Tião','Mais 1 de vida máxima. Não conta pra ninguém.',55,'heart',()=>p.mhp<20,()=>{p.mhp++;p.hp++}],
+ ['pilha','Pilhas novas','Lanterna com bateria cheia e 20% maior nesta fenda.',14,'lamp',()=>true,()=>{if(p.batMax){p.bat=p.batMax}p.lampBoost=1}],
+ ['farinha','Farofa de peixe','Recupera 1 de vida e 1 a cada 30 s na próxima fenda.',20,'food',()=>true,()=>{p.hp=Math.min(p.mhp,p.hp+1);p.farofa=1}],
+ ['minab','Mina de cerco','Mais duas bombas.',30,'bombs',()=>p.bombs<5+F('bombCap'),()=>{p.bombs=Math.min(6+F('bombCap'),p.bombs+2)}],
+ ['cafe','Café passado','A próxima fenda começa com o impulso 50% mais rápido.',18,'hourglass',()=>!p.cafe,()=>{p.cafe=1}],
+ ['amul','Figa de madeira','Os baús da próxima fenda dão bônus.',24,'clover',()=>!p.figa,()=>{p.figa=1}]
+].forEach(a=>FOOD.push({id:a[0],n:a[1],t:a[2],base:a[3],ic:a[4],ok:a[5],use:a[6],kind:'food',r:0}));
+{const _nl=newLevel;newLevel=function(){_nl.apply(this,arguments);if(!p)return;p.farofaT=0;if(p.farofa){p.farofa=0;p.farofaOn=1}else p.farofaOn=0;if(p.cafe){p.cafe=0;p.cafeOn=1}else p.cafeOn=0;if(p.figa){p.figa=0;p.figaOn=1}else p.figaOn=0;if(p.lampBoost){p.lampBoost=0;p.lampOn=1}else p.lampOn=0}}
+/* --- 17 armas novas (variantes dos tipos de tiro que já existem) --- */
+const WNEW={gaff:['harp',{n:'Bicheiro de aço',t:'Gancho de pesca afiado; atravessa 2 e empurra',d:4.2,cd:.55,pierce:2,kb:2,ic:'spear'}],
+ iceh:['harp',{n:'Arpão de gelo',t:'Congela um pouco quem acerta',d:2.6,cd:.42,ice:1,wfrz:.35,ic:'snow'}],
+ fisga:['harp',{n:'Fisga dupla',t:'Duas pontas rapidinhas',d:1.7,cd:.28,cnt:2,spr:.07,ic:'pierce'}],
+ netuno:['tri',{n:'Tridente de Netuno',t:'Cinco pontas, e o raio pula',d:1.9,cd:.62,cnt:5,spr:.15,chain:1,ic:'trident'}],
+ espuma:['bub',{n:'Espuma tóxica',t:'Rajada de bolhas venenosas',d:.8,cd:.11,wpois:1,ic:'drop'}],
+ ricoch:['harp',{n:'Estilingue de ouriço',t:'Três espinhos que quicam nas paredes',d:1.3,cd:.45,cnt:3,spr:.22,pierce:0,wbounce:2,ic:'urchin',kind:'spike'}],
+ coral:['anc',{n:'Canhão de coral',t:'Bala de coral que estoura',d:6,cd:.95,pierce:1,aoe:24,ic:'shell'}],
+ enxame:['torp',{n:'Torpedo-enxame',t:'Três torpedinhos que caçam sozinhos',d:2.2,cd:1.1,cnt:3,spr:.35,aoe:16,home:6,meta:0,ic:'torpedo'}],
+ osso:['bum',{n:'Bumerangue de osso de baleia',t:'Pesado, volta e empurra tudo',d:3.8,cd:.75,kb:2.5,life:1.5,meta:0,ic:'boomerang'}],
+ plancton:['laser',{n:'Raio de plâncton',t:'Raio curto que envenena',d:.6,beam:105,wpois:1,ic:'laser'}],
+ redel:['net',{n:'Rede elétrica',t:'Rede que dá choque em quem prende',chain:2,ic:'net'}],
+ baleia:['sonic',{n:'Canto de baleia',t:'Onda sonora lenta e devastadora',ic:'sonicw'}],
+ ourico:['mine',{n:'Mina de ouriço',t:'Minas que envenenam em volta',wpois:1,ic:'minew'}],
+ arraia:['bow',{n:'Besta de ferrão de arraia',t:'Seta venenosa que atravessa',wpois:1,ic:'crossbow'}],
+ moreia:['pira',{n:'Lança-moreias',t:'Moreias que mordem forte e caçam',ic:'fish'}],
+ macarico:['steam',{n:'Maçarico submarino',t:'Chama longa e fina que queima muito',cnt:1,life:.42,pierce:3,ic:'fire'}],
+ ciclone:['vortex',{n:'Ciclone de bolso',t:'Redemoinho maior que puxa e mói',ic:'current'}]};
+for(const k in WNEW){const[b,o]=WNEW[k];if(!WP[b])continue;const B=WP[b],W=Object.assign({},B,o);
+ if(b==='baleia'||k==='baleia'){W.d=(B.d||1)*1.8;W.cd=(B.cd||.5)*1.6}if(k==='moreia'){W.d=(B.d||1)*1.8;W.cd=(B.cd||.2)*1.7}if(k==='ciclone'){W.d=(B.d||1)*1.3;W.cd=(B.cd||.5)*1.25;W.pr=(B.pr||2)*1.5}if(k==='redel'){W.d=(B.d||1)*.9}
+ if(o.meta===0)delete W.meta;WP[k]=W}
+/* efeitos próprios das armas novas nos projéteis */
+{const _f=fire;fire=function(){const n0=pj.length;_f.apply(this,arguments);const W=WP[p.wp];if(!W)return;for(let i=n0;i<pj.length;i++){const q=pj[i];if(q.e)continue;if(W.wbounce)q.bounce=(q.bounce||0)+W.wbounce;if(W.wpois)q.wpois=1;if(W.wfrz)q.wfrz=W.wfrz}}}
+{const _d=dmgE;dmgE=function(e,d,a,kb,src,q){const W=p&&WP[p.wp];const r=_d.apply(this,arguments);if(e&&!e.dead){if(q&&q.wpois||(src!=='dot'&&W&&W.kind==='beam'&&W.wpois&&Math.random()<.15))e.pois=Math.max(e.pois||0,3);if(q&&q.wfrz&&Math.random()<q.wfrz&&!e.S.boss)e.frz=Math.max(e.frz||0,1);if(q&&q.kind==='net'&&W&&W.chain&&p.wp==='redel'&&typeof chainZap==='function'&&Math.random()<.4)chainZap(e,2,d*.5)}return r}}
+/* --- comidas com efeito na fenda --- */
+{const _tp=tickParry;tickParry=function(dt){_tp(dt);if(!p||state!=='play')return;if(p.farofaOn){p.farofaT=(p.farofaT||0)+dt;if(p.farofaT>30){p.farofaT=0;if(p.hp<p.mhp){p.hp++;ftxt(p.x,p.y-12,'+1 FAROFA','#ffd45e')}}}if(p.cafeOn&&p.dashT>0)p.dashT=Math.max(0,p.dashT-dt*.5)}}
+{const _rc=recalc;recalc=function(){_rc.apply(this,arguments);if(p&&p.lampOn){FX.lampLen=(FX.lampLen||0)+.2}}}
+/* ================= FALAS DO TIÃO, UMA POR ITEM ================= */
+const ILINE={
+/* equipamentos antigos */
+colete:'Colete de chumbo. Pesa que nem sogra, mas segura pancada.',tanque:'Dois tanques nas costas. Meu falecido sócio usava esse. Não ajudou ele, mas vai te ajudar.',
+regul:'Regulador alemão. Respira devagarinho que o ar rende.',pes:'Pés de pato de carbono. Cê vai nadar igual golfinho com pressa.',
+sodio:'Lanterna de sódio, aquela luz laranja de poste. Os bicho odeia.',cristal:'Lente de cristal, lapidada por um primo meu. Ele é ourives. Mais ou menos.',
+refletor:'Refletor largo, pra ver tudo que quer te comer de uma vez só.',ima:'Ímã de neodímio. Cuidado que ele puxa até obturação.',
+capacete:'Capacete de cobre, do tempo do meu avô. Bala ricocheteia nele.',propulsor:'Propulsor de mão. Vrum! Vrum! Escapa de tudo.',
+sonarm:'Sonar militar. Não me pergunta onde eu arranjei.',bussola:'Bússola de latão. Aponta pra saída, pros baús e, às vezes, pro norte.',
+arrasto:'Rede de arrasto. Bicho morto cai nela com o bolso cheio.',socorro:'Kit de primeiros socorros. Coração vale em dobro com esparadrapo.',
+reserva:'Garrafa de ar reserva. Já me tirou de uma enrascada a quatrocentos metros.',lastro:'Cinto de lastro. Correnteza vai passar e você vai ficar.',
+visor:'Visor noturno. Vê no escuro que nem gato. Gato de mergulho.',isqueiro:'Isqueiro à prova d’água. Não pergunta como funciona embaixo d’água. Funciona.',
+tubo:'Tubo de veneno de baiacu. Passa na ponta do arpão e reza.',mochila:'Mochila de bombas. Não senta em cima dela, pelo amor de Deus.',
+espinhos:'Traje de espinhos. Abraço de ouriço, sabe? Ninguém encosta.',termico:'Traje térmico, pra água fervendo dos gêiseres. Cozinha o peixe, não você.',
+detector:'Detector de minas. Bipa, você desvia. Se não bipar... boa sorte.',saco:'Saco de pérolas. Chefe derrubado enche o saco. No bom sentido.',
+cronom:'Cronômetro de mergulho. O combo dura mais e você chega na hora.',cantil:'Cantil de algas. Tem gosto de pé, mas cura.',lente:'Lente de foco. Faz a esquiva perfeita ficar mais fácil.',
+/* equipamentos novos */
+luvas:'Luvas de couro de tubarão. Quem bate com tubarão, bate forte.',gatilho:'Gatilho de mola. Aperta e pronto, já foi.',mira:'Mira de luneta. Era de caçador de baleia. Agora caça peixe.',
+pontas:'Pontas de obsidiana, pedra de vulcão. Corta até pensamento.',cano:'Cano longo. Atira lá do outro lado da fenda.',chumbo:'Munição de chumbo. Grossa que nem meu dedão.',
+casco2:'Casco de tartaruga. A tartaruga não precisava mais, juro.',escafandro:'Escafandro antigo, de bronze. Lento, mas parece um tanque.',
+guelrinha:'Guelras de cultivo. Bicho morre, você respira. Natureza é assim.',amuleto:'Amuleto de dente de tubarão. Dá sorte. Pra você, não pro tubarão.',
+polvora:'Pólvora molhada. Ainda explode, só que com preguiça.',quilha:'Quilha afiada, tirada de um barco que afundou. Corta tudo no impulso.',
+bobina:'Bobina de cobre. Dá um choquinho bom em quem tá perto.',tocha:'Tocha de magnésio. Queima até embaixo d’água, química é bonita.',
+gelo:'Nitrogênio líquido. Congelou meu dedo uma vez. Esse aqui, ó.',turbina:'Turbina de mão. Arranquei de um jet ski.',
+capa:'Capa de lula. Some no impulso, ninguém te acerta.',congelador:'Arpão refrigerado. Peixe congelado dura mais, né.',
+ancoral:'Âncora de rede. Prende o bicho, deixa ele lerdinho.',carrasco:'Faca de carrasco. Bicho quase morto? Termina o serviço.',
+arpoeiro:'Diário do arpoeiro. Tem todos os pontos fracos dos chefes anotados.',tnt:'Pavio curto. Explode mais, explode antes, explode melhor.',
+fabrica:'Fábrica de bombas portátil. Faz uma bomba de tempo em tempo. Não me pergunta.',cofre:'Cofre de bordo. Dinheiro guardado rende mais.',
+cupom:'Cupom do Tião. Desconto pra cliente fiel. Não espalha.',caderno:'Caderno de anotações. Aprende com o erro dos outros, que é mais barato.',
+moedeiro:'Bolsa furada. Cai moeda quando você acerta. Não faz sentido, mas funciona.',farol:'Farolete de proa. Mostra o caminho de casa.',
+/* comidas */
+med:'Kit médico. Gaze, iodo e fé.',full:'Peixada da dona Cida! Cura tudo, até saudade.',bomb:'Uma bomba. Joga longe, hein.',dyn:'Dinamite. Três bananas, isso aí abre parede.',
+buoy:'Boia salva-vidas. Se morrer, eu te puxo de volta. Uma vez só, hein.',chart:'Carta náutica. Desenhei eu mesmo, tá meio torta.',bait:'Isca dourada. Os bichos da próxima fenda vêm de bolso cheio.',
+sopa:'Caldo de sururu. Levanta até defunto. Quase.',ar:'Cilindro extra. Mais ar, mais tempo, menos desespero.',pinga:'Cachaça do Tião, envelhecida no porão. Um gole e o coração aguenta mais.',
+pilha:'Pilhas novas. As velhas eu uso no rádio.',minab:'Mina de cerco. Duas bombas pelo preço de uma e meia.',farinha:'Farofa de peixe. Come agora e vai mastigando até o fim da fenda.',cafe:'Café passado na hora. Você vai nadar acelerado.',amul:'Figa de madeira. Baú gosta de gente com sorte.',
+/* armas antigas */
+harp:'Arpão clássico. Não tem erro, é o bom e velho.',tri:'Tridente. Três chances de acertar, que nem jogo do bicho.',bub:'Metralha de bolhas. Fraquinha, mas não para.',
+elec:'Arpão elétrico. O choque pula de bicho em bicho. Lindo de ver.',anc:'Canhão-âncora. Lento, pesado e atravessa tudo.',sal:'Espingarda de sal. De perto ninguém aguenta.',
+torp:'Torpedo! Cuidado pra não acertar meu barco.',bum:'Bumerangue de coral. Vai e volta, que nem dívida.',laser:'Canhão de luz. Coisa de filme, achei num naufrágio esquisito.',
+net:'Lança-rede. Prende o bicho no lugar.',sonic:'Canhão sônico. Grita debaixo d’água por você.',spike:'Lança-espinhos. Ouriço em forma de arma.',
+mine:'Lança-minas. Deixa armadilha e sai correndo.',bow:'Besta submarina. Silenciosa e certeira.',pira:'Lança-piranhas. Elas têm fome. Sempre.',
+steam:'Jato de vapor. Cozinha o bicho na hora.',vortex:'Canhão de redemoinho. Puxa tudo pro meio.',
+/* armas novas */
+gaff:'Bicheiro de aço. Meu pai pescava mero com isso.',iceh:'Arpão de gelo. O bicho fica parado que nem picolé.',fisga:'Fisga dupla. Rapidinha, pá-pá.',
+netuno:'Tridente de Netuno. Diz a lenda que era do próprio. Eu comprei na feira.',espuma:'Espuma tóxica. Não respira perto.',ricoch:'Estilingue de ouriço. Quica na parede e acerta quem tava escondido.',
+coral:'Canhão de coral. Estoura no bicho e espalha caco.',enxame:'Torpedo-enxame. Três torpedinhos caçando sozinhos. Igual meus netos.',osso:'Bumerangue de osso de baleia. A baleia doou, tá tudo certo.',
+plancton:'Raio de plâncton. Brilha verde e envenena.',redel:'Rede elétrica. Prende e dá choque. Bicho odeia.',baleia:'Canto de baleia. Uma onda só e a fenda treme.',
+ourico:'Mina de ouriço. Explode e deixa veneno no ar.',arraia:'Besta de ferrão de arraia. A arraia tá bem, só ficou brava.',moreia:'Lança-moreias. Moreia morde e não solta.',
+macarico:'Maçarico submarino. Fogo fino, queima de longe.',ciclone:'Ciclone de bolso. Cabe no bolso, mas não no aquário.'};
+/* relíquias também ganham fala */
+Object.assign(ILINE,{leviata:'Coração do Leviatã. Ainda bate, escuta.',olho:'Lente do Olho Abissal. Enxerga através da pedra. Me dá arrepio.',coroa:'Coroa do Rei Caranguejo. Ele não vai sentir falta.',
+ concha:'Concha da Medusa. Quem morre perto de você vira espinho.',dente:'Dente do Megalodonte. Dói em você também, mas bate que é uma beleza.',isca:'Isca do Pescador Colossal. Ouro e experiência em dobro.',
+ escama:'Escama da Serpente-Trovão. Cada tiro vira raio.',tinta:'Tinta do Polvo Colossal. Apanhou? Todo mundo fica tonto.',carta:'Carta do Cartógrafo. Mapa inteiro, de toda fenda.',
+ relogio:'Relógio Afogado. Quando a coisa aperta, o tempo para pra você.',fantasma:'Âncora Fantasma. Um tubarão de outro mundo vai te seguir.',negra:'Pérola Negra. Cada fenda nova, uma pérola.',
+ helice:'Hélice do Batiscafo. Dois impulsos seguidos!',garrafa:'Garrafa com Mensagem. Mais escolhas quando subir de nível.',meteoro:'Fragmento de Meteorito. Caiu do céu e foi parar no fundo.',
+ lanterna:'Essa lanterna aí é minha! Cuida bem dela.',guelra:'Guelra Artificial. Respira que nem peixe.',baiacu:'Espinha do Baiacu-Rei. Apanhou, espeta todo mundo.',
+ rede:'Rede Sagrada. Bicho morto às vezes volta do teu lado.',sino:'Sino do Naufrágio. Toca sozinho e empurra tudo.'});
+for(const o of EQUIP)if(ILINE[o.id])o.line=ILINE[o.id];for(const o of FOOD)if(ILINE[o.id])o.line=ILINE[o.id];for(const o of RELICS)if(ILINE[o.id])o.line=ILINE[o.id];
+{const _rs=restock;restock=function(){_rs.apply(this,arguments);for(const d of shop.peds||[]){if((d.k==='weapon'||d.k==='up')&&d.w&&ILINE[d.w])d.o.line=d.k==='up'?'Afio teu '+WP[d.w].n+'. '+ILINE[d.w]:ILINE[d.w];const s=synFor(d);if(s){d.o.t=(d.o.t||'')+' ★ Combina com '+s.with+': '+s.n+'.';d.o.syn=1}}}}
+/* ================= SINERGIAS ================= */
+const SYN=[
+ {id:'tempest',n:'Tempestade',a:['elec','escama'],or:[['elec','bobina'],['redel','bobina'],['netuno','escama']],t:'Choques pulam em 2 bichos a mais e o impulso dá choque.',fx:{shock:2,dashZap:1}},
+ {id:'brasa',n:'Brasa Viva',or:[['isqueiro','tocha'],['steam','isqueiro'],['macarico','tocha'],['macarico','isqueiro']],t:'Queimaduras explodem e duram mais.',fx:{burnBoom:1,burnLong:1}},
+ {id:'peste',n:'Peste do Fundo',or:[['tubo','espuma'],['tubo','plancton'],['tubo','arraia'],['ourico','tubo'],['concha','tubo']],t:'Veneno se espalha pros vizinhos e dá ouro em dobro.',fx:{poisSpread:1,poisGold:1}},
+ {id:'inverno',n:'Inverno Abissal',or:[['gelo','congelador'],['iceh','congelador'],['iceh','gelo']],t:'Bicho congelado estilhaça e fere em volta.',fx:{frzShatter:1,frzDmg:1}},
+ {id:'demol',n:'Demolidor',or:[['mochila','tnt'],['fabrica','tnt'],['mochila','fabrica'],['coral','tnt']],t:'Explosões 40% maiores e toda morte explode.',fx:{boomSize:.4,killBoom:.6}},
+ {id:'tubarao',n:'Instinto de Tubarão',or:[['luvas','mira'],['mira','pontas'],['luvas','dente']],t:'Crítico cura 1 de vida (no máximo a cada 4 s).',fx:{critHeal:1,crit:.05}},
+ {id:'fantasma',n:'Mergulho Fantasma',or:[['capa','propulsor'],['capa','helice'],['turbina','capa']],t:'Impulso deixa uma mina pra trás.',fx:{dashMine:1,dashcd:.15}},
+ {id:'cardume',n:'Cardume de Ouro',or:[['arrasto','ima'],['moedeiro','arrasto'],['isca','arrasto'],['cofre','cupom']],t:'Mais 30% de ouro e as moedas duram mais.',fx:{gold:.3,goldLife:1}},
+ {id:'muralha',n:'Muralha de Casco',or:[['colete','casco2'],['escafandro','casco2'],['coroa','colete'],['capacete','casco2']],t:'Começa toda fenda com uma bolha-escudo.',fx:{shieldStart:1}},
+ {id:'pulmao',n:'Pulmão de Baleia',or:[['tanque','regul'],['guelrinha','regul'],['guelra','tanque'],['reserva','tanque']],t:'Ar dura mais e bicho morto devolve ar.',fx:{o2drain:-.2,killO2:2}},
+ {id:'cacador',n:'Caçador de Lendas',or:[['arpoeiro','saco'],['arpoeiro','mira'],['arpoeiro','anc']],t:'Chefes levam mais 25% de dano.',fx:{bossDmg:.25}},
+ {id:'farol',n:'Farol do Abismo',or:[['sodio','refletor'],['visor','sodio'],['lanterna','refletor'],['cristal','visor'],['farol','bussola']],t:'Lanterna enorme e bicho iluminado leva mais dano.',fx:{lampLen:.3,lampWide:.3,light:.2}},
+ {id:'ricochete',n:'Fliperama',or:[['ricoch','chumbo'],['bum','cano'],['osso','chumbo']],t:'Todos os tiros quicam uma vez a mais.',fx:{bounce:1}},
+ {id:'carrasco2',n:'Sem Piedade',or:[['carrasco','quilha'],['carrasco','luvas'],['carrasco','gaff']],t:'Executa com até 20% de vida.',fx:{execute:.08}},
+ {id:'matilha',n:'Matilha',or:[['pira','fantasma'],['moreia','fantasma'],['pira','rede'],['moreia','arrasto']],t:'Mais um peixe-drone luta do teu lado.',fx:{drone:1}}];
+const ownSet=()=>new Set([...(p.items||[]),...(p.relics||[]),...(p.wps||[])]);
+function synActive(){if(!p)return[];const s=ownSet();return SYN.filter(y=>(y.or||[]).some(pr=>pr.every(k=>s.has(k))))}
+function synFor(d){if(!p)return null;const s=ownSet(),id=d.w||d.o.id;if(!id||s.has(id))return null;for(const y of SYN){if(synActive().includes(y))continue;for(const pr of y.or||[]){if(!pr.includes(id))continue;const other=pr.find(k=>k!==id);if(s.has(other)){const nm=(EQUIP.find(o=>o.id===other)||RELICS.find(o=>o.id===other)||{}).n||(WP[other]&&WP[other].n)||other;return{n:y.n,with:nm}}}}return null}
+{const _rc=recalc;recalc=function(){_rc.apply(this,arguments);if(!p)return;const on=synActive();p.syn=p.syn||[];for(const y of on){for(const k in y.fx){const v=y.fx[k];FX[k]=typeof v==='number'?(FX[k]||0)+v:v}if(!p.syn.includes(y.id)){p.syn.push(y.id);setTimeout(()=>{try{ftxt(p.x,p.y-22,'SINERGIA: '+y.n.toUpperCase()+'!','#ffd45e');radio('SINERGIA '+y.n+': '+y.t);SFX.pearl&&SFX.pearl();META.syn=META.syn||{};META.syn[y.id]=1;saveMeta()}catch(e){}},60)}}if(typeof syncPets==='function')syncPets()}}
+{const _cb=chestBonus;chestBonus=function(c){_cb(c);if(p&&p.figaOn){_cb(c);ftxt(c.x,c.y-20,'FIGA!','#7dff9a')}}}
+
 /* ================= VIDA AMBIENTE NO MEIO DA ÁGUA ================= */
 let AMB=[];
 function ambOpen(m,far){for(let t=0;t<80;t++){const x=(3+RI(MW-6))*TS,y=(3+RI(MH-6))*TS;if(!blocked(x,y,m)&&(!far||hyp(x-p.x,y-p.y)>far))return{x,y}}return null}
@@ -5079,6 +5243,41 @@ for(const k in BH){const f=BH[k];if(k==='boss'||k==='part')continue;BH[k]=functi
  else if(t==='leech'&&e.lat>0)wglow(e.x,e.y,10,'#ff8aa8',.4)}}}
 /* álbum/bestiário: a característica aparece no nome ao passar o mouse */
 window.TRAIT_COUNT=()=>{const o={};for(const k in SP){const S=SP[k];if(S.boss||S.part)continue;o[S.tr]=(o[S.tr]||0)+1}return o};
+
+/* ================= CUTSCENES COM O TIÃO ================= */
+const STORY={
+ intro:['Ô, você que é o mergulhador novo? Chega mais, senta aí no convés.','Eu sou o Seu Tião. Pesco nesse mar faz quarenta anos. Esse barquinho aqui é a minha vida.','O último mergulhador que trabalhou comigo... bom. Ele desceu numa terça e não subiu mais. Coisa do serviço.','Por isso eu te contratei. O trato é simples: cada bicho que você pegar lá embaixo, eu te pago um dinheirinho.','Quanto mais fundo, melhor o peixe. E quanto melhor o peixe, mais dinheiro pra você... e pra mim, né.','Dizem que lá no fundo das fossas, a onze mil metros, vivem os peixes mais raros do mundo. Ninguém nunca chegou lá.','Você chega. Eu sinto isso aqui no meu bigode. Aí você fica feliz, eu fico feliz, todo mundo fica feliz!','Mas antes, deixa eu te ensinar o básico. Não quero perder mais um mergulhador esse mês.'],
+ shop:['Bem-vindo à minha lojinha flutuante! Toda vez que você subir de uma fenda, eu tô aqui.','Aqui você troca o dinheiro dos bichos por comida, arma e equipamento. Cada subida, uma coisa de cada.','E o dinheiro que sobrar no bolso rende juros. Dez por cento! Melhor que banco.'],
+ lair:['Marujo... tá sentindo a água tremer? Essa fenda é a toca de um bicho GRANDE.','Os chefes têm fases. Quando ele cansar, bate com tudo. E o que brilhar ROXO, você apara.','Se der ruim, sobe. Mergulhador vivo pesca amanhã.'],
+ boss1:['VOCÊ DERRUBOU O BICHO?! Eu vi o mar ferver daqui de cima!','Vou vender um pedaço dele no porto e pagar a reforma do barco. E você ganha sua parte, claro.','Tá vendo? Eu falei que você era diferente.'],
+ death:['Ei... acorda. Te puxei pela corda, tá tudo bem.','Morrer lá embaixo faz parte. O mar sempre cobra. Mas você volta mais esperto.','As pérolas que você achou ficam com você. Usa no estaleiro pra deixar o barco e o equipamento mais fortes.'],
+ m10:['Mil metros! Daqui pra baixo a luz do sol não chega mais.','Sabe... meu irmão também mergulhava comigo. Ele dizia que via uma luz aqui embaixo. Uma luz que não era do sol.','Um dia ele desceu atrás dela. Só voltou a garrafa com um bilhete. Se você achar outras... me traz, tá?'],
+ m30:['Três mil metros. Zona da meia-noite. Aqui tem bicho que nunca viu gente.','Meu irmão escreveu que aqui o mar começa a cantar. Eu achava que era doideira dele.','Agora eu não sei mais.'],
+ m60:['Seis mil metros. O abismo. Meu rádio quase não pega você aí.','Se ouvir uma voz que não é a minha... não responde.'],
+ m90:['Nove mil metros... a fossa. Pressão de esmagar submarino.','Meu irmão deixou o capacete dele em algum lugar por aí. Eu sei disso. Eu sinto.','Vai, marujo. Termina o que ele começou.'],
+ win:['Você... chegou no fundo do mundo. Onze mil metros.','Ninguém nunca chegou. Nem meu irmão. Mas ele ia ficar orgulhoso. Eu tô orgulhoso.','E esse peixe que você trouxe... nunca vi nada igual. Vamos ficar ricos, marujo! Todo mundo feliz!','...mas amanhã a gente desce de novo, né? O mar não acaba.']};
+document.body.insertAdjacentHTML('beforeend','<div id="cut" hidden><div class="cbar t"></div><div class="cbar b"></div><div class="cbox"><div class="tbox">'+faceCv('face big')+'<div class="cc"><div class="rb"></div><small>▶ ENTER / A / clique pra continuar &nbsp;·&nbsp; ESC pula</small></div></div></div></div>');
+{const st=document.createElement('style');st.textContent='#cut{position:fixed;inset:0;z-index:400;background:rgba(0,6,12,.45)}#cut .cbar{position:absolute;left:0;right:0;height:10vh;background:#000;animation:cbar .5s ease-out}#cut .cbar.t{top:0}#cut .cbar.b{bottom:0}@keyframes cbar{from{height:0}}#cut .cbox{position:absolute;left:50%;bottom:13vh;transform:translateX(-50%);width:min(860px,calc(100vw - 24px))}#cut .tbox{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(#12202aee,#081218f4);padding:14px;box-shadow:0 0 0 2px #000,0 0 0 4px #c8a060,0 0 0 6px #000,0 16px 40px #000c}#cut canvas{width:120px;height:120px;image-rendering:pixelated;flex:none;box-shadow:0 0 0 2px #000,0 0 0 4px #2c4f5a}#cut .cc{flex:1}#cut .rb{font-size:25px;line-height:1.25;color:#f2f6f8;min-height:96px}#cut .rb b{display:block;font:11px "Press Start 2P";color:#ffd45e;margin-bottom:8px}#cut small{display:block;text-align:right;color:#8ab;font-size:16px;margin-top:6px}@media(max-width:600px){#cut canvas{width:72px;height:72px}#cut .rb{font-size:19px;min-height:80px}}';document.head.appendChild(st)}
+let CUT=null;const CUTQ=[];
+function cutPlay(key,done){if(CUT){CUTQ.push([key,done]);return}const L=STORY[key];if(!L){done&&done();return}const was=state;CUT={L,i:-1,done,was};if(state==='play')state='cut';$('#cut').hidden=false;try{initAudio();if(AC)AC.resume()}catch(e){}cutNext()}
+function cutNext(){if(!CUT)return;const rb=$('#cut .rb');if(CUT.i>=0&&rb.querySelector('.tt')&&rb.querySelector('.tt').textContent.length<CUT.L[CUT.i].length){clearInterval(rb._ti);rb.querySelector('.tt').textContent=CUT.L[CUT.i];return}CUT.i++;if(CUT.i>=CUT.L.length)return cutEnd();rb.dataset.who='SEU TIÃO';speak(rb,CUT.L[CUT.i])}
+function cutEnd(){if(!CUT)return;const c=CUT;CUT=null;$('#cut').hidden=true;if(state==='cut')state=c.was==='cut'?'play':c.was;mouse.down=false;for(const k in keys)keys[k]=false;c.done&&c.done();if(CUTQ.length){const q=CUTQ.shift();setTimeout(()=>{if(state==='play'||state==='over'||state==='title')cutPlay(q[0],q[1])},400)}}
+$('#cut').addEventListener('click',()=>cutNext());
+addEventListener('keydown',e=>{if(!CUT)return;e.stopImmediatePropagation();e.preventDefault();if(e.key==='Escape')cutEnd();else if(e.key==='Enter'||e.key===' ')cutNext()},true);
+{let pv=0;(function cl(){requestAnimationFrame(cl);if(!CUT)return;const g=navigator.getGamepads?navigator.getGamepads():[];let a=0,b=0;for(const q of g){if(!q)continue;if(q.buttons[0]&&q.buttons[0].pressed)a=1;if(q.buttons[1]&&q.buttons[1].pressed)b=1}const now=a|b<<1;if(now&1&&!(pv&1))cutNext();if(now&2&&!(pv&2))cutEnd();pv=now})()}
+const csSeen=k=>{META.cs=META.cs||{};if(META.cs[k])return true;META.cs[k]=1;saveMeta();return false};
+/* abertura antes da primeira partida */
+{const _ng=newGame;newGame=function(){if(META&&!META.runs&&!csSeen('intro')){$('#title').hidden=true;cutPlay('intro',()=>_ng());return}_ng()}}
+/* loja, toca de chefe, profundidades */
+{const _os=openShop;openShop=function(){_os.apply(this,arguments);if(!csSeen('shop'))setTimeout(()=>cutPlay('shop'),300)}}
+{const _nl=newLevel;newLevel=function(){_nl.apply(this,arguments);if(!p||(typeof TUT!=='undefined'&&TUT.on)||(typeof ORC!=='undefined'&&ORC))return;const go=k=>{if(!csSeen(k))setTimeout(()=>{if(state==='play')cutPlay(k)},900)};
+ if(mod===MODS.lair)go('lair');if(depth>=10)go('m10');if(depth>=30)go('m30');if(depth>=60)go('m60');if(depth>=90)go('m90')}}
+{let bk0=-1;setInterval(()=>{if(!META||state!=='play')return;const n=Object.keys(META.bk||{}).length;if(bk0<0){bk0=n;return}if(n>bk0){bk0=n;if(!csSeen('boss1'))setTimeout(()=>{if(state==='play')cutPlay('boss1')},2500)}},800)}
+{const _d=die;die=function(){_d.apply(this,arguments);if(META&&!(typeof TUT!=='undefined'&&TUT.on)&&state==='over'&&!csSeen('death'))setTimeout(()=>cutPlay('death'),1600)}}
+{const _v=victory;victory=function(){_v.apply(this,arguments);if(!csSeen('win'))setTimeout(()=>cutPlay('win'),1200)}}
+/* estaleiro volta: botão na escolha de dificuldade */
+{const _ng2=newGame;newGame=function(){_ng2.apply(this,arguments);const b=$('#diffbox');if(b&&!$('#diffo').hidden&&!$('#dfyard')){const bot=b.querySelector('.bot');if(bot)bot.insertAdjacentHTML('afterbegin','<button class="btn nav" id="dfyard">ESTALEIRO ('+META.pearls+' pérolas)</button>');const y=$('#dfyard');if(y)y.onclick=()=>{$('#diffo').hidden=true;window.FROMDIFF=1;openMeta()}}}}
+$('#metabox').addEventListener('click',e=>{if(e.target.closest('#mback')&&window.FROMDIFF){e.stopImmediatePropagation();window.FROMDIFF=0;$('#meta').hidden=true;newGame()}},true);
 
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
