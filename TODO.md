@@ -92,3 +92,8 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Faca de mergulho sempre na mão: tecla E alterna entre suas armas e a faca (corpo a corpo, mais arriscado)
 - [x] Dificuldade afeta raridade: fácil = mais coisas boas, difícil/insano = menos
 - [x] Sereia (a partir de 400 m): pixel art própria com 7 cabelos, 7 tons de pele, 6 caudas (abissal com pintinhas que brilham, mais comum no fundo) e 5 enfeites; canta anéis com notinhas, cada onda tira 1 coração, trecho ROXO atravessa aparando ("ATRAVESSOU!"), grito todo roxo de vez em quando, tiro de longe desvia ("A CANÇÃO DESVIA!"), só leva dano de perto, rabada que empurra, Tião avisa no primeiro encontro, solta pérolas, conquista "Canto Silenciado"
+
+## Dificuldade nos chefes (feedback novo)
+- [x] Fácil: chefes mais lentos (IA a 78% do tempo e 80% da velocidade), golpes, tiros e raios dão menos dano (cerca de metade), uns 30% menos tiros, tiros mais lentos e avisos que duram mais
+- [x] Difícil/Insano: chefes mais rápidos, tiros mais rápidos e avisos mais curtos (o dano extra já vem da dificuldade)
+- [x] Vale pros chefes míticos, pros pedaços deles (cabeças, tentáculos) e pra Orca

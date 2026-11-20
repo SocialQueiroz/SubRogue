@@ -5568,6 +5568,22 @@ DRAW.turtle=(e,S,C)=>{const P=TPAL[(S.tt&&S.tt.pal)||'verde'],snap=S.id==='tartm
  if(e.st==='dizzy'){for(let k=0;k<3;k++){const a=time*5+k*TAU/3;ctx.fillStyle='#ffe680';const x=Math.round(e.x+Math.cos(a)*e.r*.9),y=Math.round(e.y-e.r*1.1+Math.sin(a)*e.r*.3);ctx.fillRect(x-1,y,3,1);ctx.fillRect(x,y-1,1,3)}}
  if(e.st==='stuck'&&Math.sin(time*20)>0){ctx.fillStyle='#ffe680';ctx.font='8px monospace';ctx.fillText('!',Math.round(e.x)-2,Math.round(e.y-e.r-6))}};
 
+/* ================= DIFICULDADE MEXE NOS CHEFES ================= */
+/* fácil: chefes mais lentos, dão menos dano, atacam menos e avisam com mais tempo; difícil/insano: mais rápidos e com tiros mais rápidos */
+const BOSSK={facil:{t:.78,sp:.8,dm:.55,keep:.7,bs:.8,warn:1.3},medio:null,dificil:{t:1.08,sp:1.1,dm:1,keep:1,bs:1.1,warn:.92},insano:{t:1.16,sp:1.18,dm:1,keep:1,bs:1.18,warn:.85}};
+const bossK=()=>BOSSK[(p&&p.diff)||(META&&META.diff)||'medio']||null;
+let BOSSDMG=0;
+{const _h=hurtP;hurtP=function(d,src){if(BOSSDMG&&BOSSDMG!==1)d=Math.max(1,Math.round(d*BOSSDMG));return _h.call(this,d,src)}}
+{const _u=upE;upE=function(e,dt){const S=e&&e.S,isB=S&&(S.boss||S.part||(e.par&&e.par.S&&e.par.S.boss));const K=isB&&bossK();if(!K)return _u.apply(this,arguments);
+ const n0=pj.length,w0=warns.length,b0=beams.length;BOSSDMG=K.dm;try{_u.apply(this,arguments)}finally{BOSSDMG=0}
+ for(let i=pj.length-1;i>=n0;i--){const q=pj[i];if(!q||!q.e||q._bk)continue;q._bk=1;if(K.keep<1&&!q.pur&&Math.random()>K.keep){pj.splice(i,1);continue}q.vx*=K.bs;q.vy*=K.bs;if(K.dm!==1)q.d=Math.max(1,Math.round((q.d||1)*K.dm))}
+ for(let i=w0;i<warns.length;i++){const w=warns[i];if(!w||w._bk)continue;w._bk=1;w.t*=K.warn;w.ml=(w.ml||w.t)*K.warn;if(w.fn){const f=w.fn;w.fn=function(){const b1=beams.length;BOSSDMG=K.dm;try{return f.apply(this,arguments)}finally{BOSSDMG=0;for(let j=b1;j<beams.length;j++){const b=beams[j];if(b&&!b._bk){b._bk=1;if(K.dm!==1)b.dm=Math.max(1,Math.round((b.dm||1)*K.dm))}}}}}}
+ for(let i=b0;i<beams.length;i++){const b=beams[i];if(b&&!b._bk){b._bk=1;if(K.dm!==1)b.dm=Math.max(1,Math.round((b.dm||1)*K.dm))}}}}
+{const _bb=BH.boss;BH.boss=function(e,dt,ux,uy,d,sp){const K=bossK();if(!K)return _bb.apply(this,arguments);return _bb.call(this,e,dt*K.t,ux,uy,d,sp*K.sp)}}
+{const _mp=mythPost;mythPost=function(){const K=bossK();BOSSDMG=K?K.dm:0;try{return _mp.apply(this,arguments)}finally{BOSSDMG=0}}}
+{const _oh=orcaHurtAt;orcaHurtAt=function(){const K=bossK();BOSSDMG=K?K.dm:0;try{return _oh.apply(this,arguments)}finally{BOSSDMG=0}}}
+{const _tp=tickParry;tickParry=function(dt){_tp.apply(this,arguments);if(!dt||state!=='play'||typeof ORC==='undefined'||!ORC)return;const K=bossK();if(!K)return;ORC.t+=dt*(1-K.t);if(ORC.st!=='dying'){ORC.x-=(ORC.vx||0)*dt*(1-K.sp);ORC.y-=(ORC.vy||0)*dt*(1-K.sp)}}}
+DIFFS.facil.d='Pra aprender. Bichos mais fracos e chefes lentos, que batem menos.';DIFFS.dificil.d='Bichos mais duros e que mordem mais. Chefes mais rápidos.';DIFFS.insano.d='Só pra quem já zerou. Chefes rápidos e furiosos.';
 /* ================= SEREIA: canto em anéis, aparar no roxo, matar de perto (a partir de 400 m) ================= */
 /* --- visual: pixel art gerada pixel a pixel, com variações sorteadas --- */
 const SRN={
