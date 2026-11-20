@@ -4053,7 +4053,7 @@ addEventListener('keydown',e=>{if((e.key==='Escape'||e.key==='p')&&!$('#achv').h
 {const st=document.createElement('style');st.textContent='.achg{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:56vh;overflow:auto;margin:8px 0}.achi{display:flex;gap:10px;align-items:center;padding:6px 8px;border:2px solid #1c3a44;background:#0a1a20;opacity:.55}.achi.on{opacity:1;border-color:#a8741a;background:#1e1a0c}.achi b{display:block;font-weight:normal;font-size:21px;color:#ffe}.achi.on b{color:#ffd45e}.achi small{font-size:16px;color:#9ab}@media(max-width:640px){.achg{grid-template-columns:1fr}}';document.head.appendChild(st)}
 
 /* ================= NUVEM (Supabase): contas, saves e ranking ================= */
-const CLOUD={url:'',key:''};/* supabase pronto: url https://yhrhginowondpxjhwucg.supabase.co, chave sb_publishable_0c2Hg_qxegCE6DYpGx4RoQ_QhVCgBQG *//* preencha com a URL do projeto e a chave pública (anon) do Supabase */
+const CLOUD={url:'https://yhrhginowondpxjhwucg.supabase.co',key:'sb_publishable_0c2Hg_qxegCE6DYpGx4RoQ_QhVCgBQG'};/* preencha com a URL do projeto e a chave pública (anon) do Supabase */
 const CL={on:!!(CLOUD.url&&CLOUD.key),tok:'',ref:'',uid:'',exp:0,pt:null};
 async function clReq(path,o){o=o||{};const h={apikey:CLOUD.key,'Content-Type':'application/json',Authorization:'Bearer '+(CL.tok&&!o.anon?CL.tok:CLOUD.key)};Object.assign(h,o.h||{});
  const r=await fetch(CLOUD.url.replace(/\/$/,'')+path,{method:o.m||'GET',headers:h,body:o.b?JSON.stringify(o.b):undefined,keepalive:!!o.ka});const tx=await r.text();let j=null;try{j=tx?JSON.parse(tx):null}catch(e){}

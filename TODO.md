@@ -29,7 +29,7 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Trilha muda em degradê gradual conforme a profundidade (não ficar na mesmice)
 
 ## Banco de dados / nuvem
-- [ ] Escolher serviço (ver opções na conversa) e ligar contas, saves e ranking online
+- [x] Supabase ligado: contas, saves e ranking online funcionando (testado de ponta a ponta)
 
 ## Bugs vistos
 - [x] Baú grande aparecia quebrado (retângulo marrom) no fim das correntezas — trocado por baús pequenos
@@ -43,7 +43,7 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] 0,1% por corrida: portal secreto após a cena dos tubarões-baleia leva à luta contra a Orca (conquista "Lenda do Abismo")
 
 ## Banco de dados
-- [ ] Usar PocketBase (PocketHost): criar instância, coleções users/saves/scores e ligar no jogo
+- [x] (PocketBase descartado; ficou Supabase)
 - [x] Tubarões-baleia soltam coraçõezinhos e regeneram toda a vida
 - [x] Luta secreta da Orca feita
 
