@@ -131,3 +131,11 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
   - Fumarolas negras (desde 4.000 m): chaminés que soltam fumaça preta (escurece) e entram em erupção (brilham antes; água fervendo tira vida e joga pra cima); dá pra derrubar no tiro e sai minério (moedas e pérola)
   - Cemitério de navios (desde 200 m): 2–3 naufrágios com mastro, vela rasgada e lanterna; baús, barris de pólvora, minas e um baú grande
 - [x] Conquista "Turista do Abismo" (ver os 5)
+
+## A história do Zeca, irmão do Tião (pedido novo)
+- [x] 5 garrafas douradas do Zeca, em ordem (a partir de 1.000, 3.000, 5.000, 7.000 e 9.000 m), cada uma abre uma cena com o bilhete e a reação do Tião; as pistas levam ao capacete
+- [x] Capacete do Zeca numa caverna escondida entre 8.800 e 9.800 m (se passar sem achar, aparece na próxima fenda); a lanterna dele brilha atrás da rocha rachada e o rádio do Tião chia; pegar abre uma cena e o capacete ajuda a enxergar mais longe
+- [x] Final alternativo: chegando a 11.000 m com o capacete, a tela vira "A LUZ — ZECA, ACHADO", sobem luzes do fundo e toca a gravação do Zeca no rádio do capacete
+- [x] Cenas agora aceitam outras vozes além do Tião (garrafa e rádio do capacete)
+- [x] Conquistas: "O Capacete do Zeca", "A Luz do Fundo", "Cartas do Zeca"
+- [x] Bug antigo: derrotando o chefe final, se a escolha de relíquia demorasse mais de 2,6 s a vitória era cancelada e o jogo não terminava

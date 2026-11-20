@@ -5578,7 +5578,7 @@ document.body.insertAdjacentHTML('beforeend','<div id="cut" hidden><div class="c
 {const st=document.createElement('style');st.textContent='#cut{position:fixed;inset:0;z-index:400;background:rgba(0,6,12,.45)}#cut .cbar{position:absolute;left:0;right:0;height:10vh;background:#000;animation:cbar .5s ease-out}#cut .cbar.t{top:0}#cut .cbar.b{bottom:0}@keyframes cbar{from{height:0}}#cut .cbox{position:absolute;left:50%;bottom:13vh;transform:translateX(-50%);width:min(860px,calc(100vw - 24px))}#cut .tbox{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(#12202aee,#081218f4);padding:14px;box-shadow:0 0 0 2px #000,0 0 0 4px #c8a060,0 0 0 6px #000,0 16px 40px #000c}#cut canvas{width:120px;height:120px;image-rendering:pixelated;flex:none;box-shadow:0 0 0 2px #000,0 0 0 4px #2c4f5a}#cut .cc{flex:1}#cut .rb{font-size:25px;line-height:1.25;color:#f2f6f8;min-height:96px}#cut .rb b{display:block;font:11px "Press Start 2P";color:#ffd45e;margin-bottom:8px}#cut small{display:block;text-align:right;color:#8ab;font-size:16px;margin-top:6px}@media(max-width:600px){#cut canvas{width:72px;height:72px}#cut .rb{font-size:19px;min-height:80px}}';document.head.appendChild(st)}
 let CUT=null;const CUTQ=[];
 function cutPlay(key,done){if(CUT){CUTQ.push([key,done]);return}const L=STORY[key];if(!L){done&&done();return}const was=state;CUT={L,i:-1,done,was};if(state==='play')state='cut';$('#cut').hidden=false;try{initAudio();if(AC)AC.resume()}catch(e){}cutNext()}
-function cutNext(){if(!CUT)return;const rb=$('#cut .rb');if(CUT.i>=0&&rb.querySelector('.tt')&&rb.querySelector('.tt').textContent.length<CUT.L[CUT.i].length){clearInterval(rb._ti);rb.querySelector('.tt').textContent=CUT.L[CUT.i];return}CUT.i++;if(CUT.i>=CUT.L.length)return cutEnd();rb.dataset.who='SEU TIÃO';speak(rb,CUT.L[CUT.i])}
+function cutNext(){if(!CUT)return;const rb=$('#cut .rb');if(CUT.i>=0&&rb.querySelector('.tt')&&rb.querySelector('.tt').textContent.length<CUT.L[CUT.i].length){clearInterval(rb._ti);rb.querySelector('.tt').textContent=CUT.L[CUT.i];return}CUT.i++;if(CUT.i>=CUT.L.length)return cutEnd();{const W=window.WMAP&&WMAP.get(CUT.L),who=(W&&W[CUT.i])||'SEU TIÃO';rb.dataset.who=who;const cv=$('#cut canvas');if(cv)cv.style.opacity=who==='SEU TIÃO'?1:.25}speak(rb,CUT.L[CUT.i])}
 function cutEnd(){if(!CUT)return;const c=CUT;CUT=null;$('#cut').hidden=true;if(state==='cut')state=c.was==='cut'?'play':c.was;mouse.down=false;for(const k in keys)keys[k]=false;c.done&&c.done();if(CUTQ.length){const q=CUTQ.shift();setTimeout(()=>{if(state==='play'||state==='over'||state==='title')cutPlay(q[0],q[1])},400)}}
 $('#cut').addEventListener('click',()=>cutNext());
 addEventListener('keydown',e=>{if(!CUT)return;e.stopImmediatePropagation();e.preventDefault();if(e.key==='Escape')cutEnd();else if(e.key==='Enter'||e.key===' ')cutNext()},true);
@@ -6038,6 +6038,69 @@ function evtKelp(E,front){const T=time;for(const s of E.st){const n=Math.ceil(s.
  if(E.k==='brine')glow((E.bx0+E.bx1)/2+ox,E.S+6+oy,(E.bx1-E.bx0)*.5,'#8a3ac8',.12);
  if(E.k==='whale')glow((E.x0+E.x1)/2+ox,E.fy-10+oy,50,'#f0e8d0',.06)}}
 ACHL.push(['evts','Turista do Abismo','Veja os 5 eventos do fundo: baleia, kelp, salmoura, fumarolas e navios',m=>m.evts&&Object.keys(m.evts).length>=5]);
+
+/* ================= A HISTÓRIA DO ZECA: garrafas do irmão do Tião, o capacete e o final da luz ================= */
+STORY.helmet=['Marujo... esse capacete. Esse é o capacete do Zeca. Do meu irmão.','Olha esse amassado do lado. Foi no dia que ele bateu a cabeça no casco do barco e riu uma semana inteira.','A lanterna ainda acende... Como pode? Depois de tanto tempo aí embaixo.','Ele escreveu que o capacete sabe o caminho. Então leva ele com você. Até o fundo.','Mas volta, tá? Eu não aguento perder mais um.'];
+STORY.win2=['Marujo... você chegou no fundo. E o capacete do Zeca tá piscando sozinho.',
+ '[RÁDIO DO CAPACETE] ...chhh... Tião? Se você tá ouvindo isso, alguém trouxe meu capacete até aqui embaixo.',
+ '[RÁDIO DO CAPACETE] A luz não é do sol, mano. São eles. Bicho que ninguém nunca viu, acendendo tudo junto, feito uma cidade inteira.',
+ '[RÁDIO DO CAPACETE] Eu não tô com medo. Tá tudo tão bonito. E não foi culpa sua eu ter descido, tá ouvindo? Não foi.',
+ '[RÁDIO DO CAPACETE] E as 30 pérolas... pode ficar. ...chhh...',
+ '...',
+ 'Ele gravou isso. Esse tempo todo, a voz dele tava aí embaixo, esperando alguém.',
+ 'Obrigado, marujo. Você trouxe meu irmão de volta pra mim. Do jeito que deu.',
+ 'Amanhã a gente desce de novo. Mas hoje... hoje eu vou ficar aqui no convés olhando pro mar um pouquinho.'];
+/* falas com outra voz: linha começando com [NOME] */
+window.WMAP=new Map();
+{const _cp=cutPlay;cutPlay=function(key,done){const L=STORY[key];if(L&&L.some(s=>/^\[[^\]]+\]/.test(s))){const k2='__'+key;if(!STORY[k2]){STORY[k2]=L.map(s=>s.replace(/^\[[^\]]+\]\s*/,''));WMAP.set(STORY[k2],L.map(s=>{const m=/^\[([^\]]+)\]/.exec(s);return m?m[1]:'SEU TIÃO'}))}return _cp.call(this,k2,done)}return _cp.apply(this,arguments)}}
+/* as 5 garrafas do Zeca (em ordem, uma de cada vez, a partir de 1.000 m) */
+const ZNOTE=[[10,'"Mano, se essa garrafa chegar em você: a luz existe. Eu vi ela piscar lá embaixo, igual farol. Vou atrás. — Zeca"','É a letra do Zeca... Meu irmão escreveu isso. Guarda essa garrafa pra mim, marujo.'],
+ [30,'"Três mil metros. O mar canta mesmo, Tião. Tem sereia aqui. Ela não me atacou: ficou olhando pro fundo, feito quem espera alguém. — Zeca"','Sereia esperando... O Zeca sempre foi de inventar história. Mas dessa vez eu acredito.'],
+ [50,'"Rocha rachada esconde caverna. Guardei umas coisas numa delas lá pelos nove mil, pra aliviar o peso. Se eu não voltar, quem achar fica com tudo. — Zeca"','Nove mil metros, numa caverna atrás da rocha rachada... Leva bomba, marujo. Muita bomba.'],
+ [70,'"Minha lanterna tá falhando, mas o capacete acende sozinho quando a luz do fundo pisca. Ele sabe o caminho melhor que eu. — Zeca"','Se você ver uma luz fraquinha atrás da pedra lá embaixo... é ele. É o capacete.'],
+ [90,'"Tião, me perdoa pelas 30 pérolas. E por ter descido sozinho. Se alguém achar meu capacete, leva ele pro fundo. Ele precisa ver a luz de perto. Eu prometi. — Zeca"','...Desculpa, marujo. Me dá um minuto.']];
+let ZB=null,HELM=null;
+function zOpen(far){for(let t=0;t<200;t++){const x=(3+RI(MW-6))*TS,y=(3+RI(MH-6))*TS,i=Math.floor(x/TS)+Math.floor(y/TS)*MW;if(!blocked(x,y,10)&&dm[i]>=0&&hyp(x-p.x,y-p.y)>far&&hyp(x-exit.x,y-exit.y)>60)return{x:x+8,y:y+8}}return null}
+{const _nl=newLevel;newLevel=function(){_nl.apply(this,arguments);ZB=null;HELM=null;if(!p||!META||(typeof TUT!=='undefined'&&TUT.on)||(typeof ORC!=='undefined'&&ORC))return;
+ /* garrafa do Zeca */
+ const n=META.bro||0;if(n<5&&depth>=ZNOTE[n][0]&&mod!==MODS.lair&&!boss&&Math.random()<(window.ZFORCE?1:.35)){const s=zOpen(200);if(s)ZB={x:s.x,y:s.y,t:0,i:n}}
+ /* o capacete: entre 8.800 e 9.800 m (se passar sem achar, aparece de novo na próxima) */
+ if(p.helmetD===undefined)p.helmetD=88+RI(10);
+ if(!p.helmet&&depth>=p.helmetD&&depth<=106&&mod!==MODS.lair&&!boss){let c=cavs.slice().sort((a,b)=>hyp(b.x-p.x,b.y-p.y)-hyp(a.x-p.x,a.y-p.y))[0];
+  if(!c){const keep=cavs;carveCaves();c=cavs[0];cavs=keep.concat(cavs);if(c){paint();dm=bfs(Math.floor(p.x/TS),Math.floor(p.y/TS))}}
+  if(c){for(let i=chests.length-1;i>=0;i--)if(hyp(chests[i].x-c.x,chests[i].y-c.y)<20)chests.splice(i,1);HELM={x:c.x,y:c.y,t:0,cave:c};
+   setTimeout(()=>{if(state==='play'&&HELM)radio(META.helmet?'Esse chiado no rádio de novo... o capacete do Zeca tá por aqui. Procura uma luz atrás da rocha rachada!':'Marujo... meu rádio tá pegando um chiado estranho nessa fenda. É a frequência do capacete do Zeca! Procura uma luz atrás das rochas rachadas!')},2600)}}}}
+{const _tp=tickParry;tickParry=function(dt){_tp.apply(this,arguments);if(!p||!dt||state!=='play')return;
+ if(ZB){ZB.t+=dt;if(hyp(p.x-ZB.x,p.y-ZB.y)<11){const z=ZNOTE[ZB.i];META.bro=Math.max(META.bro||0,ZB.i+1);META.pearls+=2;saveMeta();SFX.pearl();burst(ZB.x,ZB.y,'#ffd45e',16,100,2);ftxt(ZB.x,ZB.y-12,'GARRAFA DO ZECA ('+(ZB.i+1)+'/5)','#ffd45e');ZB=null;const k='zb'+(z===ZNOTE[0]?0:ZNOTE.indexOf(z));STORY[k]=['[GARRAFA DO ZECA] '+z[1],z[2]];setTimeout(()=>cutPlay(k),350)}}
+ if(HELM){HELM.t+=dt;const d=hyp(p.x-HELM.x,p.y-HELM.y);if(!HELM.near&&d<200){HELM.near=1;if(!META.helmet)setTimeout(()=>{if(state==='play'&&HELM)radio('Tá vendo essa luz fraquinha atrás da pedra? É ela! A lanterna do capacete! Abre caminho com bomba!')},300)}
+  if(d<12){const h=HELM;HELM=null;const first=!META.helmet;p.helmet=1;META.helmet=(META.helmet||0)+1;saveMeta();recalc();SFX.pearl();SFX.lvl();flash=Math.max(flash,.5);burst(h.x,h.y,'#ffe8a0',40,160,2);burst(h.x,h.y,'#7fe9ff',20,120,2);ftxt(h.x,h.y-16,'CAPACETE DO ZECA','#ffe8a0');
+   if(first)setTimeout(()=>cutPlay('helmet'),600);else radio('O capacete do Zeca... Leva ele até o fundo de novo, marujo. Ele gosta.')}}}}
+/* o capacete ilumina: enxerga mais longe */
+{const _rc=recalc;recalc=function(){_rc.apply(this,arguments);if(p&&p.helmet){FX.light=(FX.light||0)+.25;FX.lampLen=(FX.lampLen||0)+.2}}}
+/* desenho */
+function drawHelm(x,y,t,sc){const G=ctx;G.save();G.translate(Math.round(x),Math.round(y));G.scale(sc||1,sc||1);
+ disc(0,0,8.2,OUT);disc(0,0,7.2,'#a8742c');disc(-1.5,-2,5,'#c8903a');disc(-3,-3.5,2,'#f0c070');
+ for(const a of[-2.4,-1.2,0,1.2,2.4]){disc(Math.cos(a+Math.PI/2)*6,Math.sin(a+Math.PI/2)*6+1,1,'#6a4418')}
+ disc(2.5,.5,4,OUT);disc(2.5,.5,3.2,'#7a5420');const fl=.7+.3*Math.sin(t*5)*Math.sin(t*2.3);disc(2.5,.5,2.4,fl>.5?'#bff4ff':'#7fe9ff');disc(1.8,-.4,.8,'#ffffff');
+ disc(-5.5,-3.5,1.8,OUT);disc(-5.5,-3.5,1.1,'#7fe9ff');G.fillStyle='#6a4418';G.fillRect(-7,5,14,3);G.fillStyle=OUT;G.fillRect(-7,8,14,1);G.fillStyle='#8a5a22';G.fillRect(3,-8,3,2);
+ G.restore()}
+{const _dp=drawParryFx;drawParryFx=function(){_dp.apply(this,arguments);
+ if(ZB){const b=Math.sin(ZB.t*1.6)*1.5;ctx.save();ctx.translate(ZB.x,ZB.y+b);ctx.rotate(Math.sin(ZB.t*1.2)*.35);ctx.fillStyle=OUT;ctx.fillRect(-3,-6,6,11);ctx.fillStyle='#d8a030';ctx.fillRect(-2,-5,4,9);ctx.fillStyle='#ffe08a';ctx.fillRect(-2,-5,1,7);ctx.fillStyle='#f4ecd0';ctx.fillRect(-1,-2,2,4);ctx.fillStyle='#6a3a1a';ctx.fillRect(-1,-7,2,2);ctx.restore();wglow(ZB.x,ZB.y,18,'#ffd45e',.35+.15*Math.sin(ZB.t*4))}
+ if(HELM){const b=Math.sin(HELM.t*1.3)*1.2,fl=.6+.4*Math.sin(HELM.t*5)*Math.sin(HELM.t*2.3);wglow(HELM.x+3,HELM.y+b,26,'#bff4ff',.35*fl+.15);drawHelm(HELM.x,HELM.y+b,HELM.t,1)}}}
+{const _sh=sceneHoles;sceneHoles=function(ox,oy){_sh.apply(this,arguments);if(HELM){const fl=.6+.4*Math.sin(HELM.t*5)*Math.sin(HELM.t*2.3);hole(HELM.x+ox,HELM.y+oy,46+fl*10,.75)}if(ZB)hole(ZB.x+ox,ZB.y+oy,22,.6)}}
+{const _sg=sceneGlows;sceneGlows=function(ox,oy){_sg.apply(this,arguments);if(HELM)glow(HELM.x+ox,HELM.y+oy,34,'#9fe8ff',.25);if(ZB)glow(ZB.x+ox,ZB.y+oy,14,'#ffd45e',.25)}}
+/* o capacete aparece no mergulhador */
+{const _dp=drawParryFx;drawParryFx=function(){_dp.apply(this,arguments);if(p&&p.helmet&&state!=='title'){const fl=.6+.4*Math.sin(time*5)*Math.sin(time*2.3);wglow(p.x+Math.cos(p.aim||0)*4,p.y-3+Math.sin(p.aim||0)*4,14,'#bff4ff',.18*fl)}}}
+/* final: com o capacete, a luz do fundo */
+/* bug antigo: a vitória chegava enquanto a escolha de relíquia do chefe final estava aberta e era cancelada (o jogo nunca terminava); agora espera a tela fechar */
+{const _v=victory;victory=function(){if(state==='pick'||state==='cut'||state==='pause'||state==='trans'||state==='shop'){clearTimeout(victory._w);victory._w=setTimeout(()=>victory(),500);return}const had=!!(p&&p.helmet&&state==='play');if(had){META.cs=META.cs||{};META.cs.win=1}const r=_v.apply(this,arguments);
+ if(had&&state==='over'){META.luz=(META.luz||0)+1;saveMeta();const b=$('#overbox');if(b){const d=b.querySelector('.dead');if(d){d.textContent='A LUZ';d.style.color='#ffe8a0';d.style.textShadow='0 5px 0 #6a4a10,0 9px 0 #000,0 0 30px #ffe8a0'}const st=b.querySelector('.stamp');if(st){st.textContent='ZECA, ACHADO';st.style.color='#bff4ff';st.style.borderColor='#bff4ff'}const sy=b.querySelector('.say');if(sy)sy.textContent='Você levou o capacete do Zeca até os 11.000 metros. A luz do fundo piscou de volta, e o rádio do capacete chiou uma última vez.'}
+  luzFinal();setTimeout(()=>cutPlay('win2'),1400)}return r}}
+function luzFinal(){let L=$('#luzfim');if(L)L.remove();document.body.insertAdjacentHTML('beforeend','<div id="luzfim"></div>');L=$('#luzfim');
+ const C=['#bff4ff','#ffe8a0','#9dff6a','#ff8ad8','#7fe9ff','#c9a0ff'];let h='';for(let i=0;i<90;i++){const s=2+Math.random()*5,c=C[i%C.length];h+='<i style="left:'+(Math.random()*100)+'%;top:'+(20+Math.random()*90)+'%;width:'+s+'px;height:'+s+'px;background:'+c+';box-shadow:0 0 '+(s*3)+'px '+c+';animation-delay:'+(-Math.random()*9)+'s;animation-duration:'+(6+Math.random()*7)+'s"></i>'}L.innerHTML=h;
+ const ob=$('#over');const watch=setInterval(()=>{if(!ob||ob.hidden||state!=='over'){clearInterval(watch);const q=$('#luzfim');if(q)q.remove()}},500)}
+{const st=document.createElement('style');st.textContent='#luzfim{position:fixed;inset:0;z-index:5;pointer-events:none;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#1a3a4a 0%,#03080e 60%)}#luzfim i{position:absolute;border-radius:50%;opacity:0;animation:luzsobe 9s linear infinite}@keyframes luzsobe{0%{transform:translateY(0);opacity:0}15%{opacity:.9}50%{opacity:.4}70%{opacity:1}100%{transform:translateY(-55vh);opacity:0}}#over{z-index:6}';document.head.appendChild(st)}
+ACHL.push(['zeca','O Capacete do Zeca','Ache o capacete do irmão do Tião',m=>!!m.helmet],['luz','A Luz do Fundo','Leve o capacete do Zeca até os 11.000 m',m=>!!m.luz],['zeca5','Cartas do Zeca','Ache as 5 garrafas do Zeca',m=>(m.bro||0)>=5]);
 
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
