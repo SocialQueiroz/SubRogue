@@ -3424,13 +3424,15 @@ const rcRow=(a,b)=>'<div><span>'+a+'</span><i></i><b>'+b+'</b></div>';
 function perkIcons(){const k=PK.filter(q=>P(q.id));return k.length?'<div class="perks">'+k.map(q=>'<span class="r'+q.r+'" data-n="'+q.n+': '+q.t.toLowerCase()+'">'+img(q.ic,28)+(P(q.id)>1?'<u>'+P(q.id)+'</u>':'')+'</span>').join('')+'</div><div id="pinfo">passe o mouse nos ícones</div>':''}
 document.addEventListener('mouseover',e=>{const n=e.target.closest&&e.target.closest('[data-n]'),o=[...document.querySelectorAll('.ov:not([hidden]) #pinfo')].pop();if(n&&o)o.textContent=n.dataset.n});
 /* ---------- poderes ---------- */
+/* sortear de novo (loja e artefatos): começa em 70, sobe a cada descida e fica 50% mais caro a cada vez na mesma tela */
+function rerollCost(n){return Math.round((70+depth*5)*(1+.5*n))}
 let pickQ=[],shop={},meta={};
 function rollPerks(n,minR){const lk=MU('luck')+F('luck'),out=[];if(F('allRare'))minR=Math.max(minR||0,1);for(let t=0;t<60&&out.length<n;t++){const r=Math.random();let ra=r<.07+.05*lk?2:r<.33+.08*lk?1:0;if(minR)ra=Math.max(ra,minR);
   let pool=PK.filter(k=>!k.off&&k.r===ra&&P(k.id)<k.max&&!out.includes(k));if(!pool.length)pool=PK.filter(k=>!k.off&&P(k.id)<k.max&&!out.includes(k));if(!pool.length)break;out.push(pick(pool))}return out}
 function applyPerk(k){p.pk[k.id]=P(k.id)+1;recalc();if(k.id==='hp'){p.mhp++;p.hp=Math.min(p.mhp,p.hp+2)}if(k.id==='o2'){p.mo2+=15;p.o2+=15}if(k.id==='bombkit')p.bombs+=2;if(k.id==='second')p.buoys++}
-function openPick(title,minR,after){if(state==='pick'){pickQ.push([title,minR,after]);return}let pool=rollPerks(3+Math.round(F('pickN')),minR),extra=F('twoPicks')&&!after?1:0;if(!pool.length){if(after)after();return}
+function openPick(title,minR,after){if(state==='pick'){pickQ.push([title,minR,after]);return}p.rr=0;let pool=rollPerks(3+Math.round(F('pickN')),minR),extra=F('twoPicks')&&!after?1:0;if(!pool.length){if(after)after();return}
  state='pick';SFX.lvl();const b=$('#pickbox');
- const draw=()=>{const rc=8+p.rr*6;b.innerHTML='<h2>'+title+'</h2>'+pool.map((k,i)=>'<button class="boon nav r'+k.r+(i?'':' sel')+'" data-i="'+i+'"><div class="ic">'+img(k.ic,40)+'</div><div><div class="nm">'+k.n+(P(k.id)?' <span class="lv">nível '+(P(k.id)+1)+'</span>':'')+'</div><div class="ds">'+k.t+'</div></div><kbd>'+(i+1)+'</kbd></button>').join('')+
+ const draw=()=>{const rc=rerollCost(p.rr||0);b.innerHTML='<h2>'+title+'</h2>'+pool.map((k,i)=>'<button class="boon nav r'+k.r+(i?'':' sel')+'" data-i="'+i+'"><div class="ic">'+img(k.ic,40)+'</div><div><div class="nm">'+k.n+(P(k.id)?' <span class="lv">nível '+(P(k.id)+1)+'</span>':'')+'</div><div class="ds">'+k.t+'</div></div><kbd>'+(i+1)+'</kbd></button>').join('')+
   '<div class="bot"><button class="btn nav" id="rer">SORTEAR DE NOVO  $'+rc+'</button></div>';
   b.querySelectorAll('.boon').forEach(el=>el.onclick=()=>choose(+el.dataset.i));$('#rer').onclick=()=>{if(p.gold<rc){SFX.no();$('#rer').textContent='FALTA OURO';return}p.gold-=rc;p.rr++;pool=rollPerks(3+Math.round(F('pickN')),minR);SFX.buy();draw()}};
  const choose=i=>{const k=pool[i];if(!k||state!=='pick')return;applyPerk(k);SFX.buy();if(extra>0){extra--;pool=pool.filter(q=>q!==k&&P(q.id)<q.max);if(pool.length){title='MAIS UM!';draw();return}}$('#pick').hidden=true;mouse.down=false;state='play';
@@ -3502,7 +3504,7 @@ const TL2={hi:['Voltou inteiro? Que milagre.','A essa profundidade a pressão es
  boss:['Tem coisa enorme logo abaixo. Vai preparado.','O sonar apitou feio. É o bicho da fenda.'],rich:['Olha esse ouro todo! Gasta comigo.','Tá rico, hein? Aproveita.'],poor:['Liso de novo, hein?','Sem ouro, sem conversa.','Volta quando tiver mais moeda.'],
  hurt:['Tá todo rasgado. Compra um remédio aí.','Assim não chega no fundo. Se cuida.'],buy:['Negócio fechado.','Boa escolha.','Isso aí vai salvar teu couro.','Tá pago.','Cuida bem disso, hein.'],roll:['Pronto, mercadoria nova.','Fui no porão buscar mais coisa.'],
  sold:['Esse já foi.'],relic:['Isso aí eu achei num naufrágio. Não sei nem o que é. Mas é forte.']};
-const pm=()=>1.8*(1+depth*.035)*Math.max(.3,1+F('price')),rrCost=()=>Math.round((8+depth*.8+shop.rr*10)*Math.max(.5,1+F('price'))),
+const pm=()=>1.8*(1+depth*.035)*Math.max(.3,1+F('price')),rrCost=()=>Math.round(rerollCost(shop.rr||0)*Math.max(.5,1+F('price'))),
  eqCost=o=>Math.round([60,110,180][o.r]*pm()),wCost=()=>Math.round(95*pm()),lvCost=k=>Math.round((40+p.wl[k]*28)*pm()),relCost=()=>Math.round(320*pm()),foodCost=o=>Math.round(o.base*pm());
 function openShop(){state='shop';$('#hud').hidden=$('#abil').hidden=true;const rate=(P('invest')?.2:.1)+F('interest'),cap=(8+depth)*(P('invest')?2:1),int=Math.min(cap,Math.floor(p.gold*rate));p.gold+=int;p.st.gold+=int;
  shop={int,rr:0,boss:shop.bossWin||0};restock();const L=p.hp<=p.mhp*.4?TL2.hurt:BOSS_AT.includes(depth+1)?TL2.boss:p.gold>eqCost({r:1})*2?TL2.rich:p.gold<30?TL2.poor:TL2.hi;renderShop(pick(L));$('#shop').hidden=false;$('#shop').scrollTop=0;shop.bossWin=0}
@@ -4215,9 +4217,9 @@ function rcard(o,ex){ex=ex||{};const k=o.cat?CAT[o.cat]:HKIND[o.kind]||HKIND.equ
 cardH=c=>rcard(c);
 backH=()=>'<div class="hc hback"><div class="hc-in"><div class="hb-sig">'+img('eye',56)+'</div><b>CARTA DE MARÉ</b><small>INTO HADAL DEEP</small></div><i class="hc-k tl"></i><i class="hc-k tr"></i><i class="hc-k bl"></i><i class="hc-k br"></i></div>';
 /* escolha de artefato em cartas lado a lado */
-openPick=function(title,minR,after){if(state==='pick'){pickQ.push([title,minR,after]);return}let pool=rollPerks(3+Math.round(F('pickN')),minR),extra=F('twoPicks')&&!after?1:0;if(!pool.length){if(after)after();return}
+openPick=function(title,minR,after){if(state==='pick'){pickQ.push([title,minR,after]);return}p.rr=0;let pool=rollPerks(3+Math.round(F('pickN')),minR),extra=F('twoPicks')&&!after?1:0;if(!pool.length){if(after)after();return}
  state='pick';SFX.lvl();const b=$('#pickbox');
- const draw=()=>{const rc=8+p.rr*6;b.innerHTML='<div class="pk-head"><small>ARTEFATOS DO ABISMO</small><h2>'+title+'</h2><p class="say">Escolha um. Ele fica com você até o fim do mergulho.</p></div><div class="pk-row">'+pool.map((k,i)=>{const lv=P(k.id);
+ const draw=()=>{const rc=rerollCost(p.rr||0);b.innerHTML='<div class="pk-head"><small>ARTEFATOS DO ABISMO</small><h2>'+title+'</h2><p class="say">Escolha um. Ele fica com você até o fim do mergulho.</p></div><div class="pk-row">'+pool.map((k,i)=>{const lv=P(k.id);
    return'<button class="boon2 nav'+(i?'':' sel')+'" data-i="'+i+'" style="animation-delay:'+(i*.09)+'s">'+rcard({n:k.n,t:k.t,ic:k.ic,r:k.r,kind:'perk'},{lv:(lv?'NÍVEL '+lv+' → '+(lv+1):'NOVO')+(k.max>1?' <span class="pips">'+Array.from({length:Math.min(k.max,6)},(_,j)=>'<i class="'+(j<lv?'on':j===lv?'nx':'')+'"></i>').join('')+'</span>':'')})+'<kbd>'+(i+1)+'</kbd></button>'}).join('')+'</div>'+
   '<div class="bot"><span class="purse">'+img('coin',20)+p.gold+'</span><button class="btn nav" id="rer">SORTEAR DE NOVO  $'+rc+'</button></div>';
   b.querySelectorAll('.boon2').forEach(el=>el.onclick=()=>choose(+el.dataset.i));$('#rer').onclick=()=>{if(p.gold<rc){SFX.no();$('#rer').textContent='FALTA OURO';return}p.gold-=rc;p.rr++;pool=rollPerks(3+Math.round(F('pickN')),minR);SFX.buy();draw()}};

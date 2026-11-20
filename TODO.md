@@ -108,3 +108,6 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Cartas 217→250: 22 comuns fraquinhas, 7 raras, 3 épicas, 2 lendárias (a chance de cada raridade continua a mesma)
 - [x] Artefatos 607→899 com 11 efeitos novos (crítico, cadência, experiência, vida cheia, furtividade, crítico mais forte, empurrão, tiro de perto, tiro de longe, moeda por acerto, cura por abate); os comuns novos são bem fraquinhos
 - [x] Bug: o aviso "★ Combina com..." era grudado no item original e repetia a cada loja
+
+## Sortear de novo mais caro (feedback novo)
+- [x] "Trocar estoque" (loja) e "Sortear de novo" (artefatos) começam em 70 de ouro, sobem 5 a cada descida (100 m) e ficam 50% mais caros a cada vez na mesma tela; numa tela nova volta pro preço base da profundidade
