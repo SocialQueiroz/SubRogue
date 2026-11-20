@@ -111,3 +111,14 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 
 ## Sortear de novo mais caro (feedback novo)
 - [x] "Trocar estoque" (loja) e "Sortear de novo" (artefatos) começam em 70 de ouro, sobem 5 a cada descida (100 m) e ficam 50% mais caros a cada vez na mesma tela; numa tela nova volta pro preço base da profundidade
+
+## Debug (feedback novo: pressão negativa, fendas, baús atrás das paredes)
+- [x] Cavernas escondidas: o túnel de rocha rachada saía em diagonal e só encostava pela quina, aí não dava pra entrar (46% das cavernas). Agora o túnel anda um eixo por vez e todas abrem
+- [x] Cavernas escondidas: metade das fendas não tinha nenhuma (regra de lugar muito exigente); agora 84% das fendas têm
+- [x] O baú da caverna escondida virava peixe-baú (16%): agora o prêmio da caverna é sempre um baú de verdade
+- [x] Fossa de pressão negativa na fenda logo abaixo de um covil jogava você de volta no chefe já derrotado
+- [x] Fossa nascia colada no começo da fenda (às vezes a 100 px) ou perto da saída: agora fica longe dos dois
+- [x] Bichos nascendo dentro da rocha ficavam presos pra sempre (1 a cada 8 fendas): agora são empurrados pro espaço livre
+- [x] Santuário ("nenhum bicho") ainda podia ter sereia e ninho de peixes
+- [x] Cada explosão redesenhava o mapa inteiro e sorteava de novo todas as plantas e corais (o cenário "pulava"); agora só os blocos quebrados
+- [x] Testado: 300 fendas geradas (todos os tipos), descida/loja/fendas 25 vezes seguidas, morte, chefes e todas as profundidades no insano sem erro

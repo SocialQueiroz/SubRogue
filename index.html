@@ -4658,8 +4658,10 @@ let nests=[];
 
 /* ================= EXPLOSÕES ABREM PAREDES ================= */
 {const _bw=boomWorld;boomWorld=function(x,y,r){_bw.apply(this,arguments);if(typeof TUT!=='undefined'&&TUT.on)return;const tr=Math.max(2,Math.round(r*.6/TS)),cx=Math.floor(x/TS),cy=Math.floor(y/TS);let n=0;
- for(let yy=-tr;yy<=tr;yy++)for(let xx=-tr;xx<=tr;xx++){const tx=cx+xx,ty=cy+yy;if(xx*xx+yy*yy<=tr*tr&&tx>1&&ty>1&&tx<MW-2&&ty<MH-2&&map[tx+ty*MW]){map[tx+ty*MW]=0;n++;if(n%3===0)pt.push({x:tx*TS+4,y:ty*TS+4,vx:R(80)-40,vy:R(80)-40,life:.6,ml:.6,c:'#8a6a5a',s:2})}}
- if(n)try{paint()}catch(e){}}}
+ for(let yy=-tr;yy<=tr;yy++)for(let xx=-tr;xx<=tr;xx++){const tx=cx+xx,ty=cy+yy;if(xx*xx+yy*yy<=tr*tr&&tx>1&&ty>1&&tx<MW-2&&ty<MH-2&&map[tx+ty*MW]){map[tx+ty*MW]=0;n++;BRK.push([tx,ty]);if(n%3===0)pt.push({x:tx*TS+4,y:ty*TS+4,vx:R(80)-40,vy:R(80)-40,life:.6,ml:.6,c:'#8a6a5a',s:2})}}
+ /* antes redesenhava o mapa inteiro e sorteava de novo todas as plantas; agora só os blocos quebrados */
+ if(n)try{for(const[tx,ty]of BRK)repaintAround(tx,ty);const solidUnder=(x,y)=>WL(Math.floor(x/TS),Math.floor((y+1)/TS));weeds=weeds.filter(w=>solidUnder(w.x,w.y));glows=glows.filter(g=>solidUnder(g.x,g.y+3))}catch(e){paint()}BRK.length=0}}
+const BRK=[];
 /* ================= LUTA SECRETA: A ORCA (chefe com 4 fases) ================= */
 let ORC=null,OPORT=null;
 const ORPH=[['A CAÇADA','Ela tá te medindo, marujo. Orca é esperta: fica de olho no bote ROXO!'],['O CARROSSEL','Ela vai nadar em roda pra te prender nas bolhas! Fura o cerco com impulso!'],['A MATILHA','Chamou os filhotes! Orca caça em grupo! Derruba os pequenos primeiro!'],['FÚRIA DO ABISMO','Ela tá FURIOSA! Mergulha e volta de surpresa! Olha as bordas!']];
@@ -4807,7 +4809,7 @@ DRAW.chestfish=(e,S,C)=>{const x=Math.round(e.x),y=Math.round(e.y);
 {const _nl=newLevel;newLevel=function(){_nl.apply(this,arguments);if(!p||mod===MODS.lair||(typeof TUT!=='undefined'&&TUT.on)||mod.noEnemy||depth<2)return;
  const fav=['tartaruga','tartmord','tartverde','polvo','polvogig','aguaviva','caravela','ctenof','juba'].filter(k=>SP[k]&&SP[k].d<=depth),n=2+Math.min(4,Math.floor(depth/8));
  for(let i=0;i<n&&fav.length;i++){for(let t=0;t<40;t++){const x=(2+RI(MW-4))*TS+8,y=(2+RI(MH-4))*TS+8;if(!blocked(x,y,12)&&hyp(x-p.x,y-p.y)>140){addE(pick(fav),x,y);break}}}
- for(let i=chests.length-1;i>=0;i--)if(Math.random()<.16){const c=chests.splice(i,1)[0];addE('peixebau',c.x,c.y)}}}
+ for(let i=chests.length-1;i>=0;i--)if(Math.random()<.16&&!(typeof cavs!=='undefined'&&cavs.some(v=>hyp(v.x-chests[i].x,v.y-chests[i].y)<20))){const c=chests.splice(i,1)[0];addE('peixebau',c.x,c.y)}}}
 {const _tp=tickParry;tickParry=function(dt){_tp(dt);jellySting()}}
 
 /* ================= CENÁRIO VIVO: coisas que interagem no chão e no teto ================= */
@@ -5850,7 +5852,7 @@ srnFrame=(o=>function(v,ph,sing){const F=o(v,ph,sing);F.oy=22;return F})(srnFram
    if(time-(e.dfX||0)>1.8){e.dfX=time;ftxt(e.x,e.y-28,'A CANÇÃO DESVIA!','#bff4ff');if(!META.srnTip2){META.srnTip2=1;saveMeta();setTimeout(()=>radio('De longe não adianta, garoto! Chega pertinho dela e mete a faca.'),300)}}return}e.hitT=time}
  return _dm.apply(this,arguments)}}
 {const _k=kill;kill=function(e){const isS=e&&e.S&&e.S.id==='sereia'&&!e.dead&&en.indexOf(e)>=0;const r=_k.apply(this,arguments);if(isS){for(let i=0;i<2+RI(2);i++)drop(e.x,e.y,'pearl');if(META){META.sereia=(META.sereia||0)+1;saveMeta()}SRDEAD.push({x:e.x,y:e.y,v:e.v,t:0,flip:p.x<e.x});for(const q of SRINGS)if(q.own===e)q.fade=Math.min(q.fade,.6);ftxt(e.x,e.y-30,'CANTO SILENCIADO','#ffd0f0');for(let k=0;k<8;k++)SNOTES.push({x:e.x+R(16)-8,y:e.y+R(16)-8,vx:R(40)-20,vy:-25-R(20),life:1.4,ml:1.4,note:1,c:pick(['#ffd0f0','#bff4ff','#fff'])})}return r}}
-function srnSpawn(){if(state==='title'||!p||(typeof TUT!=='undefined'&&TUT.on)||boss||mod===MODS.lair||(typeof ORC!=='undefined'&&ORC)||depth<4)return;
+function srnSpawn(){if(state==='title'||!p||mod.noEnemy||(typeof TUT!=='undefined'&&TUT.on)||boss||mod===MODS.lair||(typeof ORC!=='undefined'&&ORC)||depth<4)return;
  if(Math.random()>Math.min(.6,.3+(depth-4)*.006))return;let s=null;for(let t=0;t<200&&!s;t++){const x=(3+RI(MW-6))*TS,y=(3+RI(MH-6))*TS;if(!blocked(x,y,12)&&!blocked(x,y+16,6)&&hyp(x-p.x,y-p.y)>220)s={x,y}}if(!s)return;const e=addE('sereia',s.x,s.y);if(e){e.v=srnRoll(depth);e.nct=1}}
 {const _nl=newLevel;newLevel=function(){SRINGS=[];SRDEAD=[];SNOTES=[];_nl.apply(this,arguments);try{srnSpawn()}catch(err){console.warn(err)}}}
 if(typeof orcaStart==='function'){const _o=orcaStart;orcaStart=function(){const r=_o.apply(this,arguments);en=en.filter(e=>e.S.id!=='sereia');SRINGS=[];return r}}
@@ -5878,6 +5880,28 @@ function srnNote(x,y,c,a){ctx.globalAlpha=a;ctx.fillStyle=c;x=Math.round(x);y=Ma
 if(typeof sceneGlows==='function'){const _sg=sceneGlows;sceneGlows=function(ox,oy){_sg.apply(this,arguments);for(const q of SRINGS){const a=(1-q.r/q.max)*q.fade*.5;ctx.globalAlpha=a;ctx.strokeStyle=q.all?'#7a2ab0':'#3a7a9a';ctx.lineWidth=2;ctx.beginPath();ctx.arc(q.x+ox,q.y+oy,q.r,0,TAU);ctx.stroke();if(!q.all)for(const s of q.segs){ctx.strokeStyle='#8a3ad0';ctx.lineWidth=4;ctx.beginPath();ctx.arc(q.x+ox,q.y+oy,q.r,s.a-s.w/2,s.a+s.w/2);ctx.stroke()}}ctx.globalAlpha=1;ctx.lineWidth=1}}
 {const _hs=typeof sceneHoles==='function'?sceneHoles:null;if(_hs)sceneHoles=function(ox,oy){_hs.apply(this,arguments);for(const e of en)if(e.S.id==='sereia')hole(e.x+ox,e.y+oy+8,38,.75)}}
 ACHL.push(['sereia','Canto Silenciado','Derrote uma sereia',m=>!!m.sereia]);
+
+/* ================= CORREÇÕES (debug): cavernas, fossas, bichos presos na parede, santuário ================= */
+/* cavernas escondidas: o túnel de rocha rachada era traçado em diagonal e só encostava pela quina, aí não dava pra entrar; agora anda um eixo por vez e nunca nasce dentro de outra caverna */
+carveCaves=function(){cavs=[];const n=1+(depth>15?1:0)+(Math.random()<.4?1:0),own=new Set;
+ for(let k=0,t=0;k<n&&t<1500;t++){const tx=5+RI(MW-10),ty=5+RI(MH-10);let ok=true;for(let y=-3;y<=3&&ok;y++)for(let x=-3;x<=3;x++)if(x*x+y*y<=10&&(!map[tx+x+(ty+y)*MW]||own.has(tx+x+(ty+y)*MW))){ok=false;break}if(!ok)continue;
+  let best=null,bd=99;for(let y=-8;y<=8;y++)for(let x=-8;x<=8;x++){const X=tx+x,Y=ty+y;if(X<2||Y<2||X>MW-3||Y>MH-3)continue;if(!map[X+Y*MW]&&!own.has(X+Y*MW)&&hyp(x,y)<bd){bd=hyp(x,y);best=[X,Y]}}if(!best||bd<3.5)continue;
+  for(let y=-2;y<=2;y++)for(let x=-2;x<=2;x++)if(x*x+y*y<=5){map[tx+x+(ty+y)*MW]=0;own.add(tx+x+(ty+y)*MW)}
+  let X=tx,Y=ty;for(let g=0;g<40&&(X!==best[0]||Y!==best[1]);g++){const dx=best[0]-X,dy=best[1]-Y;if(Math.abs(dx)>=Math.abs(dy))X+=Math.sign(dx);else Y+=Math.sign(dy);const i=X+Y*MW;if(map[i]===1){map[i]=2;own.add(i)}}
+  cavs.push({x:tx*TS+8,y:ty*TS+8});k++}};
+/* bicho nascido dentro da rocha ficava preso pra sempre: empurra pro espaço livre mais perto (ou some, se não tiver) */
+function unstickE(e){if(!e||e.dead||!e.S||e.S.static||e.S.part||e.S.boss||e.S.b==='trap'||e.S.b==='burrow'||e.S.b==='ghost')return true;const r=Math.min(e.r,6);if(!blocked(e.x,e.y,r))return true;
+ for(let d=4;d<=72;d+=4)for(let k=0;k<16;k++){const a=k*TAU/16,x=e.x+Math.cos(a)*d,y=e.y+Math.sin(a)*d;if(!blocked(x,y,r+1)){e.x=e.hx=x;e.y=e.hy=y;if(e.sp)for(const s of e.sp){s.x=x;s.y=y}return true}}return false}
+{const _a=addE;addE=function(){const e=_a.apply(this,arguments);if(e&&map&&!unstickE(e)){const i=en.indexOf(e);if(i>=0)en.splice(i,1);e.dead=1}return e}}
+{const _nl=newLevel;newLevel=function(){_nl.apply(this,arguments);try{
+ for(let i=en.length-1;i>=0;i--)if(!unstickE(en[i]))en.splice(i,1);
+ /* santuário: nenhum bicho mesmo (nem sereia nem ninho) */
+ if(mod.noEnemy){en=en.filter(e=>e.S.neutral);if(typeof nests!=='undefined')nests.length=0}
+ /* fossas: nada de fossa colada no começo nem na saída, e nunca na fenda logo abaixo de um covil (ela te jogava de volta pro chefe) */
+ if(typeof pits!=='undefined'&&pits.length){const noUp=BOSS_AT.includes(depth-1);for(let i=pits.length-1;i>=0;i--){const q=pits[i];if(noUp||hyp(q.x-p.x,q.y-p.y)<220||hyp(q.x-exit.x,q.y-exit.y)<130){pits.splice(i,1);for(const c of curs)if(c.neg&&c.P&&hyp(c.P[c.P.length-1][0]-q.x,c.P[c.P.length-1][1]-q.y)<40){c.neg=0;c.str/=1.4}}}}
+ }catch(err){console.warn(err)}}}
+/* trava de segurança: se a fossa mandar pra um covil, sobe mais uma */
+{const _pg=pitGo;pitGo=function(){if(BOSS_AT.includes(depth-1)&&depth>2)depth--;return _pg.apply(this,arguments)}}
 
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
