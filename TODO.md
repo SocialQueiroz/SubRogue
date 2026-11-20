@@ -169,3 +169,7 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Checkpoint do fácil não salvava na 1ª fenda da corrida
 - [x] Peixe-baú não nada mais: fica parado onde estaria o baú, morde no lugar e volta a fingir de baú; não aparece mais solto no meio dos bichos
 - [x] Mergulhador ia parar dentro da parede (polvo-gigante e caranguejo puxavam sem olhar a rocha): agora nunca fica dentro da rocha
+
+## Memória das fendas (feedback novo)
+- [x] Checkpoint (fácil) e pressão negativa (todas as dificuldades) voltam pra MESMA fenda: mesmo mapa e mesmas coisas nos mesmos lugares; o que foi pego (moedas, pérolas, baús, baús grandes, garrafas) não volta; paredes quebradas continuam abertas; só os bichos renascem
+- [x] Checkpoint guarda o que você tinha ao morrer (ouro, itens, nível) e volta com a vida da entrada da fenda (no mínimo metade)
