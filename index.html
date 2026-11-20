@@ -5881,6 +5881,50 @@ if(typeof sceneGlows==='function'){const _sg=sceneGlows;sceneGlows=function(ox,o
 {const _hs=typeof sceneHoles==='function'?sceneHoles:null;if(_hs)sceneHoles=function(ox,oy){_hs.apply(this,arguments);for(const e of en)if(e.S.id==='sereia')hole(e.x+ox,e.y+oy+8,38,.75)}}
 ACHL.push(['sereia','Canto Silenciado','Derrote uma sereia',m=>!!m.sereia]);
 
+/* ================= NUVEM: sincronização que junta em vez de sobrescrever ================= */
+/* antes: cada save mandava tudo e o último ganhava (uma aba velha em outro computador apagava o progresso), falha de rede não tentava de novo
+   e a segunda aba perdia a sessão. Agora: antes de salvar, baixa a nuvem e junta; tenta de novo se falhar; avisa no menu */
+const META_DELTA=new Set(['pearls','kills','runs','wins','parries','bottles']),META_LOCAL=new Set(['run','ckpt','diff','_opt','_uid']);
+const jeq=(x,y)=>JSON.stringify(x)===JSON.stringify(y);
+function metaMergeVal(a,b){if(a===undefined)return b;if(b===undefined)return a;if(typeof a==='number'&&typeof b==='number')return Math.max(a,b);if(typeof a==='boolean'||typeof b==='boolean')return!!(a||b);
+ if(a&&b&&typeof a==='object'&&typeof b==='object'&&!Array.isArray(a)&&!Array.isArray(b)){const o={};for(const k of new Set([...Object.keys(a),...Object.keys(b)]))o[k]=metaMergeVal(a[k],b[k]);return o}return b}
+/* junta 3 versões: L (este aparelho), R (nuvem) e B (a última que os dois tinham em comum) */
+function m3(l,r,b,k){if(META_DELTA.has(k)&&typeof l==='number'&&typeof r==='number'&&typeof b==='number')return Math.max(0,r+(l-b));if(jeq(l,r))return l;if(b!==undefined||l===undefined||r===undefined){if(jeq(l,b))return r;if(jeq(r,b))return l}
+ if(META_LOCAL.has(k))return l===undefined?r:l;
+ if(typeof l==='number'&&typeof r==='number'){if(META_DELTA.has(k)&&typeof b==='number')return Math.max(0,r+(l-b));return Math.max(l,r)}
+ if(l&&r&&typeof l==='object'&&typeof r==='object'&&!Array.isArray(l)&&!Array.isArray(r)){const o={},bb=(b&&typeof b==='object')?b:{};for(const q of new Set([...Object.keys(l),...Object.keys(r)])){const v=m3(l[q],r[q],bb[q],q);if(v!==undefined)o[q]=v}return o}
+ if(typeof l==='boolean'||typeof r==='boolean')return!!(l||r);return l===undefined?r:l}
+function metaMerge(L,R,B){if(!R)return L;if(!L)return R;if(!B){const o=metaMergeVal(R,L);for(const k of META_LOCAL)if(k in L)o[k]=L[k];return o}const o=m3(L,R,B,'');o._t=Math.max(L._t||0,R._t||0);return o}
+/* cada aba guarda a sua versão-base na memória (a do disco só serve depois de recarregar) */
+let BASE=null,BASEN='';
+function baseGet(){const n=(PROF.cur||'').toLowerCase();if(BASE&&BASEN===n)return BASE;try{BASE=JSON.parse(localStorage.getItem('ihd-base-'+n)||'null');BASEN=n}catch(e){BASE=null}return BASE}
+function baseSet(m){const n=(PROF.cur||'').toLowerCase(),c=JSON.parse(JSON.stringify(m));delete c._opt;BASE=c;BASEN=n;try{localStorage.setItem('ihd-base-'+n,JSON.stringify(c))}catch(e){}}
+function metaSet(m){for(const k of Object.keys(META))if(!(k in m))delete META[k];Object.assign(META,m)}
+if(CL.on){
+ /* a outra aba pode ter trocado a sessão: pega a nova antes de desistir */
+ {const _au=clAuth;clAuth=async function(){try{return await _au.apply(this,arguments)}catch(e){let c=null;try{c=JSON.parse(localStorage.getItem('ihd-cloud')||'null')}catch(_){}if(c&&c.ref&&c.ref!==CL.ref){CL.ref=c.ref;CL.tok='';CL.exp=0;return await _au.apply(this,arguments)}throw e}}}
+ /* baixar já junta com o que tem aqui (só se for a mesma conta) */
+ {const _pl=clPull;clPull=async function(){const row=await _pl.apply(this,arguments);if(row&&row.meta&&META&&META._uid&&META._uid===CL.uid&&(PROF.cur||'').toLowerCase()===(row.name||'').toLowerCase()){const m=Object.assign({},row.meta);delete m._opt;row.meta=Object.assign(metaMerge(Object.assign({},META),m,baseGet()),{_opt:row.meta._opt})}if(row&&row.meta){const m=Object.assign({},row.meta);baseSet(m)}return row}}
+ CL.st='ok';CL.dirty=0;CL.retry=0;
+ function cloudSay(){const e=$('#best');if(!e||!PROF.cur)return;let t=e.querySelector('.cst');if(!t){e.insertAdjacentHTML('beforeend','<span class="cst"></span>');t=e.querySelector('.cst')}t.textContent=CL.st==='ok'?'  |  ☁ salvo na nuvem':CL.st==='sync'?'  |  ☁ salvando...':'  |  ⚠ sem conexão: salvo só neste aparelho, tentando de novo';t.style.color=CL.st==='err'?'#ffb347':'#9fe8ff'}
+ {const _ti=titleInfo;titleInfo=function(){const r=_ti.apply(this,arguments);try{cloudSay()}catch(e){}return r}}
+ let SYNC=null;
+ clPushNow=async function(ka){if(!CL.on||!CL.uid||!PROF.cur)return;if(ka){try{await clReq('/rest/v1/saves?on_conflict=user_id',{m:'POST',ka:true,h:{Prefer:'resolution=merge-duplicates,return=minimal'},b:{user_id:CL.uid,name:PROF.cur,meta:Object.assign({},META,{_opt:OPT,_uid:CL.uid}),updated_at:new Date().toISOString()}})}catch(e){}return}
+  if(SYNC)return SYNC;CL.st='sync';cloudSay();
+  SYNC=(async()=>{try{await clAuth();const r=await clReq('/rest/v1/saves?select=meta,name&user_id=eq.'+CL.uid);const row=r&&r[0];
+    if(row&&row.meta){const rm=Object.assign({},row.meta);delete rm._opt;const sameAcc=!META._uid||META._uid===CL.uid;if(sameAcc){const m=metaMerge(Object.assign({},META),rm,baseGet());metaSet(m)}}
+    META._uid=CL.uid;try{localStorage.setItem('ihd-meta-'+PROF.cur,JSON.stringify(META))}catch(e){}
+    await clReq('/rest/v1/saves?on_conflict=user_id',{m:'POST',h:{Prefer:'resolution=merge-duplicates,return=minimal'},b:{user_id:CL.uid,name:PROF.cur,meta:Object.assign({},META,{_opt:OPT}),updated_at:new Date().toISOString()}});
+    baseSet(META);CL.st='ok';CL.dirty=0;CL.retry=0;cloudBadge(1);if(state==='title')titleInfo()}
+   catch(e){CL.st='err';CL.dirty=1;cloudBadge(0);clearTimeout(CL.rt);CL.retry=Math.min(6,CL.retry+1);CL.rt=setTimeout(()=>clPushNow(),Math.min(30000,2000*Math.pow(2,CL.retry)))}
+   finally{SYNC=null;cloudSay()}})();return SYNC};
+ /* o _t marca quando o progresso mudou por último */
+ {const _sm=saveMeta;saveMeta=function(){if(META&&PROF.cur){META._t=Date.now();if(CL.uid)META._uid=CL.uid}return _sm.apply(this,arguments)}}
+ addEventListener('online',()=>{if(CL.uid&&PROF.cur)clPushNow()});
+ /* voltando pra aba/computador: baixa a nuvem antes de qualquer coisa */
+ {let lastF=0;const back=()=>{if(document.hidden||!CL.uid||!PROF.cur)return;if(Date.now()-lastF<4000)return;lastF=Date.now();clPushNow()};document.addEventListener('visibilitychange',back);addEventListener('focus',back)}
+ {const st=document.createElement('style');st.textContent='#best .cst{white-space:nowrap}';document.head.appendChild(st)}
+}
 /* ================= CORREÇÕES (debug): cavernas, fossas, bichos presos na parede, santuário ================= */
 /* cavernas escondidas: o túnel de rocha rachada era traçado em diagonal e só encostava pela quina, aí não dava pra entrar; agora anda um eixo por vez e nunca nasce dentro de outra caverna */
 carveCaves=function(){cavs=[];const n=1+(depth>15?1:0)+(Math.random()<.4?1:0),own=new Set;

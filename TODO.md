@@ -156,3 +156,10 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 
 ## Checkpoint no fácil (pedido novo)
 - [x] No Fácil, cada fenda nova salva um checkpoint ("CHECKPOINT" aparece na tela); morrendo, a tela de fim mostra "VOLTAR AO CHECKPOINT" e você volta pro começo daquela fenda com a vida e o ouro que tinha ali (pelo menos metade da vida). Nas outras dificuldades nada muda
+
+## Saves na nuvem entre computadores (revisão)
+- [x] Testado com um Supabase falso simulando dois computadores. Antes: uma aba velha num computador apagava o progresso feito no outro (pérolas, garrafas, conquistas); se a internet caía o save se perdia e não tentava de novo; a segunda aba perdia a sessão e parava de salvar sem avisar
+- [x] Agora: antes de salvar baixa a nuvem e junta as duas versões (o que só um lado mudou vale o dele; contadores como pérolas somam as diferenças dos dois lados; recordes, níveis, conquistas, cartas e cenas pegam o melhor/juntam; corrida em andamento e checkpoint ficam com o aparelho que mexeu)
+- [x] Ao voltar pra aba/computador, sincroniza na hora; se falhar, tenta de novo (e quando a internet volta); o menu mostra "☁ salvo na nuvem" ou "⚠ sem conexão"
+- [x] A segunda aba pega a sessão nova em vez de falhar; nunca mistura progresso de contas diferentes
+- [x] Morrer pro chefe no fácil: volta pro começo da luta (chefe com vida cheia, você com a vida da entrada, no mínimo metade)
