@@ -122,3 +122,12 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Santuário ("nenhum bicho") ainda podia ter sereia e ninho de peixes
 - [x] Cada explosão redesenhava o mapa inteiro e sorteava de novo todas as plantas e corais (o cenário "pulava"); agora só os blocos quebrados
 - [x] Testado: 300 fendas geradas (todos os tipos), descida/loja/fendas 25 vezes seguidas, morte, chefes e todas as profundidades no insano sem erro
+
+## Eventos de cenário (pedido novo)
+- [x] Em ~40% das fendas aparece um evento, cada um com visual e mecânica própria (o Tião avisa pelo rádio quando você chega perto):
+  - Queda de baleia (desde 200 m): esqueleto com crânio, costelas e vermes vermelhos; carniceiros em volta e baú com moedas entre as costelas
+  - Floresta de kelp (até 3.000 m): algas altas na frente dos bichos; lá dentro eles só te notam bem de perto e o ataque de surpresa dá 60% a mais ("EMBOSCADA!")
+  - Lago de salmoura (desde 2.000 m): bacia roxa no chão que queima (1 coração a cada 0,9 s), rouba ar e te empurra pra cima; pérolas na beirada e no fundo
+  - Fumarolas negras (desde 4.000 m): chaminés que soltam fumaça preta (escurece) e entram em erupção (brilham antes; água fervendo tira vida e joga pra cima); dá pra derrubar no tiro e sai minério (moedas e pérola)
+  - Cemitério de navios (desde 200 m): 2–3 naufrágios com mastro, vela rasgada e lanterna; baús, barris de pólvora, minas e um baú grande
+- [x] Conquista "Turista do Abismo" (ver os 5)
