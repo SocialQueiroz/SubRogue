@@ -6460,6 +6460,9 @@ for(const fn of['orcaCaveStart','orcaStart','tutArena']){const f=window[fn];if(t
 {const _pg=pitGo;pitGo=function(){const was=PIT.busy;const r=_pg.apply(this,arguments);if(!was&&PIT.busy)window.LVREUSE=1;return r}}
 /* checkpoint do fácil: ao morrer, guarda tudo o que você tinha (ouro, itens, nível) e volta pro começo da MESMA fenda */
 {const _d=die;die=function(){try{if(p&&META&&(p.diff||(DIFF===DIFFS.facil?'facil':''))==='facil'&&!(typeof TUT!=='undefined'&&TUT.on)&&!(typeof ORC!=='undefined'&&ORC&&!p.inOrcaCave)){lvFinalize();runSnap();if(META.run){const ck=JSON.parse(JSON.stringify(META.run));ck.p.hp=Math.max(p.lvHp||0,Math.ceil((p.mhp||10)/2));ck.p.inOrcaCave=0;ck.cp=1;ck.reuse=1;META.ckpt=ck;saveMeta()}}}catch(e){console.warn(e)}return _d.apply(this,arguments)}}
+/* ================= DASH: o save guardava a hora do último impulso; ao continuar a corrida o relógio recomeça e o dash travava ================= */
+{const _d=dash;dash=function(){if(p&&p.dst&&time<p.dst){p.dst=0;p.ptry=0}return _d.apply(this,arguments)}}
+{const _rr=runResume;runResume=function(){const r=_rr.apply(this,arguments);if(p){p.dst=0;p.ptry=0;p.dashing=0;p.dashT=0;p.pt=0;p.pfT=0;p.cbT=0;p.dch=Math.max(p.dch||0,1+Math.round(F('dashCharges')))}return r}}
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
 </script>
