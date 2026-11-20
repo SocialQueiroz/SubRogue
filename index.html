@@ -6463,6 +6463,13 @@ for(const fn of['orcaCaveStart','orcaStart','tutArena']){const f=window[fn];if(t
 /* ================= DASH: o save guardava a hora do último impulso; ao continuar a corrida o relógio recomeça e o dash travava ================= */
 {const _d=dash;dash=function(){if(p&&p.dst&&time<p.dst){p.dst=0;p.ptry=0}return _d.apply(this,arguments)}}
 {const _rr=runResume;runResume=function(){const r=_rr.apply(this,arguments);if(p){p.dst=0;p.ptry=0;p.dashing=0;p.dashT=0;p.pt=0;p.pfT=0;p.cbT=0;p.dch=Math.max(p.dch||0,1+Math.round(F('dashCharges')))}return r}}
+/* ================= NINHO DE OVOS: espada e bomba também quebram (antes só tiro acertava) ================= */
+function nestHit(n,d,x,y){if(!n||n.hp<=0)return;n.hp-=d;n.hf=.12;burst(x,y,'#e8c890',6,70);ftxt(n.x,n.y-14,Math.max(1,Math.round(d))+'','#ffe0a0')}
+{const _sw=swing;swing=function(W){const r=_sw.apply(this,arguments);try{if(typeof nests==='undefined'||!nests.length||!W)return r;const L=p.wl[p.wp]||1,reach=W.reach*(1+.5*F('swBig')+.4*F('ssize')),dm=W.d*dmgMul()*(1+.22*(L-1));
+ for(const n of nests){const dx=n.x-p.x,dy=n.y-p.y,d=hyp(dx,dy);if(d>reach+9)continue;let da=Math.atan2(dy,dx)-p.aim;da=Math.atan2(Math.sin(da),Math.cos(da));if(Math.abs(da)>W.arc/2+.25&&d>15)continue;nestHit(n,dm*2,n.x-dx/(d||1)*6,n.y-dy/(d||1)*6);shake=Math.max(shake,3)}}catch(e){}return r}}
+{const _ex=explode;explode=function(x,y,r,d,hurtsP,own){const res=_ex.apply(this,arguments);try{if(typeof nests!=='undefined'&&nests.length){const k=(own||!hurtsP),rr=r*(k?1+F('boomSize'):1),dd=(d||1)*(k?1+F('boomDmg'):1);for(const n of nests)if(hyp(n.x-x,n.y-y)<rr+10)nestHit(n,dd*1.5,n.x,n.y)}}catch(e){}return res}}
+{const _dp=drawParryFx;drawParryFx=function(){_dp.apply(this,arguments);if(typeof nests==='undefined')return;for(const n of nests)if(n.hf>0){n.hf-=1/60;ctx.globalAlpha=Math.min(1,n.hf*8)*.8;disc(n.x,n.y,10,'#fff');ctx.globalAlpha=1}}}
+{const _b=bomb;bomb=function(){const had=p&&p.bombs>=1&&state==='play';const r=_b.apply(this,arguments);try{if(had&&typeof nests!=='undefined'){const br=80*(1+.25*P('bombkit')+F('bombSize'));for(const n of nests)if(hyp(n.x-p.x,n.y-p.y)<br+10)nestHit(n,n.hp+1,n.x,n.y)}}catch(e){}return r}}
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
 </script>
