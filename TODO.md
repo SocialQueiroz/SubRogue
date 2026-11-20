@@ -18,7 +18,7 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [ ] Itens com interações legais que mudem o jeito de jogar (sinergias, efeitos que combinam)
 
 ## Conteúdo
-- [ ] Mais inimigos, mais variedade — feito em parte: tartaruga-mordedora, tartaruga-verde, caravela, juba-de-leão, ctenóforo, polvo-gigante, peixe-baú
+- [x] Mais inimigos e golpes: todos os 213 bichos têm característica real (ver FAUNA.md); já tinha: tartaruga-mordedora, tartaruga-verde, caravela, juba-de-leão, ctenóforo, polvo-gigante, peixe-baú
 - [x] Ninhos de peixes no fim das correntezas (soltam peixes, destruíveis, dão moedas e às vezes baú)
 - [x] Paredes explodíveis: bomba e minas agora abrem buraco na rocha de verdade (antes a bomba não quebrava nada)
 - [ ] Mais blocos interagíveis com explosão (rocha rachada, barris, cristais, etc.)
