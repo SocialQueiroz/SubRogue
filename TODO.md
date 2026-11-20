@@ -100,3 +100,11 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 
 ## Bugs vistos (novos)
 - [x] Fechar a fala do Tião com A (controle), Enter ou 1/2/3 comprava item na loja ou escolhia carta/relíquia por trás. Agora o controle não manda "confirmar" pra tela de trás enquanto a fala está aberta nem logo depois de fechar (0,35 s); e cada A faz só uma coisa (antes um A pulava duas falas)
+
+## Mais variedade (feedback novo) — sem mudar quantas coisas aparecem
+- [x] Equipamentos 67→100: 18 comuns fraquinhos (meia de lã, chiclete de alga, tampinha da sorte...), 11 raros médios e 4 épicos fortes; a chance de cada raridade na loja continua a mesma
+- [x] Comidas 21→30 (pão dormido, bala de goma, tapioca, água de coco, caldo de piranha, acarajé, boia de braço...)
+- [x] Relíquias 119→138: 6 fraquinhas, 7 médias, 3 fortes e 3 amaldiçoadas
+- [x] Cartas 217→250: 22 comuns fraquinhas, 7 raras, 3 épicas, 2 lendárias (a chance de cada raridade continua a mesma)
+- [x] Artefatos 607→899 com 11 efeitos novos (crítico, cadência, experiência, vida cheia, furtividade, crítico mais forte, empurrão, tiro de perto, tiro de longe, moeda por acerto, cura por abate); os comuns novos são bem fraquinhos
+- [x] Bug: o aviso "★ Combina com..." era grudado no item original e repetia a cada loja

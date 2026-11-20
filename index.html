@@ -5130,7 +5130,7 @@ Object.assign(ILINE,{leviata:'Coração do Leviatã. Ainda bate, escuta.',olho:'
  lanterna:'Essa lanterna aí é minha! Cuida bem dela.',guelra:'Guelra Artificial. Respira que nem peixe.',baiacu:'Espinha do Baiacu-Rei. Apanhou, espeta todo mundo.',
  rede:'Rede Sagrada. Bicho morto às vezes volta do teu lado.',sino:'Sino do Naufrágio. Toca sozinho e empurra tudo.'});
 for(const o of EQUIP)if(ILINE[o.id])o.line=ILINE[o.id];for(const o of FOOD)if(ILINE[o.id])o.line=ILINE[o.id];for(const o of RELICS)if(ILINE[o.id])o.line=ILINE[o.id];
-{const _rs=restock;restock=function(){_rs.apply(this,arguments);for(const d of shop.peds||[]){if((d.k==='weapon'||d.k==='up')&&d.w&&ILINE[d.w])d.o.line=d.k==='up'?'Afio teu '+WP[d.w].n+'. '+ILINE[d.w]:ILINE[d.w];const s=synFor(d);if(s){d.o.t=(d.o.t||'')+' ★ Combina com '+s.with+': '+s.n+'.';d.o.syn=1}}}}
+{const _rs=restock;restock=function(){_rs.apply(this,arguments);for(const d of shop.peds||[]){if((d.k==='weapon'||d.k==='up')&&d.w&&ILINE[d.w])d.o.line=d.k==='up'?'Afio teu '+WP[d.w].n+'. '+ILINE[d.w]:ILINE[d.w];const s=synFor(d);if(s){d.o=Object.assign({},d.o,{t:(d.o.t||'')+' ★ Combina com '+s.with+': '+s.n+'.',syn:1})}}}}
 /* ================= SINERGIAS ================= */
 const SYN=[
  {id:'tempest',n:'Tempestade',a:['elec','escama'],or:[['elec','bobina'],['redel','bobina'],['netuno','escama']],t:'Choques pulam em 2 bichos a mais e o impulso dá choque.',fx:{shock:2,dashZap:1}},
@@ -5329,6 +5329,140 @@ NOTES.push('"Dia 12. O peixe-lua me olhou por uma hora. Acho que ele tava com pe
  ['amuleto2','Patuá do Tião','Os baús da próxima fenda dão bônus.',22,'clover',()=>!p.figa,()=>{p.figa=1},'Meu patuá. Me devolve depois, hein.'],
  ['mapa2','Mapa rabiscado','Mostra o mapa inteiro da próxima fenda.',18,'ship',()=>!p.chart,()=>{p.chart=1},'Rabisquei de memória. Confia.']
 ].forEach(a=>FOOD.push({id:a[0],n:a[1],t:a[2],base:a[3],ic:a[4],ok:a[5],use:a[6],kind:'food',r:0,line:a[7]}));
+
+/* ================= MAIS VARIEDADE: itens, comidas, relíquias, cartas e artefatos (muita coisa fraca, várias médias, poucas fortes) ================= */
+/* a loja continua com 3 itens e as escolhas continuam com as mesmas quantidades; só o catálogo cresceu */
+{const has=(L,a)=>L.some(o=>o.id===a[0]||o.n===a[1]);
+ /* raridade dos equipamentos: guarda a proporção antiga pra o catálogo maior não mudar a chance de cada raridade */
+ const EQW=[0,0,0,0];for(const o of EQUIP)EQW[Math.min(3,o.r||0)]++;window.EQW=EQW;
+ [
+  /* comuns: coisinhas fracas */
+  ['meia','Meia de lã molhada','Nada 4% mais rápido.',0,'fin',{spd:.04},'Meia de lã. Molhada é pior, mas esquenta o pé.'],
+  ['chiclete','Chiclete de alga','Tiros 5% mais fortes.',0,'spear',{dmg:.05},'Masca e gruda na ponta do arpão. Machuca mais. Ou menos. Sei lá.'],
+  ['oculos2','Óculos remendado','Enxerga 6% mais longe no escuro.',0,'eye',{light:.06},'Remendei com fita isolante. Enxerga quase tudo.'],
+  ['lenco','Lenço da sorte','Bichos deixam 6% mais ouro.',0,'coin',{gold:.06},'Era da minha avó. Ela era sortuda. Viveu 103 anos.'],
+  ['galocha','Galochas furadas','6% menos efeito das correntezas.',0,'anchor',{curRes:.06},'Furada, mas pesa. Segura o pé no lugar.'],
+  ['tampinha','Tampinha de garrafa','4% de chance de não levar dano.',0,'shield',{dodge:.04},'Achei no convés. Dizem que dá sorte. Dizem.'],
+  ['canudo','Canudo de bambu','O ar acaba 6% mais devagar.',0,'bubbles',{o2drain:-.06},'Respira pelo canudo. Não me pergunta como funciona.'],
+  ['pilhav','Pilha usada','Lanterna 8% mais longa.',0,'lamp',{lampLen:.08},'Ainda tem um restinho de carga. Acho.'],
+  ['ima2','Ímã de geladeira','Puxa as moedas de um pouquinho mais longe.',0,'magnet',{magnet:.2},'Tem um abacaxi desenhado. Puxa moeda que é uma beleza.'],
+  ['polvmolhada','Saco de pólvora úmida','Mais 1 bomba.',0,'bomb',{bombs:1},'Tá meio molhada. Explode meio devagar.'],
+  ['cortica','Cinto de cortiça','Mais 8 de oxigênio no tanque.',0,'tank',{o2:8},'Cortiça boia. E guarda ar. Mais ou menos.'],
+  ['dentinho','Dente de leite de tubarão','O combo dura 8% mais.',0,'fang',{combo:.08},'Tubarão troca de dente toda semana. Esse era de um filhote.'],
+  ['sininho','Sininho de bicicleta','O sonar recarrega 8% mais rápido.',0,'sonar',{sonarcd:.08},'Trim-trim. O peixe acha que é sonar.'],
+  ['luva2','Luva de cozinha','Corações curam 15% mais.',0,'medkit',{heartPlus:.15},'Pega coração quente sem queimar a mão.'],
+  ['pena','Pena de gaivota','O impulso recarrega 5% mais rápido.',0,'hourglass',{dashcd:.05},'A gaivota rouba meu peixe. Eu roubei a pena dela.'],
+  ['trevo2','Trevo de plástico','Sorte 6% maior nos artefatos.',0,'clover',{luck:.06},'Sorte de plástico. Melhor que sorte nenhuma.'],
+  ['peso','Peso de pescaria','15% menos empurrão quando apanha, mas nada 3% mais devagar.',0,'anchor',{kbRes:.15,spd:-.03},'Pesa no bolso. Te segura no lugar.'],
+  ['peneira','Peneira velha','Ganha 8% mais experiência.',0,'net',{xp:.08},'Peneira de farinha. Peneira ideia também.'],
+  /* raros: coisas médias */
+  ['luvaarp','Luva de arpoeiro','Tiros 12% mais fortes e 4% mais crítico.',1,'spear',{dmg:.12,crit:.04},'Couro de arraia. Firma a mão na hora do tiro.'],
+  ['pedepato','Pé de pato de competição','Nada 12% mais rápido.',1,'fin',{spd:.12},'Comprei de um nadador olímpico. Ele não precisava mais.'],
+  ['relogio2','Relógio de mergulho','O impulso recarrega 15% mais rápido e o combo dura 15% mais.',1,'hourglass',{dashcd:.15,combo:.15},'À prova d’água até 200 metros. Depois disso, reza.'],
+  ['ferrao','Ferrão de arraia','Tiros envenenam (15% de chance).',1,'drop',{poison:.15},'Cuidado pra não se espetar. Eu me espetei.'],
+  ['isqueiro2','Isqueiro de marinheiro','Tiros queimam (15% de chance).',1,'fire',{burn:.15},'Acende até embaixo d’água. Juro por Netuno.'],
+  ['cofrinho','Cofrinho de porcelana','Os juros do barco sobem 5%.',1,'coins',{interest:.05},'Porquinho de porcelana. O dinheiro é de verdade.'],
+  ['bueiro','Tampa de bueiro','Mais 1 de vida máxima e 6% de chance de não levar dano.',1,'shield',{hp:1,dodge:.06},'Pesada, mas aguenta mordida de tubarão.'],
+  ['lanca','Lança de caça-monstro','20% mais dano em chefes.',1,'harpoon',{bossDmg:.2},'Feita pra bicho grande. Bicho pequeno ela nem olha.'],
+  ['bolhares','Bolha de reserva','Quando o ar acaba, o tanque enche uma vez.',1,'tank',{airSpare:1},'Uma bolha guardada pra hora do aperto.'],
+  ['bolsapesc','Bolsa de pescador','Bichos derrubam mais ar, e cada abate tem 3% de chance de curar 1.',1,'net',{o2drop:.5,killHeal:.03},'Tudo que cai no mar, cai na bolsa.'],
+  ['capuz','Capuz de neoprene','Os bichos demoram 15% mais pra te notar e o ar dura 8% mais.',1,'fog',{stealth:.15,o2drain:-.08},'Preto, justinho. Você some no escuro.'],
+  /* épicos: poucas coisas fortes */
+  ['baleiaazul','Coração de baleia-azul','Mais 3 de vida máxima e regenera 1 de vida a cada 28 s.',2,'heart',{hp:3,regen:1},'O maior coração do mundo. Bate devagar, mas não para.'],
+  ['almirante','Escafandro do almirante','Mais 2 de vida, 25 de ar e 10% de chance de não levar dano.',2,'tank',{hp:2,o2:25,dodge:.1},'Do almirante que afundou com o navio. Ele não precisa mais.'],
+  ['gatilhouro','Gatilho de ouro','Atira 20% mais rápido e os tiros ficam 15% mais fortes.',2,'coins',{rate:.2,dmg:.15},'Ouro puro. Aperta macio que é uma beleza.'],
+  ['tigre','Olho de tubarão-tigre','Mais 12% de crítico e críticos 30% mais fortes.',2,'eye',{crit:.12,critMult:.3},'Ele te olhava assim antes de morder. Agora é você que olha.']
+ ].forEach(a=>{if(!has(EQUIP,a))EQUIP.push({id:a[0],n:a[1],t:a[2],r:a[3],ic:a[4],fx:a[5],kind:'equip',line:a[6]})});
+ {const _rs=restock;restock=function(){_rs.apply(this,arguments);const own=p.items||[];for(const d of shop.peds||[]){if(d.k!=='equip')continue;
+   const tot=EQW.reduce((a,b)=>a+b,0);let q=Math.random()*tot,r=0;while(r<3&&q>=EQW[r]){q-=EQW[r];r++}
+   const pool=EQUIP.filter(o=>!own.includes(o.id)&&(o.r||0)===r);if(!pool.length)continue;d.o=pick(pool);const s=typeof synFor==='function'&&synFor(d);if(s)d.o=Object.assign({},d.o,{t:(d.o.t||'')+' ★ Combina com '+s.with+': '+s.n+'.',syn:1})}}}
+ /* comidas */
+ const heal=n=>()=>{p.hp=Math.min(p.mhp,p.hp+n)},hurt=()=>p.hp<p.mhp;
+ [
+  ['pao','Pão dormido','Recupera 1 de vida.',8,'food',hurt,heal(1),'Pão de ontem. De anteontem, na verdade.'],
+  ['bala','Bala de goma','Recupera 1 de vida. Baratinho.',6,'heart',hurt,heal(1),'Bala de goma de peixinho. Criança adora. Eu adoro.'],
+  ['sardlata','Sardinha em lata','Recupera 2 de vida.',13,'fish',hurt,heal(2),'Sardinha comendo sardinha. O mar é cruel.'],
+  ['tapioca','Tapioca de queijo','Recupera 2 de vida.',14,'food',hurt,heal(2),'Tapioca na chapa, queijo coalho derretendo.'],
+  ['coco','Água de coco','Recupera 1 de vida e enche o ar.',12,'drop',()=>p.hp<p.mhp||p.o2<p.mo2,()=>{p.hp=Math.min(p.mhp,p.hp+1);p.o2=p.mo2},'Coco verde, geladinho. Melhor que soro.'],
+  ['caldo','Caldo de piranha','Recupera 2 de vida e enche o ar.',20,'piranha',()=>p.hp<p.mhp||p.o2<p.mo2,()=>{p.hp=Math.min(p.mhp,p.hp+2);p.o2=p.mo2},'Caldo de piranha. Levanta defunto, dizem.'],
+  ['acaraje','Acarajé apimentado','Recupera 3 de vida.',22,'fire',hurt,heal(3),'Com bastante pimenta. Esquenta até a alma.'],
+  ['pipoca','Pipoca de camarão','Mais 1 bomba.',14,'bomb',()=>p.bombs<5+F('bombCap'),()=>{p.bombs=Math.min(6+F('bombCap'),p.bombs+1)},'Estoura igual bomba. É quase uma bomba.'],
+  ['boiabraco','Boia de braço','Ganha uma boia salva-vidas.',45,'buoy',()=>(p.buoys||0)<1,()=>{p.buoys=(p.buoys||0)+1},'Boia de criança. Cabe no braço se apertar bem.']
+ ].forEach(a=>{if(!has(FOOD,a))FOOD.push({id:a[0],n:a[1],t:a[2],base:a[3],ic:a[4],ok:a[5],use:a[6],kind:'food',r:0,line:a[7]})});
+ /* relíquias */
+ [
+  /* fraquinhas */
+  ['conchinha','Conchinha de praia','Mais 1 de vida máxima.','shell',{hp:1},'Conchinha qualquer. Mas foi você que achou.'],
+  ['botao','Botão de farda','Tiros 8% mais fortes.','coin',{dmg:.08},'Botão da farda de um almirante. Ainda brilha.'],
+  ['escamasolta','Escama solta','Nada 6% mais rápido e 3% de chance de não levar dano.','fin',{spd:.06,dodge:.03},'Escama de sereia. Ou de sardinha grande.'],
+  ['anzol','Anzol enferrujado','Cada tiro que acerta tem 5% de chance de soltar uma moeda.','hook',{hitGold:.05},'Anzol velho. Ainda fisga moeda.'],
+  ['garrafinha','Garrafinha de ar','Mais 12 de oxigênio no tanque.','tank',{o2:12},'Ar engarrafado em 1950. Safra boa.'],
+  ['ossinho','Ossinho da sorte','Sorte 10% maior nos artefatos.','clover',{luck:.1},'Ossinho de galinha. A galinha não teve sorte.'],
+  /* médias */
+  ['colar','Colar de dentes','Cada abate tem 4% de chance de curar 1 de vida.','fang',{killHeal:.04},'Cada dente é um bicho que não te mordeu.'],
+  ['pulmao','Pulmão de golfinho','Cada abate devolve 1 de ar, e o ar dura 10% mais.','bubbles',{killO2:1,o2drain:-.1},'Golfinho segura o fôlego por quinze minutos. Agora você também.'],
+  ['farol2','Lente de farol','Lanterna 25% mais longa e 15% mais larga.','lamp',{lampLen:.25,lampWide:.15},'Tirei do farol da ilha. Ninguém vai sentir falta. Espero.'],
+  ['tambor','Tambor de guerra','O combo dura 30% mais e você atira 8% mais rápido.','sonar',{combo:.3,rate:.08},'Bum, bum, bum. Os bichos dançam conforme a música.'],
+  ['casca','Casca de ostra-gigante','Golpes tiram 1 a menos (mínimo 1), mas nada 5% mais devagar.','shell',{armor:1,spd:-.05},'Pesada que só. Mas bicho nenhum fura.'],
+  ['raiz','Raiz de mangue','Regenera 1 de vida a cada 40 s.','clover',{regen:.7},'O mangue se cura sozinho. Agora você também, devagarinho.'],
+  ['bussola2','Bússola torta','Mais 1 baú em cada fenda.','chest',{chest:1},'Ela não aponta pro norte. Aponta pro tesouro.'],
+  /* fortes */
+  ['perolabreu','Pérola do Breu','Tiros 20% mais fortes, atira 15% mais rápido e 8% mais crítico.','pearl',{dmg:.2,rate:.15,crit:.08},'Uma pérola que engole a luz. Bonita e assustadora.'],
+  ['barbmega','Barbatana do Megalodonte','Nada 20% mais rápido, e o impulso corta forte.','fin',{spd:.2,dashDmg:1},'Do bicho que você derrubou. Ou do primo dele.'],
+  ['conchakraken','Concha do Kraken','Mais 2 de vida máxima e 15% de chance de não levar dano.','shell',{hp:2,dodge:.15},'O Kraken morava nela. Agora ela mora com você.'],
+  /* amaldiçoadas (boas, com preço) */
+  ['olhovesgo','Olho Vesgo','Mais 25% de crítico, mas tiros 15% mais fracos.','eye',{crit:.25,dmg:-.15},'Ele erra muito. Mas quando acerta...'],
+  ['bolsofurado','Bolso Furado','Atira 25% mais rápido, mas bichos deixam 30% menos ouro.','coin',{rate:.25,gold:-.3},'O dinheiro escorre. Mas o dedo fica ligeiro.'],
+  ['fome','Estômago sem Fundo','Corações curam o dobro, mas 1 de vida máxima a menos.','food',{heartPlus:1,hp:-1},'Come de tudo e nunca enche.']
+ ].forEach(a=>{if(!has(RELICS,a))RELICS.push({id:a[0],n:a[1],t:a[2],ic:a[3],fx:a[4],r:3,kind:'relic',line:a[5]})});
+ /* cartas (a chance de cada raridade continua a mesma) */
+ [
+  ['Sardinha Valente',0,'m','fish','Nada 5% mais rápido e tiros 5% mais fortes.',{spd:.05,dmg:.05}],
+  ['Mão Firme',0,'x','spear','Mais 5% de chance de crítico.',{crit:.05}],
+  ['Pulmão Grande',0,'m','tank','Mais 10 de ar.',{o2:10}],
+  ['Faisquinha',0,'f','fire','Tiros têm 10% de chance de queimar.',{burn:.1}],
+  ['Gota Ácida',0,'v','drop','Tiros têm 10% de chance de envenenar.',{poison:.1}],
+  ['Cofre Raso',0,'o','coin','Começa com 30 de ouro.',{goldStart:30}],
+  ['Bolso Cheio',0,'o','coins','Bichos deixam 8% mais ouro.',{gold:.08}],
+  ['Pele Grossa',0,'s','vest','Mais 1 de vida máxima.',{hp:1}],
+  ['Vaga-lume',0,'a','lamp','Lanterna 15% mais longa.',{lampLen:.15}],
+  ['Ouvido Bom',0,'r','sonar','O sonar recarrega 15% mais rápido.',{sonarcd:.15}],
+  ['Água Fria',0,'g','snow','Corações curam 25% mais.',{heartPlus:.25}],
+  ['Sombra Rasa',0,'x','fog','Os bichos demoram 10% mais pra te notar.',{stealth:.1}],
+  ['Moeda no Sapato',0,'o','coin','Loja 5% mais barata.',{price:-.05}],
+  ['Âncora Leve',0,'m','anchor','15% menos empurrão ao levar dano.',{kbRes:.15}],
+  ['Caos Miúdo',0,'c','card','Sorte 10% maior nos artefatos.',{luck:.1}],
+  ['Estalinho',0,'r','bolt','Atira 6% mais rápido.',{rate:.06}],
+  ['Sangue Quente',0,'s','heart','Com a vida cheia, bate 10% mais forte.',{fullhp:.1}],
+  ['Geada Rasa',0,'g','snow','Nada 4% mais rápido e o impulso recarrega 6% mais rápido.',{spd:.04,dashcd:.06}],
+  ['Lodo',0,'v','drop','15% menos efeito das correntezas, e o ar dura 5% mais.',{curRes:.15,o2drain:-.05}],
+  ['Olho no Escuro',0,'a','cave','Enxerga 10% mais longe no escuro.',{light:.1}],
+  ['Desajeitado',0,'c','urchin','Tiros 15% mais fortes, mas nada 8% mais devagar.',{dmg:.15,spd:-.08}],
+  ['Apressado',0,'c','hourglass','Atira 12% mais rápido, mas os tiros ficam 6% mais fracos.',{rate:.12,dmg:-.06}],
+  ['Brasa Lenta',1,'f','fire','Tiros têm 25% de chance de queimar, e o combo dura 10% mais.',{burn:.25,combo:.1}],
+  ['Veneno de Moreia',1,'v','fang','Tiros têm 25% de chance de envenenar.',{poison:.25}],
+  ['Raio de Bolso',1,'r','bolt','Atira 12% mais rápido e o impulso recarrega 10% mais rápido.',{rate:.12,dashcd:.1}],
+  ['Guarda-Costas',1,'s','shield','8% de chance de não levar dano e mais 1 de vida.',{dodge:.08,hp:1}],
+  ['Mapa de Pirata',1,'o','chest','Mais 1 baú por fenda e 10% mais ouro.',{chest:1,gold:.1}],
+  ['Lamparina',1,'a','lamp','Lanterna 20% mais longa e 20% mais larga.',{lampLen:.2,lampWide:.2}],
+  ['Pescador Paciente',1,'m','harpoon','Ganha 20% mais experiência.',{xp:.2}],
+  ['Caçador de Gigantes',2,'s','harpoon','30% mais dano em chefes e 10% mais crítico.',{bossDmg:.3,crit:.1}],
+  ['Maré Cheia',2,'m','wave','Nada 15% mais rápido, mais 20 de ar, e o ar dura 15% mais.',{spd:.15,o2:20,o2drain:-.15}],
+  ['Ferreiro do Fundo',2,'x','blade','Tiros 25% mais fortes.',{dmg:.25}],
+  ['Sereia Domada',3,'c','wave','Tiros 20% mais fortes, atira 20% mais rápido e 10% de chance de não levar dano.',{dmg:.2,rate:.2,dodge:.1}],
+  ['Coração do Oceano',3,'s','heart','Mais 3 de vida máxima, e regenera 1 de vida a cada 20 s.',{hp:3,regen:1.4}]
+ ].forEach(a=>{if(!CARDS.some(c=>c.n===a[0]))CARDS.push({id:CARDS.length,n:a[0],r:a[1],cat:a[2],ic:a[3],t:a[4],fx:a[5]})});
+ /* artefatos: famílias novas e um monte de coisa fraquinha (a chance de cada raridade continua a mesma) */
+ const NF=[['crit','{v}% mais chance de crítico',.02,'eye'],['rate','Atira {v}% mais rápido',.03,'bolt'],['xp','Ganha {v}% mais experiência',.05,'pearl'],['fullhp','Com a vida cheia, bate {v}% mais forte',.05,'shield'],
+  ['stealth','Os bichos demoram {v}% mais pra te notar',.05,'fog'],['critMult','Críticos {v}% mais fortes',.08,'fang'],['knock','Tiros empurram {v}% mais',.1,'anchor'],['close','Tiros de pertinho até {v}% mais fortes',.08,'fang'],
+  ['sniper','Tiros de longe até {v}% mais fortes',.08,'eye'],['hitGold','{v}% de chance de moeda a cada acerto',.02,'coin'],['killHeal','{v}% de chance de curar 1 ao abater um bicho',.01,'heart']];
+ const ALL=PFAM.concat(NF),NADJ=[['Barato','Lascado','de Plástico','Achado na Praia','Meia-Boca','Furado','Desbotado','de Feira','Amassado','Colado com Cuspe','do Camelô','Sem Graça'],['Bem-Feito','de Bronze','do Contramestre','Lustrado','da Maré','de Pérola Rosa','Afortunado'],['das Trevas','da Medusa','do Kraken','Sem Nome','do Abismo Cantante'],['de Netuno','do Primeiro Mar','do Fundo do Mundo']];
+ const NNOUN=['Botão','Chaveiro','Prego','Caco de Vidro','Rolha','Carretel','Pente','Brinco','Dobrão','Apito','Remo','Cachimbo','Boné','Colher','Dado','Fivela','Ampulheta','Estrela-do-mar','Ouriço Seco','Gancho'];
+ const ADD=[150,100,32,10],LOW=[.6,.85,.9,.95],used=new Set(PK.map(k=>k.n)),fmt=(f,v)=>f[1].replace('{v}',Math.max(1,Math.round(Math.abs(v)*100)));let id=0;
+ for(let r=0;r<4;r++){let made=0,tries=0;while(made<ADD[r]&&tries<30000){tries++;const fam=r===0&&Math.random()<.5?NF:ALL,nst=r===0?1:r===1?(Math.random()<.35?2:1):r===2?2+(Math.random()<.3?1:0):3,fams=[];
+   while(fams.length<nst){const f=pick(fam);if(!fams.includes(f))fams.push(f)}const fx={},tx=[];
+   for(const f of fams){const v=+(f[2]*PMUL[r]*LOW[r]*(.8+Math.random()*.35)*(nst>1?.8:1)).toFixed(3);fx[f[0]]=v;tx.push(fmt(f,v))}
+   const n=pick(NNOUN)+' '+pick(NADJ[r]);if(used.has(n))continue;used.add(n);PK.push({id:'n'+r+'_'+(id++),n,t:tx.join('. ')+'.',r,max:PMAX[r],ic:fams[0][3],fx,gen:1});made++}}}
 
 /* ================= FACA SEMPRE À MÃO + RARIDADE PELA DIFICULDADE ================= */
 function diffLuck(){return{facil:.5,medio:0,dificil:-.35,insano:-.6}[(p&&p.diff)||(META&&META.diff)||'medio']||0}
