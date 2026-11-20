@@ -4509,7 +4509,7 @@ const PMUL=[1,2.4,4.5,8],PMAX=[5,3,2,1],PCNT=[300,200,45,15];
 /* artefatos antigos com mecânica especial sobem de raridade; os comuns ficam só com bônus simples */
 for(const k of PK){if(k.gen)continue;const simple=['dmg','rate','spd','hp','o2'].includes(k.id);if(!simple&&k.r<3)k.r=Math.min(3,k.r+1)}
 /* sorteio com chance de lendário */
-rollPerks=function(n,minR){const lk=MU('luck')+F('luck'),out=[];if(F('allRare'))minR=Math.max(minR||0,1);for(let t=0;t<80&&out.length<n;t++){const q=Math.random();let ra=q<.02+.01*lk?3:q<.09+.05*lk?2:q<.36+.08*lk?1:0;if(minR)ra=Math.max(ra,minR);
+rollPerks=function(n,minR){const lk=MU('luck')+F('luck'),out=[];if(F('allRare'))minR=Math.max(minR||0,1);for(let t=0;t<80&&out.length<n;t++){const q=Math.random();const gD=Math.min(1,(depth+1)/12);let ra=q<.002+.018*gD+.01*lk?3:q<.022+.068*gD+.05*lk?2:q<.17+.19*gD+.08*lk?1:0;if(minR)ra=Math.max(ra,minR);
   let pool=PK.filter(k=>!k.off&&k.r===ra&&P(k.id)<k.max&&!out.includes(k));if(!pool.length)pool=PK.filter(k=>!k.off&&P(k.id)<k.max&&!out.includes(k));if(!pool.length)break;out.push(pick(pool))}return out};
 
 /* ================= ORCA EM PIXEL ART (refeita a partir de fotos) ================= */
@@ -5278,6 +5278,36 @@ const csSeen=k=>{META.cs=META.cs||{};if(META.cs[k])return true;META.cs[k]=1;save
 /* estaleiro volta: botão na escolha de dificuldade */
 {const _ng2=newGame;newGame=function(){_ng2.apply(this,arguments);const b=$('#diffbox');if(b&&!$('#diffo').hidden&&!$('#dfyard')){const bot=b.querySelector('.bot');if(bot)bot.insertAdjacentHTML('afterbegin','<button class="btn nav" id="dfyard">ESTALEIRO ('+META.pearls+' pérolas)</button>');const y=$('#dfyard');if(y)y.onclick=()=>{$('#diffo').hidden=true;window.FROMDIFF=1;openMeta()}}}}
 $('#metabox').addEventListener('click',e=>{if(e.target.closest('#mback')&&window.FROMDIFF){e.stopImmediatePropagation();window.FROMDIFF=0;$('#meta').hidden=true;newGame()}},true);
+
+/* ================= BALANÇO: relíquias, progressão e saída livre de correnteza ================= */
+/* --- relíquias mais fracas (eram fortes demais) --- */
+{const NERF={leviata:['Mais 2 de vida máxima, e regenera 1 a cada 45 s.',{hp:2,regen:.6}],olho:['Seus tiros atravessam paredes, mas fazem 20% menos dano.',{wallShot:1,dmg:-.2}],
+ coroa:['15% de chance de não levar dano, e quase não é empurrado.',{dodge:.15,kbRes:.5}],concha:['Todo bicho morto solta 2 espinhos venenosos.',{killRing:2,poison:.2}],
+ dente:['35% mais dano, mas 1 de vida máxima a menos.',{dmg:.35,hp:-1}],isca:['50% mais ouro e 20% mais experiência.',{gold:.5,xp:.2}],
+ escama:['Todo tiro solta um raio que pula em 1 bicho.',{shock:1}],guelra:['O ar dura 30% mais.',{o2drain:-.3}],
+ baiacu:['Quando apanha, solta 8 espinhos pra todo lado.',{hurtRing:8}],rede:['Bichos mortos às vezes (5%) voltam como fantasmas aliados.',{killAlly:.05}],
+ sino:['A cada 16 s, uma onda fere e empurra tudo perto.',{pulse:.5}],garrafa:['Ao subir de nível, você escolhe entre 4 poderes.',{pickN:1}],
+ meteoro:['A cada 8 tiros, sai um arpão gigante.',{giant:1,giantN:8}],lanterna:['A lanterna alcança 45% mais longe.',{lampLen:.45,lampWide:.15}]};
+ for(const o of RELICS){const n=NERF[o.id];if(n){o.t=n[0];o.fx=n[1]}}
+ /* casco de tartaruga (equipamento) tinha armadura fixa: quebrado */
+ const c=EQUIP.find(o=>o.id==='casco2');if(c){c.t='Mais 1 de vida máxima e 8% de chance de não levar dano.';c.fx={hp:1,dodge:.08};c.r=1}}
+/* --- relíquia fora de chefe fica rara e limitada --- */
+{let bossK=0;const _k=kill;kill=function(e){bossK=e&&e.S&&e.S.boss?1:0;try{return _k.apply(this,arguments)}finally{bossK=0}};
+ const _dr=drop;drop=function(x,y,t){if(t==='relic'&&!bossK&&p){const cap=1+Math.floor(depth/6),n=p.relicFree||0,ch=mod===MODS.hunt?.6:depth<4?.15:depth<10?.3:.45;if(n>=cap||Math.random()>ch){return _dr.call(this,x,y,'pearl')}p.relicFree=n+1}return _dr.apply(this,arguments)}}
+/* --- subir de nível mais devagar --- */
+const needFor=l=>Math.round(22+l*11+l*l*1.1);
+gainXp=function(n){if(F('noXP'))return;if(p.need<1e8&&!p.needV2){p.needV2=1;p.need=needFor(p.lvl)}p.xp+=n*Math.max(.2,1+F('xp'));if(p.xp>=p.need&&state==='play'){p.xp-=p.need;p.lvl++;p.need=p.need>=1e8?p.need:needFor(p.lvl);p.lvDmg=(p.lvDmg||0)+F('lvlDmg');openPick('NÍVEL '+p.lvl+'!')}};
+/* --- a fenda de descida nunca fica dentro de correnteza --- */
+function exitClear(){if(!exit||exit.x<0)return;const ex=exit.x,ey=exit.y,keep=[];let cut=0;
+ for(const c of curs){if(!c.P){const inside=ex>c.x-30&&ex<c.x+c.w+30&&ey>c.y-30&&ey<c.y+c.h+30;if(inside)cut++;else keep.push(c);continue}
+  const bad=c.P.map(q=>hyp(q[0]-ex,q[1]-ey)<c.r+44);if(!bad.some(Boolean)){keep.push(c);continue}cut++;
+  let run=[];const flush=()=>{if(run.length>=10){const n=mkCur(run.map(q=>[q[0],q[1]]),c.r,c.str,c.lair);for(const k of['neg','lair','sting'])if(c[k]!==undefined)n[k]=c[k];keep.push(n)}run=[]};
+  for(let i=0;i<c.P.length;i++){if(bad[i])flush();else run.push(c.P[i])}flush()}
+ curs.length=0;curs.push(...keep);
+ if(typeof pits!=='undefined')for(let i=pits.length-1;i>=0;i--)if(hyp(pits[i].x-ex,pits[i].y-ey)<90)pits.splice(i,1);
+ if(typeof therm!=='undefined')for(let i=therm.length-1;i>=0;i--){const t=therm[i];if(t&&t.x!==undefined&&hyp(t.x-ex,t.y-ey)<40)therm.splice(i,1)}
+ return cut}
+{const _nl=newLevel;newLevel=function(){_nl.apply(this,arguments);try{exitClear()}catch(e){}}}
 
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);

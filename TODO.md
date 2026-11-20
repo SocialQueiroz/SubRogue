@@ -66,3 +66,9 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Cutscene do Tião antes da primeira partida (o mergulhador anterior morreu; cada peixe dá dinheiro; descer até o fundo das fossas)
 - [x] Mais cenas: primeira loja, primeiro covil de chefe, primeiro chefe derrubado, primeira morte, 1.000/3.000/6.000/9.000 m (história do irmão do Tião) e vitória
 - [x] Estaleiro (gastar pérolas) voltou: botão na tela de dificuldade
+
+## Balanço (feedback novo)
+- [x] Relíquias enfraquecidas (Leviatã, Olho, Coroa, Concha, Dente, Isca, Escama, Guelra, Baiacu, Rede, Sino, Garrafa, Meteoro, Lanterna); Casco de tartaruga sem armadura fixa
+- [x] Relíquia fora de chefe: rara (15% nos primeiros andares) e limitada por corrida — antes ~6 relíquias nos 4 primeiros andares, agora ~0,7
+- [x] Subir de nível mais devagar (nível 4–5 no 4º andar, antes 7–9) e artefatos épicos/lendários raros no começo, ficando comuns só lá no fundo
+- [x] Fenda de descida nunca dentro de correnteza (antes 30% das fendas tinham, agora 0 em 150 testadas); redemoinhos também saem de perto da saída
