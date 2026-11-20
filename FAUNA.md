@@ -23,6 +23,7 @@ Mapa de características em `TRMAP` (módulo de características); golpes especi
 | Tartarugas | Esticam o pescoço e mordem; casco que gira e quica | Tartaruga-mordedora |
 | Águas-vivas | Tentáculos longos que queimam e deixam lento | Nematocistos |
 | Peixe-baú | Disfarçado de baú | — |
+| Sereia (a partir de 400 m) | Canta anéis de onda que tiram 1 coração; trechos ROXOS dá pra atravessar aparando; tiro de longe desvia, só morre de perto (faca/arma branca); rabada que empurra | Canto das sereias (Odisseia) |
 
 ## Características para todos (213 espécies)
 veneno, choque, tinta, abraço, isca, sucção, sangue (tubarões), cardume (desvia de tiros), camuflagem, inflar,
@@ -30,6 +31,7 @@ pinça, casca, clarão, corte, gosma (peixe-bruxa), sanguessuga (lampreia), rege
 (salpas/sifonóforos), mandíbula extra (moreias), calor (fontes hidrotermais), esquiva, enxame.
 
 ## Mitológicos e lendas
+- **Sereia** (mito grego, Odisseia): bonita e com muitas variações (cabelo, pele, cauda, enfeite). O canto vira anéis de onda com trechos roxos; a canção desvia tiros de longe. Conquista "Canto Silenciado".
 - **Iara, a Mãe-d'Água** (folclore brasileiro): canta notas que ENCANTAM e te puxam; a nota do meio é roxa (dá pra aparar).
 - **Boto-cor-de-rosa** (folclore amazônico): aliado, ataca os bichos que te perseguem.
 - **Hipocampo** (grego): galopa em saltos e dá patada com onda de choque.
