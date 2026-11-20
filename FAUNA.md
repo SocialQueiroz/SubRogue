@@ -33,7 +33,7 @@ pinça, casca, clarão, corte, gosma (peixe-bruxa), sanguessuga (lampreia), rege
 ## Mitológicos e lendas
 - **Sereia** (mito grego, Odisseia): bonita e com muitas variações (cabelo, pele, cauda, enfeite). O canto vira anéis de onda com trechos roxos; a canção desvia tiros de longe. Conquista "Canto Silenciado".
 - **Iara, a Mãe-d'Água** (folclore brasileiro): canta notas que ENCANTAM e te puxam; a nota do meio é roxa (dá pra aparar).
-- **Boto-cor-de-rosa** (folclore amazônico): aliado, ataca os bichos que te perseguem.
+- **Boto-cor-de-rosa** (folclore amazônico) e **golfinhos**: rápidos e folgados; rodeiam em bando e se revezam trombando em você (empurram e tiram 1 coração).
 - **Hipocampo** (grego): galopa em saltos e dá patada com onda de choque.
 - **Umibōzu** (japonês): sombra gigante que apaga a luz.
 - Chefes: Karkinos, Megalodonte, Kraken, Medusa, Caríbdis, Cila, Jörmungandr, Leviatã, a Orca (secreta).

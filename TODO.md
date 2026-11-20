@@ -173,3 +173,8 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 ## Memória das fendas (feedback novo)
 - [x] Checkpoint (fácil) e pressão negativa (todas as dificuldades) voltam pra MESMA fenda: mesmo mapa e mesmas coisas nos mesmos lugares; o que foi pego (moedas, pérolas, baús, baús grandes, garrafas) não volta; paredes quebradas continuam abertas; só os bichos renascem
 - [x] Checkpoint guarda o que você tinha ao morrer (ouro, itens, nível) e volta com a vida da entrada da fenda (no mínimo metade)
+
+## Golfinhos, rabo e navio (feedback novo)
+- [x] Golfinhos de verdade: pixel art cinza com bico, testa redonda, dorsal em foice, barriga clara e rabo horizontal (boto em rosa); andam em bando de 2–3 nas zonas de cima, são muito rápidos, rodeiam e se revezam dando trombadas que empurram longe e tiram 1 coração; dá pra matar
+- [x] Rabo dos peixes sem quina: o fim do corpo segue reto até a nadadeira
+- [x] Navio afundado com cara de navio: proa empinada, popa alta com janelas, borda do convés, escotilhas, quilha e rombo com as costelas
