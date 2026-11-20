@@ -153,3 +153,6 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] A caverna: túnel longo que desce em zigue-zague, cheio de bichos nas duas primeiras galerias; na última só tem caracóis, que falam ("daqui pra frente ninguém tem coragem de entrar", "o mal mora no fundo dessa caverna"); canto triste de baleia e água avermelhada
 - [x] Arena: a família de tubarões-baleia presa em redes e correntes, alguns já mortos (sobram de 1 a 3)
 - [x] Depois da orca: as redes arrebentam, os sobreviventes vêm falar com você (fala diferente se sobrou só um), enchem sua vida, dão 15 pérolas e a conquista "Família do Fundo"
+
+## Checkpoint no fácil (pedido novo)
+- [x] No Fácil, cada fenda nova salva um checkpoint ("CHECKPOINT" aparece na tela); morrendo, a tela de fim mostra "VOLTAR AO CHECKPOINT" e você volta pro começo daquela fenda com a vida e o ouro que tinha ali (pelo menos metade da vida). Nas outras dificuldades nada muda

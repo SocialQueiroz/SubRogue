@@ -6186,6 +6186,16 @@ const WSFL2=['Eu... eu sou o último.','Ela levou todos. Meu pai, minhas irmãs,
 {const _die=die;die=function(){WSF=null;OCAVE=null;OENT=null;SNL=[];window.FAMHOLD=0;const b=$('#podbox');if(b)b.style.display='none';return _die.apply(this,arguments)}}
 ACHL.push(['familia','Família do Fundo','Liberte os tubarões-baleia da caverna da orca',m=>!!m.famSaved]);
 
+/* ================= CHECKPOINT NO FÁCIL: cada nova fenda salva; morrendo, dá pra voltar ================= */
+{const _nl=newLevel;newLevel=function(){const r=_nl.apply(this,arguments);try{if(p&&META&&p.diff==='facil'&&state!=='title'&&!(typeof TUT!=='undefined'&&TUT.on)&&p.hp>0&&!window.FAMHOLD){const keep=META.run;runSnap();if(META.run){META.ckpt=JSON.parse(JSON.stringify(META.run));META.ckpt.cp=1;saveMeta();setTimeout(()=>{if(state==='play'&&p)ftxt(p.x,p.y-22,'CHECKPOINT','#9dff6a')},700)}if(keep===undefined&&!META.run)delete META.run}}catch(e){console.warn(e)}return r}}
+{const _d=die;die=function(){const ck=META&&META.ckpt&&p&&p.diff==='facil'?META.ckpt:null;const r=_d.apply(this,arguments);
+ if(ck&&state==='over'){const m=$('#overbox .menu');if(m&&!$('#ckbtn')){m.insertAdjacentHTML('afterbegin','<button class="mi nav sel" id="ckbtn" data-a="ckpt">VOLTAR AO CHECKPOINT <small style="font-size:.6em;color:#9dff6a">'+M(ck.depth)+'</small></button>');for(const x of m.querySelectorAll('.mi'))if(x.id!=='ckbtn')x.classList.remove('sel')}}
+ else if(META&&p&&p.diff!=='facil'){delete META.ckpt;saveMeta()}return r}}
+$('#overbox').addEventListener('click',ev=>{const el=ev.target.closest('#ckbtn');if(!el)return;ev.stopImmediatePropagation();const ck=META.ckpt;if(!ck)return;$('#over').hidden=true;META.run=JSON.parse(JSON.stringify(ck));
+ const S=META.run.p;if(S){S.hp=Math.max(S.hp||0,Math.ceil((S.mhp||10)/2));S.buoys=S.buoys||0}runResume();SFX.down();banner('CHECKPOINT',M(depth))},true);
+{const _ng=newGame;newGame=function(){if(META)delete META.ckpt;return _ng.apply(this,arguments)}}
+{const _v=victory;victory=function(){const r=_v.apply(this,arguments);if(state==='over'&&META){delete META.ckpt;saveMeta()}return r}}
+
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
 </script>
