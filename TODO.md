@@ -48,9 +48,9 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Luta secreta da Orca feita
 
 ## Orca (feedback novo)
-- [ ] Refazer a luta da Orca como chefe de verdade com VÁRIAS FASES (como os chefes mitológicos: 4 fases, rugido, golpes novos por fase)
-- [ ] Animação da orca melhor (nado, mordida, giro, salto, cauda)
-- [ ] IA inteligente: orcas são caçadoras espertas — cercar, fingir recuar, emboscar, usar ondas/bolhas pra encurralar, prever a posição do jogador, chamar o "grupo" (filhotes) numa fase
+- [x] Orca com 4 fases (Caçada, Carrossel, Matilha, Fúria do Abismo), rugido e golpes novos por fase
+- [x] Animação da orca: boca abrindo com dentes, cauda batendo, cicatrizes, olho vermelho na fúria, morte afundando
+- [x] IA esperta (prevê o jogador, finta, carrossel de bolhas, filhotes flanqueando, mergulho surpresa, pune quem fica parado): — cercar, fingir recuar, emboscar, usar ondas/bolhas pra encurralar, prever a posição do jogador, chamar o "grupo" (filhotes) numa fase
 
 ## Pedidos novos (feitos)
 - [x] Caranguejo-chefe extra no fim dos 300 m no Difícil/Insano
