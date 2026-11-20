@@ -6268,6 +6268,9 @@ $('#overbox').addEventListener('click',ev=>{const el=ev.target.closest('#ckbtn')
  else{let ok=0;for(let d=4;d<=96&&!ok;d+=4)for(let k=0;k<16;k++){const a=k*TAU/16,x=p.x+Math.cos(a)*d,y=p.y+Math.sin(a)*d;if(!blocked(x,y,p.r+1)){p.x=x;p.y=y;ok=1;break}}}
  p.vx*=.3;p.vy*=.3;if(p.grab)p.grab=null;for(const e of en){if(e.st==='hold'){e.st='';e.tm=.6}if(e.clamp>0)e.clamp=0}}}
 
+/* ================= VERSÃO NO MENU ================= */
+const VERSAO='0.13.1';
+{const t=$('#title');if(t){t.insertAdjacentHTML('beforeend','<div id="ver">v'+VERSAO+'</div>');const st=document.createElement('style');st.textContent='#ver{position:absolute;left:8px;top:6px;font:8px "Press Start 2P",monospace;color:#cfe8ff;opacity:.55;letter-spacing:1px;pointer-events:none;text-shadow:0 1px 0 #000;z-index:5}';document.head.appendChild(st)}}
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
 </script>
