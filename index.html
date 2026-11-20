@@ -3621,7 +3621,7 @@ function titleScene(){if(!tsc){tsc={fish:[],bub:[],jel:[]};for(let i=0;i<26;i++)
   ctx.fillStyle=OUT;ctx.fillRect(-24,-4,48,9);ctx.fillStyle='#8a3e1e';ctx.fillRect(-23,-3,46,5);ctx.fillStyle='#c8602a';ctx.fillRect(-23,-3,46,2);ctx.fillStyle='#f0e8d8';ctx.fillRect(-21,-1,42,1);ctx.fillStyle='#5a2a10';ctx.fillRect(-20,2,40,2);
   ctx.fillStyle=OUT;ctx.fillRect(-6,-14,15,11);ctx.fillStyle='#f0e8d8';ctx.fillRect(-5,-13,13,9);ctx.fillStyle='#59d8ff';ctx.fillRect(-3,-11,4,3);ctx.fillRect(3,-11,4,3);ctx.fillStyle='#c83a3a';ctx.fillRect(-6,-15,15,2);
   ctx.fillStyle='#5a3a20';ctx.fillRect(12,-26,1,22);ctx.fillStyle='#ffd45e';ctx.fillRect(11,-27,3,2);ctx.globalAlpha=.4+.3*Math.sin(t*5);ctx.fillRect(10,-29,5,5);ctx.globalAlpha=1;
-  ctx.fillStyle='#1d3050';ctx.fillRect(-17,-13,6,2);ctx.fillStyle='#f0c8a0';ctx.fillRect(-16,-11,4,3);ctx.fillStyle='#e8e0d0';ctx.fillRect(-16,-9,4,3);ctx.fillStyle='#2a4a7a';ctx.fillRect(-17,-6,6,4);ctx.fillStyle='#8a4a1e';ctx.fillRect(-12,-9,2,1);
+  tiaoMini(ctx,-21,-17,t);
   ctx.fillStyle='#8a6a3a';ctx.save();ctx.translate(-13,-7);ctx.rotate(-.9);ctx.fillRect(0,0,22,1);ctx.restore();ctx.restore();
   const tx=bx-13+Math.cos(-.9)*22,ty=by-7+Math.sin(-.9)*22;ctx.strokeStyle='rgba(240,240,240,.6)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(tx,ty);const ly=sy+H*.25+Math.sin(t*.8)*6;ctx.quadraticCurveTo(tx-6,sy,tx-4+Math.sin(t)*3,ly);ctx.stroke();disc(tx-4+Math.sin(t)*3,ly,1.5,'#ff5d6c')}
  if(Math.random()<.15)pt.length=0}
@@ -4610,7 +4610,7 @@ let nests=[];
  if(n.hp<n.mhp){ctx.fillStyle='#000';ctx.fillRect(n.x-10,n.y-16,20,3);ctx.fillStyle='#ffd45e';ctx.fillRect(n.x-9,n.y-15,18*n.hp/n.mhp,1)}}}}
 
 /* ================= EXPLOSÕES ABREM PAREDES ================= */
-{const _ex=explode;explode=function(x,y,r,d,hurtsP,own){_ex.apply(this,arguments);if(typeof TUT!=='undefined'&&TUT.on)return;const tr=Math.max(2,Math.round(r*.9/TS)),cx=Math.floor(x/TS),cy=Math.floor(y/TS);let n=0;
+{const _bw=boomWorld;boomWorld=function(x,y,r){_bw.apply(this,arguments);if(typeof TUT!=='undefined'&&TUT.on)return;const tr=Math.max(2,Math.round(r*.6/TS)),cx=Math.floor(x/TS),cy=Math.floor(y/TS);let n=0;
  for(let yy=-tr;yy<=tr;yy++)for(let xx=-tr;xx<=tr;xx++){const tx=cx+xx,ty=cy+yy;if(xx*xx+yy*yy<=tr*tr&&tx>1&&ty>1&&tx<MW-2&&ty<MH-2&&map[tx+ty*MW]){map[tx+ty*MW]=0;n++;if(n%3===0)pt.push({x:tx*TS+4,y:ty*TS+4,vx:R(80)-40,vy:R(80)-40,life:.6,ml:.6,c:'#8a6a5a',s:2})}}
  if(n)try{paint()}catch(e){}}}
 /* ================= LUTA SECRETA: A ORCA ================= */
@@ -4742,6 +4742,26 @@ function scnSpots(n,ceil){const out=[];for(let t=0;t<n*40&&out.length<n;t++){con
  else if(o.k==='zap'){const c=(o.ch||0)/4;for(let j=0;j<6;j++){const a=-Math.PI/2*u+(j-2.5)*.35+Math.sin(T*3+j)*.15;pl(x,y,x+Math.cos(a)*7,y+Math.sin(a)*7*(u>0?1:1),c>.75&&Math.random()<.5?'#ffffff':'#c8c040',1)}disc(x,y-u*2,2.2,c>.75?'#fff35a':'#8a8a20');if(c>.7)wglow(x,y-u*4,30*c,'#fff35a',.4)}
  else if(o.k==='bulb'){const sw=Math.sin(T*1.5)*2;pl(x,y,x+sw,y-u*7,'#3a7a3a',1);disc(x+sw,y-u*9,3.4,OUT);disc(x+sw,y-u*9,2.8,'#7ad86a');disc(x+sw-.8,y-u*9.8,1.1,'#d8ffd0');if(Math.random()<.02)bub(x+sw,y-u*10,1)}
  else if(o.k==='cucumber'){const s=Math.sin(T*1.3);ctx.save();ctx.translate(x,y-u*2.5);ell(0,0,6+s*.6,2.6-s*.3,0,'#4a2a5a');for(let k=-2;k<=2;k++)disc(k*2.4,-1.4,.8,'#c8a8ff');ctx.restore()}}}}
+
+/* ================= TIÃO NO BARCO DO MENU ================= */
+const TMINI=['....kkkkk...','...kzzyzzk..','..kkkkkkkkk.','...kFFFFFk..','...kFkFkFk..','...kFFeeFk..','...hhheehhm.','..hhhhhhhhMm','..hhhhkkhhM.','...hhhhhh...','..kBBBBBBk..','..kBBbBBBk..','..kBBBBBBk..'];
+const TMP={k:'#0a0f1e',z:'#22324a',y:'#ffd45e',F:'#e2b088',e:'#c0392b',h:'#ddd6c4',m:'#8a4a1e',M:'#5a2e12',B:'#2a4a7a',b:'#ffd45e'};
+function tiaoMini(g,x0,y0,t){const bl=Math.sin(t*1.1)>.96;TMINI.forEach((r,y)=>{for(let x=0;x<r.length;x++){let c=TMP[r[x]];if(!c)continue;if(bl&&y===4&&r[x]==='k'&&(x===5||x===7))c=TMP.F;g.fillStyle=c;g.fillRect(x0+x,y0+y,1,1)}});
+ for(let i=0;i<3;i++){const k=(t*.6+i/3)%1;g.globalAlpha=.55*(1-k);g.fillStyle='#e8eef4';g.fillRect(Math.round(x0+11+Math.sin(t*2+i)*1.5),Math.round(y0+6-k*10),k>.5?2:1,k>.5?2:1)}g.globalAlpha=1}
+/* ================= MENU ENXUTO ================= */
+{const m=$('#tmenu');const order=['cont','start','how','tut','ach','prof'];const btn={};for(const b of [...m.querySelectorAll('.mi')])btn[b.dataset.a]=b;
+ for(const k of['yard','album','ward','rank'])if(btn[k])btn[k].remove();for(const k of order)if(btn[k])m.appendChild(btn[k])}
+/* conquistas reúne ranking e álbum; configurações reúne vestiário */
+let FROM=null;
+{const _oa=openAch;openAch=function(){_oa();const b=$('#achbox'),h=b.querySelector('h2');if(h)h.insertAdjacentHTML('afterend','<div class="wtabs" style="justify-content:center;margin:4px 0 8px"><button class="btn nav sel" disabled>CONQUISTAS</button><button class="btn nav" id="achrk">RANKING</button><button class="btn nav" id="achal">ÁLBUM DE CARTAS</button></div>');
+ $('#achrk').onclick=()=>{$('#achv').hidden=true;FROM='ach';openRank()};$('#achal').onclick=()=>{$('#achv').hidden=true;FROM='ach';openAlbum()}}}
+document.addEventListener('click',e=>{const id=e.target&&e.target.id;if(!FROM)return;if(id==='rkback'||id==='albback'){setTimeout(()=>{if(FROM==='ach'){FROM=null;openAch()}},0)}else if(id==='wback'){setTimeout(()=>{if(FROM==='prof'){FROM=null;openProf()}},0)}},true);
+{const _op=openProf;openProf=function(msg){_op(msg);const m=$('#profbox .menu');if(m&&!$('#pward'))m.insertAdjacentHTML('afterbegin','<button class="mi nav" id="pward">VESTIÁRIO</button>');const w=$('#pward');if(w)w.onclick=()=>{$('#prof').hidden=true;FROM='prof';openWard()}}}
+/* ESC/B dentro das telas voltando pro lugar certo */
+addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#rank').hidden&&FROM==='ach'){e.stopImmediatePropagation();$('#rkback').click()}},true);
+/* tutorial obrigatório antes da primeira partida da conta */
+{const _ng=newGame;newGame=function(){if(META&&!META.tut&&!META.tutSeen&&!META.runs){TUT.then=1;tutStart();return}_ng()}}
+{const _tf=tutFinish;tutFinish=function(done){const then=TUT.then;TUT.then=0;if(TUT.on&&!done&&META){META.tutSeen=1;saveMeta()}_tf(done);if(then)setTimeout(()=>newGame(),600)}}
 
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);

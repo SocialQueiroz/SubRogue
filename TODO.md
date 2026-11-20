@@ -20,7 +20,7 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 ## Conteúdo
 - [ ] Mais inimigos, mais variedade — feito em parte: tartaruga-mordedora, tartaruga-verde, caravela, juba-de-leão, ctenóforo, polvo-gigante, peixe-baú
 - [x] Ninhos de peixes no fim das correntezas (soltam peixes, destruíveis, dão moedas e às vezes baú)
-- [x] Paredes explodíveis: toda explosão agora abre um buraco na rocha
+- [x] Paredes explodíveis: bomba e minas agora abrem buraco na rocha de verdade (antes a bomba não quebrava nada)
 - [ ] Mais blocos interagíveis com explosão (rocha rachada, barris, cristais, etc.)
 - [x] Mais coisas interagíveis no cenário: anêmonas no chão/teto, ouriços, mariscos gigantes, coral-de-fogo, anêmona elétrica, bolsas de ar, pepino-do-mar
 - [x] Redemoinho de pressão negativa: refeito como espiral vermelha girando
@@ -58,3 +58,6 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Águas-vivas com tentáculos longos que fluem e queimam
 - [x] Polvo-gigante que agarra (impulso solta)
 - [x] Peixe-baú disfarçado de baú
+- [x] Menu enxuto: Novo jogo, Como jogar, Tutorial, Conquistas (com Ranking e Álbum), Configurações (com Vestiário); estaleiro fora do menu
+- [x] Tutorial obrigatório antes da primeira partida da conta
+- [x] Tião no barco do menu
