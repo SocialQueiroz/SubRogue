@@ -4990,6 +4990,40 @@ let WTR=[];const NOTES=['"Se alguém achar esta garrafa: o fundo não tem fim. T
 {const _k=kill;kill=function(e){const was=e&&!e.dead&&e.S&&e.S.id==='cavalo';const r=_k.apply(this,arguments);if(was&&Math.random()<.6){ftxt(e.x,e.y-12,'ERA O PAPAI!','#ffd45e');for(let i=0;i<3;i++)pt.push({x:e.x,y:e.y,vx:R(30)-15,vy:-20-R(20),life:2.2,ml:2.2,c:'#e8c050',s:2})}return r}}
 ACHL.push(['moby','Me Chame de Ishmael','Aviste a baleia branca',m=>!!m.moby],['cthulhu','Ele Sonha','Encontre o que dorme no fundo',m=>!!m.cthulhu],['bottle5','Correio do Mar','Ache 5 garrafas com bilhete',m=>(m.bottles||0)>=5]);
 
+/* ================= VIDA AMBIENTE NO MEIO DA ÁGUA ================= */
+let AMB=[];
+function ambOpen(m,far){for(let t=0;t<80;t++){const x=(3+RI(MW-6))*TS,y=(3+RI(MH-6))*TS;if(!blocked(x,y,m)&&(!far||hyp(x-p.x,y-p.y)>far))return{x,y}}return null}
+function ambSteer(o,sp,dt){const a=o.a,nx=o.x+Math.cos(a)*sp*dt,ny=o.y+Math.sin(a)*sp*dt;if(blocked(nx+Math.cos(a)*14,ny+Math.sin(a)*14,6)){o.a+=(o.turn||1)*dt*3;if(Math.random()<.01)o.turn=-(o.turn||1)}else{o.x=nx;o.y=ny;o.a+=Math.sin(o.t*.4+o.ph)*dt*.25}}
+{const _nl=newLevel;newLevel=function(){_nl.apply(this,arguments);AMB=[];if(!p||(typeof TUT!=='undefined'&&TUT.on)||(typeof ORC!=='undefined'&&ORC))return;const z=zone,add=(k,n,m,f)=>{for(let i=0;i<n;i++){const s=ambOpen(m||16,60);if(s)AMB.push(Object.assign({k,t:R(9),ph:R(9),a:R(TAU),turn:Math.random()<.5?1:-1},s,f?f():{}))}};
+ const fishCol=[['#e8f0f8','#a8c0d8'],['#ffd45e','#ff8a3a'],['#9fe8ff','#3a8ab0'],['#c8d8e8','#6a7a9a'],['#7affd8','#2a8a9a'],['#ff9ad8','#a04a8a'],['#cfe','#5a6a8a']][z]||['#cfe','#678'];
+ add('school',3+RI(3),20,()=>({f:[...Array(12+RI(14))].map(()=>({x:R(30)-15,y:R(16)-8,ph:R(9)})),c:fishCol,sp:28+R(20),sc:0}));
+ if(z<=1&&Math.random()<.6)add('turtle',1,22);if(z>=1&&z<=3&&Math.random()<.45)add('manta',1,30);
+ add('bloom',1+RI(2),20,()=>({j:[...Array(6+RI(6))].map(()=>({x:R(40)-20,y:R(40)-20,ph:R(9),s:2+R(2)}))}));
+ if(z>=1)add('krill',1+RI(2),16,()=>({d:[...Array(30)].map(()=>[R(40)-20,R(24)-12,R(9)])}));
+ if(z<=1)add('kelp',2+RI(2),14);
+ if(z>=3)add('lantern',2+RI(2),20,()=>({f:[...Array(10)].map(()=>({x:R(30)-15,y:R(16)-8,ph:R(9)})),sp:24}));
+ for(let i=0;i<4+RI(3);i++){for(let t=0;t<60;t++){const x=2+RI(MW-4),y=3+RI(MH-6);if(!map[x+y*MW]&&map[x+(y+1)*MW]){AMB.push({k:'bub',x:x*TS+8,y:(y+1)*TS,t:R(9),ph:R(9)});break}}}
+ if(z>=1&&z<=4&&Math.random()<.25)AMB.push({k:'whale',x:-300,y:MH*TS*.35+R(MH*TS*.3),t:0,ph:0})}}
+{const _tp=tickParry;tickParry=function(dt){_tp(dt);if(!p||state!=='play')return;for(const o of AMB){o.t+=dt;const d=hyp(p.x-o.x,p.y-o.y);
+ if(o.k==='school'||o.k==='lantern'){o.sc=Math.max(0,(o.sc||0)-dt*.6);if(d<55){o.sc=1;o.a=Math.atan2(o.y-p.y,o.x-p.x)}for(const q of pj)if(!q.e&&hyp(q.x-o.x,q.y-o.y)<30){o.sc=1}ambSteer(o,o.sp*(1+o.sc*1.5),dt)}
+ else if(o.k==='turtle')ambSteer(o,14,dt);else if(o.k==='manta')ambSteer(o,18,dt);else if(o.k==='kelp'){o.x+=Math.sin(o.t*.3+o.ph)*5*dt;o.y+=Math.cos(o.t*.2)*3*dt}
+ else if(o.k==='bloom'){if(!blocked(o.x,o.y-10,10))o.y-=4*dt;o.x+=Math.sin(o.t*.4)*3*dt}else if(o.k==='krill'){o.x+=Math.sin(o.t*.5+o.ph)*6*dt;o.y+=Math.cos(o.t*.4)*4*dt}
+ else if(o.k==='whale'){o.x+=22*dt;if(o.x>MW*TS+400)o.x=-400}}}}
+{const _dp=drawParryFx;drawParryFx=function(){
+ const V=(o,m)=>o.x>camx-m&&o.x<camx+VW+m&&o.y>camy-m&&o.y<camy+VH+m;
+ for(const o of AMB){if(o.k==='whale'){if(Math.abs(o.y-camy-VH/2)<VH){ctx.globalAlpha=.16;const x=camx+((o.x-camx)*.35)%(VW+500)-150,y=o.y*.0+camy+VH*.35;ell(x,y,110,22,0,'#02121c');ell(x-120,y-2,30,8,.3,'#02121c');ell(x+40,y+18,30,7,.5,'#02121c');ctx.globalAlpha=1}continue}
+  if(!V(o,60))continue;const x=o.x,y=o.y,T=o.t;
+  if(o.k==='school'||o.k==='lantern'){const ca=Math.cos(o.a),sa=Math.sin(o.a),spr=1+(o.sc||0)*1.8;for(const f of o.f){const fx=x+(f.x*ca-f.y*sa)*spr+Math.sin(T*3+f.ph)*1.5,fy=y+(f.x*sa+f.y*ca)*spr+Math.cos(T*2.5+f.ph)*1;
+   if(o.k==='lantern'){ctx.fillStyle='#7af8ff';ctx.globalAlpha=.6+.4*Math.sin(T*4+f.ph);ctx.fillRect(Math.round(fx),Math.round(fy),1,1);ctx.globalAlpha=1}else{const X=Math.round(fx),Y=Math.round(fy);ctx.fillStyle='rgba(4,12,20,.55)';ctx.fillRect(X-1,Y-1,5,3);ctx.fillStyle=o.c[0];ctx.fillRect(X,Y,3,1);ctx.fillStyle=o.c[1];ctx.fillRect(X,Y+1,2,1);ctx.fillRect(Math.round(fx-ca*2),Math.round(fy-sa*2),1,1);ctx.fillStyle='#000';ctx.fillRect(Math.round(fx+ca*2),Y,1,1)}}if(o.k==='lantern')wglow(x,y,30,'#5af8ff',.12)}
+  else if(o.k==='turtle'){const a=o.a,f=Math.sin(T*2.2)*.6;ctx.save();ctx.translate(x,y);ctx.rotate(a);for(const s of[-1,1]){pl(2,s*3,-1+f*2,s*(9+f*2),'#3a6a3a',3);pl(-5,s*2,-8,s*5,'#3a6a3a',2)}ell(0,0,7,5,0,OUT);ell(0,0,6,4.2,0,'#5a8a4a');for(let k=-1;k<=1;k++)disc(k*2.5,0,1.4,'#3a6a2a');disc(8,0,2.4,OUT);disc(8,0,2,'#8ab06a');ctx.fillStyle='#000';ctx.fillRect(9,-1,1,1);ctx.restore()}
+  else if(o.k==='manta'){const a=o.a,f=Math.sin(T*1.6);ctx.save();ctx.translate(x,y);ctx.rotate(a);poly([[10,0],[0,-16-f*5],[-6,-4],[-16,0],[-6,4],[0,16+f*5]],'#1a2a3a',OUT);poly([[8,0],[0,-12-f*4],[-4,-3],[-4,3],[0,12+f*4]],'#2a3a4a');pl(-16,0,-26,Math.sin(T*3)*2,'#1a2a3a',1);pl(10,-3,13,-5,'#1a2a3a',1);pl(10,3,13,5,'#1a2a3a',1);ctx.restore()}
+  else if(o.k==='bloom'){for(const j of o.j){const jx=x+j.x+Math.sin(T+j.ph)*2,jy=y+j.y+Math.cos(T*.8+j.ph)*2,pu=1+.25*Math.sin(T*3+j.ph);ctx.globalAlpha=.7;dome(jx,jy,j.s*pu,'#ffd8f4');ctx.globalAlpha=.5;for(let k=-1;k<=1;k++)pl(jx+k,jy,jx+k+Math.sin(T*2+k)*1,jy+j.s*2,'#ffc8e8',1);ctx.globalAlpha=1}}
+  else if(o.k==='krill'){for(const q of o.d){ctx.fillStyle=Math.sin(T*2+q[2])>0?'#ff9a7a':'#ffc8a0';ctx.fillRect(Math.round(x+q[0]+Math.sin(T*1.5+q[2])*3),Math.round(y+q[1]+Math.cos(T+q[2])*2),1,1)}}
+  else if(o.k==='kelp'){const P=[];for(let k=0;k<6;k++)P.push([x+k*3,y+Math.sin(T*1.2+k*.8+o.ph)*3]);tube(P,j=>Math.max(.8,2-j*.2),'#4a7a2a',{lt:.3});disc(P[2][0],P[2][1]-1,1.5,'#6a9a3a')}
+  else if(o.k==='bub'){for(let k=0;k<5;k++){const ph=(T*.35+k/5)%1;ctx.globalAlpha=.6*(1-ph);ctx.strokeStyle='#dff6ff';ctx.beginPath();ctx.arc(x+Math.sin(T*2+k)*2,y-ph*90,1+ph*1.5,0,TAU);ctx.stroke()}ctx.globalAlpha=1}}
+ if(zone>=2&&state==='play'){ctx.fillStyle='rgba(220,235,245,.5)';for(let i=0;i<40;i++){const sx=((i*73.1+time*(3+i%4))%VW),sy=((i*41.7+time*(5+i%3)*2)%VH);ctx.fillRect(Math.round(camx+sx),Math.round(camy+sy),1,1)}}
+ _dp()}}
+
 /* ================= CARACTERÍSTICA REAL DE CADA BICHO (camada por cima do comportamento) ================= */
 const TRMAP=[[/^Peixe-leão|escorpião|Peixe-pedra|Coroa-de-espinhos|Ouriço|anéis-azuis|Dragão-azul|Raia(?!-elétrica)|Raia-pintada|Lesma-do-mar|Vespa-do-mar|Quimera|Peixe-espinha|Pescador-espinhoso|Escorpião-do-mar/i,'venom'],
  [/elétric|Enguia-magma|Enguia-de-lava|Peixe-lâmpada/i,'shock'],[/^Lula|Lula-|Polvo-dumbo|Polvo-telescópio|Polvo-cristal|Polvo-fantasma|Polvo-hadal|Polvo-das-fontes/i,'ink'],[/^Polvo(?!-dumbo|-telescópio|-cristal|-fantasma|-hadal|-das-fontes|-mímico)/i,'hug'],
