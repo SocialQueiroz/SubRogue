@@ -18,11 +18,11 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [ ] Itens com interações legais que mudem o jeito de jogar (sinergias, efeitos que combinam)
 
 ## Conteúdo
-- [ ] Mais inimigos, mais variedade
+- [ ] Mais inimigos, mais variedade — feito em parte: tartaruga-mordedora, tartaruga-verde, caravela, juba-de-leão, ctenóforo, polvo-gigante, peixe-baú
 - [x] Ninhos de peixes no fim das correntezas (soltam peixes, destruíveis, dão moedas e às vezes baú)
 - [x] Paredes explodíveis: toda explosão agora abre um buraco na rocha
 - [ ] Mais blocos interagíveis com explosão (rocha rachada, barris, cristais, etc.)
-- [ ] Mais coisas interagíveis no cenário
+- [x] Mais coisas interagíveis no cenário: anêmonas no chão/teto, ouriços, mariscos gigantes, coral-de-fogo, anêmona elétrica, bolsas de ar, pepino-do-mar
 - [x] Redemoinho de pressão negativa: refeito como espiral vermelha girando
 
 ## Música
@@ -51,3 +51,10 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [ ] Refazer a luta da Orca como chefe de verdade com VÁRIAS FASES (como os chefes mitológicos: 4 fases, rugido, golpes novos por fase)
 - [ ] Animação da orca melhor (nado, mordida, giro, salto, cauda)
 - [ ] IA inteligente: orcas são caçadoras espertas — cercar, fingir recuar, emboscar, usar ondas/bolhas pra encurralar, prever a posição do jogador, chamar o "grupo" (filhotes) numa fase
+
+## Pedidos novos (feitos)
+- [x] Caranguejo-chefe extra no fim dos 300 m no Difícil/Insano
+- [x] Tartarugas: mordida esticando o pescoço; com pouca vida entram no casco, giram quicando 3 vezes e ficam escondidas até morrer
+- [x] Águas-vivas com tentáculos longos que fluem e queimam
+- [x] Polvo-gigante que agarra (impulso solta)
+- [x] Peixe-baú disfarçado de baú
