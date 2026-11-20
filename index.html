@@ -6287,6 +6287,11 @@ const SWDIFF={facil:1,medio:1/3,dificil:1/4,insano:1/5};
 @keyframes pulso{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.9)}}
 @keyframes brasa{0%,100%{opacity:.6}50%{opacity:1}}
 @keyframes scan{from{background-position:0 0}to{background-position:0 12px}}`;document.head.appendChild(st)}
+/* ================= CORPO DOS PEIXES SEM DOBRA ================= */
+/* o corpo era uma corrente que só seguia a cabeça: virando rápido, dobrava no meio em "V"; agora cada junta tem um limite de curva, como uma coluna */
+{const _u=upE;upE=function(e,dt){const r=_u.apply(this,arguments);const P=e&&e.sp;if(!P||P.length<2||!e.S||e.S.a!=='chain'||e.dead)return r;
+ const pf=e.S.pf,sl=e.r*(e.S.sl||.72),mb=pf==='eel'?.55:pf==='shark'?.16:.2;let fx=e.fx||1,fy=e.fy||0;const fl=Math.hypot(fx,fy)||1;let pa=Math.atan2(-fy/fl,-fx/fl);
+ for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i];let ang=Math.atan2(b.y-a.y,b.x-a.x);const da=Math.atan2(Math.sin(ang-pa),Math.cos(ang-pa));const lim=i===1?mb*.8:mb;if(Math.abs(da)>lim)ang=pa+Math.sign(da)*lim;b.x=a.x+Math.cos(ang)*sl;b.y=a.y+Math.sin(ang)*sl;pa=ang}return r}}
 /* ================= VERSÃO NO MENU ================= */
 const VERSAO='0.13.1';
 {const t=$('#title');if(t){t.insertAdjacentHTML('beforeend','<div id="ver">v'+VERSAO+'</div>');const st=document.createElement('style');st.textContent='#ver{position:absolute;left:8px;top:6px;font:8px "Press Start 2P",monospace;color:#cfe8ff;opacity:.55;letter-spacing:1px;pointer-events:none;text-shadow:0 1px 0 #000;z-index:5}';document.head.appendChild(st)}}
