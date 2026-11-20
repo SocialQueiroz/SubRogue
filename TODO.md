@@ -80,3 +80,9 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Mais 12 equipamentos e 6 comidas (armas 37, equipamentos 67, comidas 21)
 - [x] Decoração no meio da água: ficaram só as águas-vivas; saíram cardumes, tartarugas, raias, krill, algas soltas, bolhas, lanternas, baleia, neve, tábuas, sargaço, caixas e bola de isca
 - [x] Mais 25 mensagens nas garrafas (outros pescadores)
+
+## Tartarugas refeitas (feedback novo)
+- [x] Visual novo: tartaruga-mordedora (casco escuro com espinhos, cabeça grande de bico curvo, cauda espinhosa) e tartaruga-verde (casco com escudos, nadadeiras longas)
+- [x] Sem tanque: tiradas a armadura, a característica "casca" (85% menos dano) e o "escondida até morrer"; vida menor
+- [x] Golpe: recolhe a cabeça (brilho amarelo) e dá o bote com o pescoço esticando; se errar, fica presa e leva mais dano
+- [x] Com pouca vida: gira no casco (aviso), quica nas paredes mirando em você e derruba outros bichos ("STRIKE!"); depois de 3 quiques fica TONTA de barriga pra cima (dano em dobro) e volta a lutar
