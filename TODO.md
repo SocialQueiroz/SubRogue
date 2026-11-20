@@ -182,3 +182,8 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 ## Baús e sereias (feedback novo)
 - [x] Baús em pixel art: pequeno (tampa arredondada, madeira com veios, faixas de ferro, borda e quinas de ouro, fechadura), grande (3 faixas de ferro, rebites, pedras na tampa, cadeado) e grande aberto (tampa de pé, fundo escuro com moedas); peixe-baú disfarçado usa o mesmo desenho
 - [x] Sereias (a partir de 400 m, ~1 em cada 3 fendas): o Tião avisa no rádio quando a fenda tem sereia e o canto dela é ouvido de perto (~330 px)
+
+## Golfinhos safados (feedback novo)
+- [x] Bandos de 3 a 5 que rodeiam juntos e se revezam nas travessuras: trombada que empurra e ROUBA moedas (matando o ladrão, devolve), bolha na cara (cega um pouco), pirueta e risadinhas ("HIHIHI!"); encostar sem querer não machuca, só a trombada
+- [x] Animação certa: o rabo não pula mais quando muda a velocidade e o golfinho nunca fica de cabeça pra baixo (espelha e só inclina)
+- [x] Golfinho Safado (2% por golfinho): rosa-choque com chapéu de palha amarelo de faixa roxa, olho preguiçoso e sorrisinho; matando, conquista "Pegou o Safado" e o "Chapéu do Golfinho Safado" no vestiário
