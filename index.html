@@ -6268,6 +6268,25 @@ $('#overbox').addEventListener('click',ev=>{const el=ev.target.closest('#ckbtn')
  else{let ok=0;for(let d=4;d<=96&&!ok;d+=4)for(let k=0;k<16;k++){const a=k*TAU/16,x=p.x+Math.cos(a)*d,y=p.y+Math.sin(a)*d;if(!blocked(x,y,p.r+1)){p.x=x;p.y=y;ok=1;break}}}
  p.vx*=.3;p.vy*=.3;if(p.grab)p.grab=null;for(const e of en){if(e.st==='hold'){e.st='';e.tm=.6}if(e.clamp>0)e.clamp=0}}}
 
+/* ================= ESPADAS PELA DIFICULDADE + VISUAL DO DIFÍCIL E DO INSANO ================= */
+/* espada, sabre e machado: dano cheio no fácil, 1/3 no médio, 1/4 no difícil e 1/5 no insano (a faca não muda) */
+const SWDIFF={facil:1,medio:1/3,dificil:1/4,insano:1/5};
+{const _sw=swing;swing=function(W){const k=W&&['sword','sabre','machado'].includes(p&&p.wp)?(SWDIFF[(p&&p.diff)||(DIFF===DIFFS.facil?'facil':DIFF===DIFFS.dificil?'dificil':DIFF===DIFFS.insano?'insano':'medio')]||1):1;if(k===1)return _sw.apply(this,arguments);const d0=W.d;W.d=d0*k;try{return _sw.apply(this,arguments)}finally{W.d=d0}}}
+{const st=document.createElement('style');st.textContent=`
+.dfo .btn[data-df=dificil]{background:linear-gradient(#5a1418,#2a0608);color:#ffb0a0;box-shadow:0 0 0 2px #000,0 0 0 4px #b0302a,0 0 0 6px #000,inset 0 0 18px #ff3a1a55;text-shadow:0 2px 0 #000}
+.dfo .btn[data-df=dificil] small{color:#ffcfc0}
+.dfo .btn[data-df=dificil]::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 20% 110%,#ff6a1a55,transparent 45%),radial-gradient(circle at 85% 115%,#ff3a1a44,transparent 40%);animation:brasa 2.2s ease-in-out infinite}
+.dfo .btn[data-df=insano]{position:relative;overflow:hidden;background:repeating-linear-gradient(180deg,#0a0003 0 3px,#180006 3px 4px);color:#ff2a3a;font-size:14px;letter-spacing:3px;box-shadow:0 0 0 2px #000,0 0 0 4px #ff0a2a,0 0 0 6px #000,0 0 24px #ff0a2a99;text-shadow:2px 0 #00e5ff,-2px 0 #ff0a2a,0 0 10px #ff0a2a;animation:insano 3.2s infinite}
+.dfo .btn[data-df=insano] small{color:#ff8a9a;text-shadow:0 0 6px #ff0a2a}
+.dfo .btn[data-df=insano] .hh img{filter:drop-shadow(0 0 3px #ff0a2a);animation:pulso .6s infinite}
+.dfo .btn[data-df=insano]::before{content:'☠';position:absolute;right:8px;top:4px;font-size:18px;color:#ff0a2a;opacity:.85;text-shadow:0 0 8px #ff0a2a;animation:pulso 1.2s infinite}
+.dfo .btn[data-df=insano]::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(transparent 0,#ff0a2a22 50%,transparent 100%);background-size:100% 6px;animation:scan 1.6s linear infinite;mix-blend-mode:screen}
+.dfo .btn[data-df=insano]:hover,.dfo .btn[data-df=insano].sel{animation:insano .35s infinite;outline-color:#ff0a2a}
+.dfo .btn[data-df=dificil],.dfo .btn[data-df=insano]{position:relative}
+@keyframes insano{0%,92%,100%{transform:none;filter:none}93%{transform:translate(2px,-1px) skewX(-6deg);filter:hue-rotate(20deg)}95%{transform:translate(-3px,1px) skewX(5deg)}97%{transform:translate(1px,1px);filter:invert(.15)}}
+@keyframes pulso{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.9)}}
+@keyframes brasa{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes scan{from{background-position:0 0}to{background-position:0 12px}}`;document.head.appendChild(st)}
 /* ================= VERSÃO NO MENU ================= */
 const VERSAO='0.13.1';
 {const t=$('#title');if(t){t.insertAdjacentHTML('beforeend','<div id="ver">v'+VERSAO+'</div>');const st=document.createElement('style');st.textContent='#ver{position:absolute;left:8px;top:6px;font:8px "Press Start 2P",monospace;color:#cfe8ff;opacity:.55;letter-spacing:1px;pointer-events:none;text-shadow:0 1px 0 #000;z-index:5}';document.head.appendChild(st)}}
