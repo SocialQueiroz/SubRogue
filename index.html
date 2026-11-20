@@ -5574,15 +5574,15 @@ const STORY={
  m60:['Seis mil metros. O abismo. Meu rádio quase não pega você aí.','Se ouvir uma voz que não é a minha... não responde.'],
  m90:['Nove mil metros... a fossa. Pressão de esmagar submarino.','Meu irmão deixou o capacete dele em algum lugar por aí. Eu sei disso. Eu sinto.','Vai, marujo. Termina o que ele começou.'],
  win:['Você... chegou no fundo do mundo. Onze mil metros.','Ninguém nunca chegou. Nem meu irmão. Mas ele ia ficar orgulhoso. Eu tô orgulhoso.','E esse peixe que você trouxe... nunca vi nada igual. Vamos ficar ricos, marujo! Todo mundo feliz!','...mas amanhã a gente desce de novo, né? O mar não acaba.']};
-document.body.insertAdjacentHTML('beforeend','<div id="cut" hidden><div class="cbar t"></div><div class="cbar b"></div><div class="cbox"><div class="tbox">'+faceCv('face big')+'<div class="cc"><div class="rb"></div><small>▶ ENTER / A / clique pra continuar &nbsp;·&nbsp; ESC pula</small></div></div></div></div>');
+document.body.insertAdjacentHTML('beforeend','<div id="cut" hidden><div class="cbar t"></div><div class="cbar b"></div><div class="cbox"><div class="tbox">'+faceCv('face big')+'<div class="cc"><div class="rb"></div><small>▶ <b class="cutk">B</b> / X / clique pra continuar &nbsp;·&nbsp; ESC / Y pula</small></div></div></div></div>');
 {const st=document.createElement('style');st.textContent='#cut{position:fixed;inset:0;z-index:400;background:rgba(0,6,12,.45)}#cut .cbar{position:absolute;left:0;right:0;height:10vh;background:#000;animation:cbar .5s ease-out}#cut .cbar.t{top:0}#cut .cbar.b{bottom:0}@keyframes cbar{from{height:0}}#cut .cbox{position:absolute;left:50%;bottom:13vh;transform:translateX(-50%);width:min(860px,calc(100vw - 24px))}#cut .tbox{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(#12202aee,#081218f4);padding:14px;box-shadow:0 0 0 2px #000,0 0 0 4px #c8a060,0 0 0 6px #000,0 16px 40px #000c}#cut canvas{width:120px;height:120px;image-rendering:pixelated;flex:none;box-shadow:0 0 0 2px #000,0 0 0 4px #2c4f5a}#cut .cc{flex:1}#cut .rb{font-size:25px;line-height:1.25;color:#f2f6f8;min-height:96px}#cut .rb b{display:block;font:11px "Press Start 2P";color:#ffd45e;margin-bottom:8px}#cut small{display:block;text-align:right;color:#8ab;font-size:16px;margin-top:6px}@media(max-width:600px){#cut canvas{width:72px;height:72px}#cut .rb{font-size:19px;min-height:80px}}';document.head.appendChild(st)}
 let CUT=null;const CUTQ=[];
 function cutPlay(key,done){if(CUT){CUTQ.push([key,done]);return}const L=STORY[key];if(!L){done&&done();return}const was=state;CUT={L,i:-1,done,was};if(state==='play')state='cut';$('#cut').hidden=false;try{initAudio();if(AC)AC.resume()}catch(e){}cutNext()}
 function cutNext(){if(!CUT)return;const rb=$('#cut .rb');if(CUT.i>=0&&rb.querySelector('.tt')&&rb.querySelector('.tt').textContent.length<CUT.L[CUT.i].length){clearInterval(rb._ti);rb.querySelector('.tt').textContent=CUT.L[CUT.i];return}CUT.i++;if(CUT.i>=CUT.L.length)return cutEnd();{const W=window.WMAP&&WMAP.get(CUT.L),who=(W&&W[CUT.i])||'SEU TIÃO';rb.dataset.who=who;const cv=$('#cut canvas');if(cv)cv.style.opacity=who==='SEU TIÃO'?1:.25}speak(rb,CUT.L[CUT.i])}
 function cutEnd(){if(!CUT)return;const c=CUT;CUT=null;$('#cut').hidden=true;if(state==='cut')state=c.was==='cut'?'play':c.was;mouse.down=false;for(const k in keys)keys[k]=false;c.done&&c.done();if(CUTQ.length){const q=CUTQ.shift();setTimeout(()=>{if(state==='play'||state==='over'||state==='title')cutPlay(q[0],q[1])},400)}}
 $('#cut').addEventListener('click',()=>cutNext());
-addEventListener('keydown',e=>{if(!CUT)return;e.stopImmediatePropagation();e.preventDefault();if(e.key==='Escape')cutEnd();else if(e.key==='Enter'||e.key===' ')cutNext()},true);
-{let pv=0;(function cl(){requestAnimationFrame(cl);if(!CUT)return;const g=navigator.getGamepads?navigator.getGamepads():[];let a=0,b=0;for(const q of g){if(!q)continue;if(q.buttons[0]&&q.buttons[0].pressed)a=1;if(q.buttons[1]&&q.buttons[1].pressed)b=1}const now=a|b<<1;if(now&1&&!(pv&1))cutNext();if(now&2&&!(pv&2))cutEnd();pv=now})()}
+addEventListener('keydown',e=>{if(!CUT)return;e.stopImmediatePropagation();e.preventDefault();if(e.repeat)return;if(e.key==='Escape')cutEnd();else if(e.key==='x'||e.key==='X')cutNext()},true);
+{let pv=0;(function cl(){requestAnimationFrame(cl);if(!CUT)return;const g=navigator.getGamepads?navigator.getGamepads():[];let a=0,b=0;for(const q of g){if(!q)continue;if(q.buttons[3]&&q.buttons[3].pressed)a=1;if(q.buttons[1]&&q.buttons[1].pressed)b=1}const now=a|b<<1;if(now&2&&!(pv&2))cutNext();if(now&1&&!(pv&1))cutEnd();pv=now})()}
 const csSeen=k=>{META.cs=META.cs||{};if(META.cs[k])return true;META.cs[k]=1;saveMeta();return false};
 /* abertura antes da primeira partida */
 {const _ng=newGame;newGame=function(){if(META&&!META.runs&&!csSeen('intro')){$('#title').hidden=true;cutPlay('intro',()=>_ng());return}_ng()}}
@@ -6157,6 +6157,22 @@ function luzFinal(){let L=$('#luzfim');if(L)L.remove();document.body.insertAdjac
 {const st=document.createElement('style');st.textContent='#luzfim{position:fixed;inset:0;z-index:5;pointer-events:none;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#1a3a4a 0%,#03080e 60%)}#luzfim i{position:absolute;border-radius:50%;opacity:0;animation:luzsobe 9s linear infinite}@keyframes luzsobe{0%{transform:translateY(0);opacity:0}15%{opacity:.9}50%{opacity:.4}70%{opacity:1}100%{transform:translateY(-55vh);opacity:0}}#over{z-index:6}';document.head.appendChild(st)}
 ACHL.push(['zeca','O Capacete do Zeca','Ache o capacete do irmão do Tião',m=>!!m.helmet],['luz','A Luz do Fundo','Leve o capacete do Zeca até os 11.000 m',m=>!!m.luz],['zeca5','Cartas do Zeca','Ache as 5 garrafas do Zeca',m=>(m.bro||0)>=5]);
 
+/* ================= MENUS: o Tião não fala por cima e nada vaza pro menu ================= */
+/* cena que começa com um menu aberto (morte, loja, escolha, rotas) esconde o menu até terminar; todo menu que aparece ignora confirmar/voltar por 0,7 s (o A do impulso ou da fala não aperta nada) */
+const MENUS=['over','shop','route','pick'],CUTHID=[];
+{const _cp=cutPlay;cutPlay=function(){const was=!!CUT;const r=_cp.apply(this,arguments);if(CUT&&!was){for(const id of MENUS){const e=document.getElementById(id);if(e&&!e.hidden){e.hidden=true;CUTHID.push([e,state])}}}return r}}
+{const _ce=cutEnd;cutEnd=function(){const r=_ce.apply(this,arguments);if(!CUT&&CUTHID.length){const L=CUTHID.splice(0);setTimeout(()=>{if(CUT){CUTHID.push(...L);return}CUTBACK=performance.now();for(const[e,st]of L)if(state===st)e.hidden=false},150)}return r}}
+{const st=document.createElement('style');st.textContent='.lockin>*{opacity:.45;filter:grayscale(.7);transition:opacity .25s,filter .25s}.ov>*{transition:opacity .25s,filter .25s}';document.head.appendChild(st)}
+let CUTBACK=0;
+{const mo=new MutationObserver(ms=>{for(const m of ms){const e=m.target;if(!e.hidden){const dur=performance.now()-CUTBACK<400?1100:700;INLOCK=Math.max(INLOCK,performance.now()+dur);e.classList.add('lockin');clearTimeout(e._lk);e._lk=setTimeout(()=>e.classList.remove('lockin'),dur);const h=$('#hint');if(h)h.style.opacity=0}}});for(const id of MENUS){const e=document.getElementById(id);if(e)mo.observe(e,{attributes:true,attributeFilter:['hidden']})}}
+/* ================= PEIXE-BAÚ: fica no chão, parado, e morde no lugar ================= */
+SP.peixebau.d=999;SP.peixebau.static=1;
+{const _ae=addE;addE=function(id){const e=_ae.apply(this,arguments);if(e&&id==='peixebau'&&!e.dead){e.hx=e.x;e.hy=e.y}return e}}
+BH.chestmimic=function(e,dt,ux,uy,d,sp){e.vx=e.vy=0;e.kx=e.ky=0;if(e.hx!==undefined){e.x=e.hx;e.y=e.hy}
+ if(e.st==='disg'){if(d<24)mimicReveal(e);return}
+ e.fx=ux;e.fy=uy;e.bt=(e.bt||0)-dt;e.chomp=(e.chomp||0)+dt*(d<44?16:5);
+ if(d<e.r+p.r+10&&e.bt<=0){e.bt=.8;e.chomp=Math.PI/2;hurtP(e.S.dm+edmAdd(depth),e);ftxt(e.x,e.y-14,'NHAC!','#ffb347');shake=Math.max(shake,3);SFX.hit()}
+ if(d>90){e.cl=(e.cl||0)+dt;if(e.cl>3){e.st='disg';e.cl=0;e.ag=0;ftxt(e.x,e.y-12,'...','#c8a060')}}else e.cl=0};
 /* ================= CAVERNA DA ORCA: entrada secreta, o caminho, os caracóis e a família de tubarões-baleia ================= */
 let OENT=null,OCAVE=null,SNL=[],WSF=null;window.FAMHOLD=0;
 const SNLINES=['Psiu... mergulhador. Daqui pra frente nenhum bicho tem coragem de entrar.','Os peixes fugiram tudo. Só ficou a gente, que é devagar demais pra fugir.','O mal mora no fundo dessa caverna. Ela traz os bichos grandes pra cá e não deixa sair.','Tá ouvindo esse canto? São os tubarões-baleia. Ela pegou a família inteira deles.','Se você vai mesmo descer... vai rápido. Eles não aguentam muito tempo.'];
@@ -6231,14 +6247,26 @@ const WSFL2=['Eu... eu sou o último.','Ela levou todos. Meu pai, minhas irmãs,
 ACHL.push(['familia','Família do Fundo','Liberte os tubarões-baleia da caverna da orca',m=>!!m.famSaved]);
 
 /* ================= CHECKPOINT NO FÁCIL: cada nova fenda salva; morrendo, dá pra voltar ================= */
-{const _nl=newLevel;newLevel=function(){const r=_nl.apply(this,arguments);try{if(p&&META&&p.diff==='facil'&&state!=='title'&&!(typeof TUT!=='undefined'&&TUT.on)&&p.hp>0&&!window.FAMHOLD){const keep=META.run;runSnap();if(META.run){META.ckpt=JSON.parse(JSON.stringify(META.run));META.ckpt.cp=1;saveMeta();setTimeout(()=>{if(state==='play'&&p)ftxt(p.x,p.y-22,'CHECKPOINT','#9dff6a')},700)}if(keep===undefined&&!META.run)delete META.run}}catch(e){console.warn(e)}return r}}
-{const _d=die;die=function(){const ck=META&&META.ckpt&&p&&p.diff==='facil'?META.ckpt:null;const r=_d.apply(this,arguments);
+/* salva no primeiro instante de jogo de cada fenda (inclusive a primeira da corrida) */
+let LVID=0;{const _nl=newLevel;newLevel=function(){const r=_nl.apply(this,arguments);LVID++;return r}}
+function ckSave(){try{runSnap();if(META.run){META.ckpt=JSON.parse(JSON.stringify(META.run));META.ckpt.cp=1;saveMeta();ftxt(p.x,p.y-22,'CHECKPOINT','#9dff6a')}}catch(e){console.warn(e)}}
+{const _tp=tickParry;tickParry=function(dt){_tp.apply(this,arguments);if(!dt||state!=='play'||!p||!META||p.hp<=0||window.FAMHOLD||(typeof TUT!=='undefined'&&TUT.on)||(typeof OCAVE!=='undefined'&&OCAVE)||(typeof ORC!=='undefined'&&ORC))return;
+ if((p.diff||(DIFF===DIFFS.facil?'facil':''))!=='facil'||p._ck===LVID)return;p._ck=LVID;ckSave()}}
+{const _d=die;die=function(){const ck=META&&META.ckpt&&p&&(p.diff||(DIFF===DIFFS.facil?'facil':''))==='facil'?META.ckpt:null;const r=_d.apply(this,arguments);
  if(ck&&state==='over'){const m=$('#overbox .menu');if(m&&!$('#ckbtn')){m.insertAdjacentHTML('afterbegin','<button class="mi nav sel" id="ckbtn" data-a="ckpt">VOLTAR AO CHECKPOINT <small style="font-size:.6em;color:#9dff6a">'+M(ck.depth)+'</small></button>');for(const x of m.querySelectorAll('.mi'))if(x.id!=='ckbtn')x.classList.remove('sel')}}
  else if(META&&p&&p.diff!=='facil'){delete META.ckpt;saveMeta()}return r}}
 $('#overbox').addEventListener('click',ev=>{const el=ev.target.closest('#ckbtn');if(!el)return;ev.stopImmediatePropagation();const ck=META.ckpt;if(!ck)return;$('#over').hidden=true;META.run=JSON.parse(JSON.stringify(ck));
  const S=META.run.p;if(S){S.hp=Math.max(S.hp||0,Math.ceil((S.mhp||10)/2));S.buoys=S.buoys||0}runResume();SFX.down();banner('CHECKPOINT',M(depth))},true);
 {const _ng=newGame;newGame=function(){if(META)delete META.ckpt;return _ng.apply(this,arguments)}}
 {const _v=victory;victory=function(){const r=_v.apply(this,arguments);if(state==='over'&&META){delete META.ckpt;saveMeta()}return r}}
+
+/* ================= NUNCA DENTRO DA PAREDE ================= */
+/* polvo-gigante e caranguejo puxavam o mergulhador pra junto deles sem olhar a parede (e ele ia parar dentro da rocha); agora, se o mergulhador estiver dentro da rocha em qualquer frame, volta pro último lugar livre */
+{const _tp=tickParry;tickParry=function(dt){_tp.apply(this,arguments);if(!p||state!=='play'||!map)return;
+ if(!blocked(p.x,p.y,p.r)){p.safeX=p.x;p.safeY=p.y;return}
+ if(p.safeX!==undefined&&!blocked(p.safeX,p.safeY,p.r)&&hyp(p.safeX-p.x,p.safeY-p.y)<120){p.x=p.safeX;p.y=p.safeY}
+ else{let ok=0;for(let d=4;d<=96&&!ok;d+=4)for(let k=0;k<16;k++){const a=k*TAU/16,x=p.x+Math.cos(a)*d,y=p.y+Math.sin(a)*d;if(!blocked(x,y,p.r+1)){p.x=x;p.y=y;ok=1;break}}}
+ p.vx*=.3;p.vy*=.3;if(p.grab)p.grab=null;for(const e of en){if(e.st==='hold'){e.st='';e.tm=.6}if(e.clamp>0)e.clamp=0}}}
 
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);

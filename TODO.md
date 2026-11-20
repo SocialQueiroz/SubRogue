@@ -163,3 +163,9 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Ao voltar pra aba/computador, sincroniza na hora; se falhar, tenta de novo (e quando a internet volta); o menu mostra "☁ salvo na nuvem" ou "⚠ sem conexão"
 - [x] A segunda aba pega a sessão nova em vez de falhar; nunca mistura progresso de contas diferentes
 - [x] Morrer pro chefe no fácil: volta pro começo da luta (chefe com vida cheia, você com a vida da entrada, no mínimo metade)
+
+## Correções urgentes
+- [x] Fala do Tião: agora avança e fecha com B (controle) ou X (teclado); A/Enter não fazem nada durante a fala, então não vazam pro menu. Cena que aparece com menu aberto (morte, loja, escolha) esconde o menu até acabar, e o menu volta apagadinho e travado por 1 s
+- [x] Checkpoint do fácil não salvava na 1ª fenda da corrida
+- [x] Peixe-baú não nada mais: fica parado onde estaria o baú, morde no lugar e volta a fingir de baú; não aparece mais solto no meio dos bichos
+- [x] Mergulhador ia parar dentro da parede (polvo-gigante e caranguejo puxavam sem olhar a rocha): agora nunca fica dentro da rocha
