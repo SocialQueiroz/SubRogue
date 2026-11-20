@@ -97,3 +97,6 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Fácil: chefes mais lentos (IA a 78% do tempo e 80% da velocidade), golpes, tiros e raios dão menos dano (cerca de metade), uns 30% menos tiros, tiros mais lentos e avisos que duram mais
 - [x] Difícil/Insano: chefes mais rápidos, tiros mais rápidos e avisos mais curtos (o dano extra já vem da dificuldade)
 - [x] Vale pros chefes míticos, pros pedaços deles (cabeças, tentáculos) e pra Orca
+
+## Bugs vistos (novos)
+- [x] Fechar a fala do Tião com A (controle), Enter ou 1/2/3 comprava item na loja ou escolhia carta/relíquia por trás. Agora o controle não manda "confirmar" pra tela de trás enquanto a fala está aberta nem logo depois de fechar (0,35 s); e cada A faz só uma coisa (antes um A pulava duas falas)

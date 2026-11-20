@@ -5568,6 +5568,14 @@ DRAW.turtle=(e,S,C)=>{const P=TPAL[(S.tt&&S.tt.pal)||'verde'],snap=S.id==='tartm
  if(e.st==='dizzy'){for(let k=0;k<3;k++){const a=time*5+k*TAU/3;ctx.fillStyle='#ffe680';const x=Math.round(e.x+Math.cos(a)*e.r*.9),y=Math.round(e.y-e.r*1.1+Math.sin(a)*e.r*.3);ctx.fillRect(x-1,y,3,1);ctx.fillRect(x,y-1,1,3)}}
  if(e.st==='stuck'&&Math.sin(time*20)>0){ctx.fillStyle='#ffe680';ctx.font='8px monospace';ctx.fillText('!',Math.round(e.x)-2,Math.round(e.y-e.r-6))}};
 
+/* ================= FALA DO TIÃO NÃO VAZA PRA LOJA / ESCOLHA ================= */
+/* o "Enter" que o controle manda chegava na loja antes da cutscene: o A que fechava a fala comprava ou escolhia item. Agora, com a fala aberta e logo depois de fechar, confirmar não age na tela de trás */
+let INLOCK=0;const inLocked=()=>!!CUT||performance.now()<INLOCK;
+{const _ce=cutEnd;cutEnd=function(){const had=!!CUT;const r=_ce.apply(this,arguments);if(had){INLOCK=performance.now()+350;mouse.down=false}return r}}
+{const _pk=padKey;padKey=function(k){if(inLocked()&&(k==='Enter'||k==='Escape'||k===' '))return;return _pk.apply(this,arguments)}}
+{const _ng=navGo;navGo=function(){if(inLocked())return;return _ng.apply(this,arguments)}}
+{const _ds=descend;descend=function(){if(inLocked()&&state==='shop')return;return _ds.apply(this,arguments)}}
+addEventListener('keydown',e=>{if(inLocked()&&!CUT&&(e.key==='Enter'||e.key===' '||/^[123]$/.test(e.key))&&state!=='play'){e.stopImmediatePropagation();e.preventDefault()}},true);
 /* ================= DIFICULDADE MEXE NOS CHEFES ================= */
 /* fácil: chefes mais lentos, dão menos dano, atacam menos e avisam com mais tempo; difícil/insano: mais rápidos e com tiros mais rápidos */
 const BOSSK={facil:{t:.78,sp:.8,dm:.55,keep:.7,bs:.8,warn:1.3},medio:null,dificil:{t:1.08,sp:1.1,dm:1,keep:1,bs:1.1,warn:.92},insano:{t:1.16,sp:1.18,dm:1,keep:1,bs:1.18,warn:.85}};
