@@ -146,3 +146,10 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Sobras da fenda anterior (evento de cenário, garrafa, moedas dentro da rocha, vida ambiente) ficavam na arena
 - [x] Vida ajustada: era 1.800 + 90 por descida (2.880 a 1.200 m, ~2,5 min só atirando com o arpão inicial); agora 1.000 + 85 por descida
 - [x] Testado: as 4 fases, todos os golpes, morte, conquista e volta ao mergulho, sem erro
+
+## Caverna da Orca (pedido novo)
+- [x] Chance da luta secreta: 3% por corrida (era 0,1%)
+- [x] Entrada nova: rocha rachada com sangue escorrendo e brilho vermelho (a partir de ~400 m; a cena dos tubarões-baleia dá a pista); abre com bomba e tem um buraco escuro atrás
+- [x] A caverna: túnel longo que desce em zigue-zague, cheio de bichos nas duas primeiras galerias; na última só tem caracóis, que falam ("daqui pra frente ninguém tem coragem de entrar", "o mal mora no fundo dessa caverna"); canto triste de baleia e água avermelhada
+- [x] Arena: a família de tubarões-baleia presa em redes e correntes, alguns já mortos (sobram de 1 a 3)
+- [x] Depois da orca: as redes arrebentam, os sobreviventes vêm falar com você (fala diferente se sobrou só um), enchem sua vida, dão 15 pérolas e a conquista "Família do Fundo"
