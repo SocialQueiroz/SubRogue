@@ -6287,11 +6287,16 @@ const SWDIFF={facil:1,medio:1/3,dificil:1/4,insano:1/5};
 @keyframes pulso{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.9)}}
 @keyframes brasa{0%,100%{opacity:.6}50%{opacity:1}}
 @keyframes scan{from{background-position:0 0}to{background-position:0 12px}}`;document.head.appendChild(st)}
-/* ================= CORPO DOS PEIXES SEM DOBRA ================= */
-/* o corpo era uma corrente que só seguia a cabeça: virando rápido, dobrava no meio em "V"; agora cada junta tem um limite de curva, como uma coluna */
-{const _u=upE;upE=function(e,dt){const r=_u.apply(this,arguments);const P=e&&e.sp;if(!P||P.length<2||!e.S||e.S.a!=='chain'||e.dead)return r;
- const pf=e.S.pf,sl=e.r*(e.S.sl||.72),mb=pf==='eel'?.55:pf==='shark'?.16:.2;let fx=e.fx||1,fy=e.fy||0;const fl=Math.hypot(fx,fy)||1;let pa=Math.atan2(-fy/fl,-fx/fl);
- for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i];let ang=Math.atan2(b.y-a.y,b.x-a.x);const da=Math.atan2(Math.sin(ang-pa),Math.cos(ang-pa));const lim=i===1?mb*.8:mb;if(Math.abs(da)>lim)ang=pa+Math.sign(da)*lim;b.x=a.x+Math.cos(ang)*sl;b.y=a.y+Math.sin(ang)*sl;pa=ang}return r}}
+/* ================= PEIXES VIRANDO FLUIDO ================= */
+/* só visual: a cabeça vira com velocidade limitada (faz curva em vez de virar no lugar) e o corpo desenha um arco suave que depende de quão rápido ele está virando; nadando reto, o corpo fica reto */
+{const _u=upE;upE=function(e,dt){const r=_u.apply(this,arguments);const P=e&&e.sp;if(!P||P.length<2||!e.S||e.S.a!=='chain'||e.dead||!dt)return r;
+ const pf=e.S.pf,eel=pf==='eel'||pf==='long',sp=Math.hypot(e.vx||0,e.vy||0);if(e.hd===undefined)e.hd=Math.atan2(e.fy||0,e.fx||1),e.hv=0;
+ const tgt=sp>8?Math.atan2(e.vy,e.vx):Math.atan2(e.fy||0,e.fx||1);const dA=Math.atan2(Math.sin(tgt-e.hd),Math.cos(tgt-e.hd)),mt=(eel?5.5:e.S.boss?2.2:pf==='shark'?3.2:3.8)*dt,st=Math.max(-mt,Math.min(mt,dA));
+ e.hd+=st;e.hv+=((st/dt)-e.hv)*Math.min(1,dt*6);
+ const sl=e.r*(e.S.sl||.72),mb=eel?.32:pf==='shark'?.1:.13,cv=Math.max(-mb,Math.min(mb,-e.hv*(eel?.11:.075)));
+ let ang=e.hd+Math.PI;P[0].x=e.x;P[0].y=e.y;for(let i=1;i<P.length;i++){ang+=cv*(i===1?.5:1);const a=P[i-1],b=P[i];const tx=a.x+Math.cos(ang)*sl,ty=a.y+Math.sin(ang)*sl;const k=Math.min(1,dt*(eel?14:20));b.x+=(tx-b.x)*k;b.y+=(ty-b.y)*k;const dx=b.x-a.x,dy=b.y-a.y,l=Math.hypot(dx,dy)||1;b.x=a.x+dx/l*sl;b.y=a.y+dy/l*sl}
+ return r}}
+{const _dc=DRAW.chain;DRAW.chain=function(e,S,C){if(e&&e.hd!==undefined&&!e.dead){const fx=e.fx,fy=e.fy;e.fx=Math.cos(e.hd);e.fy=Math.sin(e.hd);try{return _dc.apply(this,arguments)}finally{e.fx=fx;e.fy=fy}}return _dc.apply(this,arguments)}}
 /* ================= VERSÃO NO MENU ================= */
 const VERSAO='0.13.1';
 {const t=$('#title');if(t){t.insertAdjacentHTML('beforeend','<div id="ver">v'+VERSAO+'</div>');const st=document.createElement('style');st.textContent='#ver{position:absolute;left:8px;top:6px;font:8px "Press Start 2P",monospace;color:#cfe8ff;opacity:.55;letter-spacing:1px;pointer-events:none;text-shadow:0 1px 0 #000;z-index:5}';document.head.appendChild(st)}}
