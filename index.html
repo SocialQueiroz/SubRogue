@@ -4464,7 +4464,7 @@ restock=function(){const own=p.items||[],eq=EQUIP.filter(o=>!own.includes(o.id))
 .dfo{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}.dfo .btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 10px;font-size:12px}.dfo .btn small{font:16px "VT323",monospace;color:#3a2410;letter-spacing:0}.dfo .btn .hh{display:flex;gap:1px}.dfo .btn .hh img{width:12px;height:11px;image-rendering:pixelated}.dfo .btn.sel{outline:3px solid #fff}`;document.head.appendChild(st)}
 (function o2Loop(){requestAnimationFrame(o2Loop);if(!p||state==='title')return;const b=$('#o2b b');if(b){const t='OXIGÊNIO '+Math.ceil(p.o2);if(b.textContent!==t)b.textContent=t}const o=$('#o2b');if(o)o.classList.toggle('low',p.o2<p.mo2*.25);const h=$('#hearts');if(h){h.classList.toggle('m12',p.mhp>12&&p.mhp<=18);h.classList.toggle('m18',p.mhp>18)}})();
 /* dificuldade */
-const DIFFS={facil:{n:'FÁCIL',h:10,hp:.8,dm:.75,d:'Pra aprender. Bichos mais fracos.'},medio:{n:'MÉDIO',h:7,hp:1,dm:1,d:'O mergulho como ele é.'},dificil:{n:'DIFÍCIL',h:5,hp:1.3,dm:1.35,d:'Bichos mais duros e que mordem mais.'},insano:{n:'INSANO',h:3,hp:1.7,dm:1.8,d:'Só pra quem já zerou. Boa sorte.'}};
+const DIFFS={facil:{n:'FÁCIL',h:10,hp:.8,dm:.5,d:'Pra aprender. Bichos mais fracos e lentos, tiros lentos, correnteza fraca e menos dano.'},medio:{n:'MÉDIO',h:7,hp:1,dm:1,d:'O mergulho como ele é.'},dificil:{n:'DIFÍCIL',h:5,hp:1.3,dm:1.35,d:'Bichos mais duros e que mordem mais.'},insano:{n:'INSANO',h:3,hp:1.7,dm:1.8,d:'Só pra quem já zerou. Boa sorte.'}};
 let DIFF=DIFFS.medio;
 document.body.insertAdjacentHTML('beforeend','<div class="ov" id="diffo" hidden><div class="metal" id="diffbox" style="max-width:640px;text-align:center"></div></div>');
 const _ngD=newGame;newGame=function(){$('#title').hidden=true;const cur=(META&&META.diff)||'medio',b=$('#diffbox');
@@ -6513,6 +6513,13 @@ function sepOk(e){return e&&!e.dead&&e.S&&!e.S.boss&&!e.S.part&&!e.S.static&&!e.
    if(!blocked(ax,ay,Math.min(a.r,6))){a.x=ax;a.y=ay}if(!blocked(bx,by,Math.min(b.r,6))){b.x=bx;b.y=by}}
   /* com o mergulhador: só um empurrãozinho no bicho pra não ficar empilhado em cima dele */
   const dx=a.x-p.x,dy=a.y-p.y,md=(ra+p.r)*.75,d=hyp(dx,dy);if(d<md&&d>.01){const ov=(md-d)*k*.5,nx=a.x+dx/d*ov,ny=a.y+dy/d*ov;if(!blocked(nx,ny,Math.min(a.r,6))){a.x=nx;a.y=ny}}}}}
+/* ================= FÁCIL DE VERDADE: menos dano, mais tempo piscando depois de apanhar, correntezas fracas, bichos e tiros mais lentos ================= */
+const isEasy=()=>typeof DIFFS!=='undefined'&&DIFF===DIFFS.facil;
+{const _h=hurtP;hurtP=function(d,src){const h0=p?p.hp:0;const r=_h.apply(this,arguments);if(p&&isEasy()&&p.hp<h0)p.inv=Math.max(p.inv,1.4);return r}}
+{const _c=curAt;curAt=function(){const r=_c.apply(this,arguments);return r&&isEasy()?[r[0]*.5,r[1]*.5]:r}}
+{const _f=flowAt;flowAt=function(){const r=_f.apply(this,arguments);return r&&isEasy()?[r[0]*.5,r[1]*.5]:r}}
+{const _u=upE;upE=function(e,dt){if(dt&&isEasy()&&e&&e.S&&!e.S.boss&&!e.S.part&&!e.par&&!e.S.neutral)return _u.call(this,e,dt*.78);return _u.apply(this,arguments)}}
+{const _tp=tickParry;tickParry=function(dt){_tp.apply(this,arguments);if(!isEasy()||!pj)return;for(const q of pj)if(q.e&&!q.ez){q.ez=1;q.vx*=.7;q.vy*=.7;if(q.life)q.life*=1.3}}}
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
 </script>
