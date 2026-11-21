@@ -4636,8 +4636,8 @@ function podSay(m,who){let b=$('#podbox');if(!b){document.body.insertAdjacentHTM
   if(Math.random()<.35){const s=pick(S);pt.push({x:s.x+R(10)-5,y:s.y-8,vx:R(20)-10,vy:-20-R(20),life:1.2,ml:1.2,c:pick(['#ff7aa8','#ff5d7c','#ffc0d8']),s:2})}
   if(P.t>1.6&&p.hp<p.mhp&&Math.random()<.08){p.hp=Math.min(p.mhp,p.hp+1);ftxt(p.x,p.y-14,'+1 ♥','#ff8aa8');SFX.coin(4)}
   const li=Math.floor((P.t-1.6)/3.4);if(li>=0&&li!==P.li&&li<PODL.length){P.li=li;podSay(PODL[li])}
-  if(P.t>1.6+PODL.length*3.4){p.hp=p.mhp;P.st='orca';P.t=0;P.ox=p.x-side*260;P.oy=p.y;podSay('!!! UMA ORCA! FUJAM!!!');shake=8;SFX.roar()}}
- else if(P.st==='orca'){S.forEach((s,i)=>{if(s.fa===undefined){let best=0,bl=-1;for(let k=0;k<16;k++){const a=k*TAU/16;let l=0;while(l<260&&!blocked(s.x+Math.cos(a)*l,s.y+Math.sin(a)*l,10))l+=10;const sc=l+Math.cos(a)*side*40;if(sc>bl){bl=sc;best=a}}s.fa=best}const v=170+i*20,nx=s.x+Math.cos(s.fa)*v*dt,ny=s.y+Math.sin(s.fa)*v*dt;if(blocked(nx,ny,9))s.fade=1;else{s.x=nx;s.y=ny}s.a=lerpA(s.a,s.fa,dt*8);if(s.fade)s.al=Math.max(0,(s.al===undefined?1:s.al)-dt*6)});P.ox+=side*230*dt;P.oy+=(p.y-30-P.oy)*dt;if(blocked(P.ox,P.oy,10))P.of=1;if(P.of)P.oa=Math.max(0,(P.oa===undefined?1:P.oa)-dt*3);if(P.t>3.8){POD=null;const b=$('#podbox');if(b)b.style.display='none';radio('Que bando bonito! E que orca assustadora... Segue o mergulho, marujo!')}}}}
+  if(P.t>1.6+PODL.length*3.4){p.hp=p.mhp;P.st='orca';P.t=0;P.ox=side>0?camx-70:camx+VW+70;P.oy=p.y-30;podSay('!!! UMA ORCA! FUJAM!!!');shake=8;SFX.roar()}}
+ else if(P.st==='orca'){S.forEach((s,i)=>{if(s.fa===undefined){let best=0,bl=-1;for(let k=0;k<16;k++){const a=k*TAU/16;let l=0;while(l<260&&!blocked(s.x+Math.cos(a)*l,s.y+Math.sin(a)*l,10))l+=10;const sc=l+Math.cos(a)*side*40;if(sc>bl){bl=sc;best=a}}s.fa=best}const v=170+i*20,nx=s.x+Math.cos(s.fa)*v*dt,ny=s.y+Math.sin(s.fa)*v*dt;if(blocked(nx,ny,9))s.fade=1;else{s.x=nx;s.y=ny}s.a=lerpA(s.a,s.fa,dt*8);if(s.fade)s.al=Math.max(0,(s.al===undefined?1:s.al)-dt*6)});P.ox+=side*230*dt;P.oy+=(p.y-30-P.oy)*dt;if((side>0&&P.ox>camx+VW+80)||(side<0&&P.ox<camx-80))P.of=1;if(P.of)P.oa=Math.max(0,(P.oa===undefined?1:P.oa)-dt*3);if(P.t>3.8){POD=null;const b=$('#podbox');if(b)b.style.display='none';radio('Que bando bonito! E que orca assustadora... Segue o mergulho, marujo!')}}}}
 {const _dp=drawParryFx;drawParryFx=function(){_dp();const P=POD;if(!P)return;P.S=P.S||0;for(const s of P.sh){const fl=Math.cos(s.a)<0;ctx.globalAlpha=s.al===undefined?1:s.al;drawWhaleShark(ctx,s.x,s.y,s.a,70,time*2+s.ph,fl);ctx.globalAlpha=1}
  if(P.st==='orca'){const a=Math.atan2(0,(P.x>p.x?1:-1));ctx.globalAlpha=P.oa===undefined?1:P.oa;drawOrca(ctx,P.ox,P.oy,a,80,time*3,Math.cos(a)<0);ctx.globalAlpha=1}}}
 
@@ -6546,6 +6546,8 @@ DRAW.dolph=(e,S,C)=>{const ph=Math.floor(((e.dph||0)%TAU+TAU)%TAU/TAU*10)/10*TAU
  ctx.restore();
  if(S.id==='golfsafado'&&Math.random()<.15)pt.push({x:e.x+R(12)-6,y:e.y-8,vx:0,vy:-14,life:.7,ml:.7,c:pick(['#ffc0ea','#fff','#ff7ad0']),s:1})};
 SP.golfinho.r=8;SP.boto.r=8;SP.golfsafado.r=9;
+/* orca da cena dos tubarões-baleia: sempre iluminada (não some no escuro) */
+{const _sh=sceneHoles;sceneHoles=function(ox,oy){_sh.apply(this,arguments);if(typeof POD!=='undefined'&&POD&&POD.st==='orca'&&POD.ox!==undefined)hole(POD.ox+ox,POD.oy+oy,70,.7)}}
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
 </script>
