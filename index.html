@@ -6220,7 +6220,7 @@ function orcaCaveStart(){fadeTo(()=>{tutArena();boss=null;try{EVT=null;SMK=[];ZB
 {const _tp=tickParry;tickParry=function(dt){_tp.apply(this,arguments);if(!p||!dt||state!=='play')return;
  if(OENT){OENT.t+=dt;const d=hyp(p.x-OENT.x,p.y-OENT.y);if(!OENT.said&&d<240){OENT.said=1;radio('Tá vendo essa rocha rachada com SANGUE escorrendo? Tem uma caverna atrás... e um canto de baleia vindo lá de dentro. Abre com bomba, marujo!')}
   if(Math.random()<dt*6&&OENT.tun.length){const q=pick(OENT.tun);if(map[Math.floor(q[0]/TS)+Math.floor(q[1]/TS)*MW]===2)pt.push({x:q[0]+R(10)-5,y:q[1]+6,vx:R(6)-3,vy:8+R(10),life:1.2,ml:1.2,c:pick(['#8a0a1a','#b0182a','#5a0410']),s:1})}
-  if(d<12){OENT=null;SFX.roar();shake=10;orcaCaveStart()}}
+  if(d<12&&OENT.tun.some(q=>!map[Math.floor(q[0]/TS)+Math.floor(q[1]/TS)*MW])){OENT=null;SFX.roar();shake=10;orcaCaveStart()}}
  if(OCAVE){const C=OCAVE;C.t+=dt;C.songT-=dt;const deep=p.y>C.y3-40;
   if(deep&&C.songT<=0){C.songT=5+R(3);if(typeof tone==='function'){tone('sine',190,140,1.6,.035);setTimeout(()=>tone('sine',150,210,1.4,.03),900)}}
   for(const e of en){if(e.S.boss||e.dead)continue;if(e.y>C.y3-50){e.ag=0;e.kx-=(e.x-p.x>0?-1:1)*0;e.ky-=60*dt;if(e.y>C.y3-20)e.y-=40*dt}}
@@ -6276,7 +6276,7 @@ $('#overbox').addEventListener('click',ev=>{const el=ev.target.closest('#ckbtn')
 {const _tp=tickParry;tickParry=function(dt){_tp.apply(this,arguments);if(!p||state!=='play'||!map)return;
  if(!blocked(p.x,p.y,p.r)){p.safeX=p.x;p.safeY=p.y;return}
  if(p.safeX!==undefined&&!blocked(p.safeX,p.safeY,p.r)&&hyp(p.safeX-p.x,p.safeY-p.y)<120){p.x=p.safeX;p.y=p.safeY}
- else{let ok=0;for(let d=4;d<=96&&!ok;d+=4)for(let k=0;k<16;k++){const a=k*TAU/16,x=p.x+Math.cos(a)*d,y=p.y+Math.sin(a)*d;if(!blocked(x,y,p.r+1)){p.x=x;p.y=y;ok=1;break}}}
+ else{let ok=0;for(let d=4;d<=40&&!ok;d+=2)for(let k=0;k<16;k++){const a=k*TAU/16,x=p.x+Math.cos(a)*d,y=p.y+Math.sin(a)*d;if(!blocked(x,y,p.r+1)){p.x=x;p.y=y;ok=1;break}}}
  p.vx*=.3;p.vy*=.3;if(p.grab)p.grab=null;for(const e of en){if(e.st==='hold'){e.st='';e.tm=.6}if(e.clamp>0)e.clamp=0}}}
 
 /* ================= ESPADAS PELA DIFICULDADE + VISUAL DO DIFÍCIL E DO INSANO ================= */
@@ -6435,7 +6435,7 @@ SKC.helm.L.push(['chapeu','Chapéu do Golfinho Safado',['#e8c020','#8a3ab0'],{gs
 {const _dd=diverDraw;diverDraw=function(g,S){const r=_dd.apply(this,arguments);if(S&&S.helm==='chapeu'){const hx=5.3,hy=-.8,F=(x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(x,y,w,h)};
   F(hx-4.6,hy-3.6,9.2,1.9,OUT);F(hx-4,hy-3.2,8,1.1,'#e8c020');F(hx-2.6,hy-6.6,5.2,3.4,OUT);F(hx-2.1,hy-6.2,4.2,2.8,'#f0cc30');F(hx-2.1,hy-6.2,4.2,.6,'#ffe680');F(hx-2.1,hy-4.4,4.2,1,'#8a3ab0')}return r}}
 /* ================= VERSÃO NO MENU ================= */
-const VERSAO='0.13.1';
+const VERSAO='0.13.2';
 {const t=$('#title');if(t){t.insertAdjacentHTML('beforeend','<div id="ver">v'+VERSAO+'</div>');const st=document.createElement('style');st.textContent='#ver{position:absolute;left:8px;top:6px;font:8px "Press Start 2P",monospace;color:#cfe8ff;opacity:.55;letter-spacing:1px;pointer-events:none;text-shadow:0 1px 0 #000;z-index:5}';document.head.appendChild(st)}}
 /* ================= MEMÓRIA DAS FENDAS: checkpoint e pressão negativa voltam pra MESMA fenda ================= */
 /* cada fenda guarda uma semente: refazer com a mesma semente dá o mesmo mapa e as mesmas coisas nos mesmos lugares.
@@ -6554,6 +6554,14 @@ DRAW.dolph=(e,S,C)=>{const ph=Math.floor(((e.dph||0)%TAU+TAU)%TAU/TAU*10)/10*TAU
 SP.golfinho.r=8;SP.boto.r=8;SP.golfsafado.r=9;
 /* orca da cena dos tubarões-baleia: sempre iluminada (não some no escuro) */
 {const _sh=sceneHoles;sceneHoles=function(ox,oy){_sh.apply(this,arguments);if(typeof POD!=='undefined'&&POD&&POD.st==='orca'&&POD.ox!==undefined)hole(POD.ox+ox,POD.oy+oy,70,.7)}}
+/* ================= TRAVA ANTI-TELEPORTE ================= */
+/* 1) posição/velocidade inválida (NaN) deixava a parede sem efeito e a câmera presa no canto do mapa: volta pro último lugar bom
+   2) o "último lugar livre" de uma fenda não vale na outra
+   3) o resgate de dentro da parede só leva pra lugar que dá pra ver de onde você estava (nunca pra uma bolha do outro lado da rocha) */
+{const _u=update;update=function(dt){const r=_u.apply(this,arguments);try{if(p&&state==='play'){
+  if(!Number.isFinite(p.x)||!Number.isFinite(p.y)){const ok=Number.isFinite(p.safeX)&&Number.isFinite(p.safeY);p.x=ok?p.safeX:exit.x>0?exit.x:MW*TS/2;p.y=ok?p.safeY:exit.y>0?exit.y:MH*TS/2;p.vx=p.vy=0;camx=p.x-VW/2;camy=p.y-VH/2;console.warn('posição inválida corrigida')}
+  if(!Number.isFinite(p.vx))p.vx=0;if(!Number.isFinite(p.vy))p.vy=0;if(!Number.isFinite(camx)||!Number.isFinite(camy)){camx=p.x-VW/2;camy=p.y-VH/2}}}catch(e){}return r}}
+{const _nl=newLevel;newLevel=function(){const r=_nl.apply(this,arguments);if(p){p.safeX=p.x;p.safeY=p.y}return r}}
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
 </script>
