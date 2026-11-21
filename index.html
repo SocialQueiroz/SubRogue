@@ -6309,24 +6309,24 @@ const SWDIFF={facil:1,medio:1/3,dificil:1/4,insano:1/5};
 {const _dc=DRAW.chain;DRAW.chain=function(e,S,C){if(e&&e.hd!==undefined&&!e.dead){const fx=e.fx,fy=e.fy;e.fx=Math.cos(e.hd);e.fy=Math.sin(e.hd);try{return _dc.apply(this,arguments)}finally{e.fx=fx;e.fy=fy}}return _dc.apply(this,arguments)}}
 /* ================= GOLFINHOS DE VERDADE: pixel art com bico e rabo horizontal; rápidos, provocam e trombam em você ================= */
 const DLPX={};
-function dolphinFrame(ph,pal){const key=ph+'_'+pal;if(DLPX[key])return DLPX[key];const W=60,H=34,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),M=new Uint8Array(W*H),C=new Array(W*H).fill(null);
+const DLZ=.72;function dolphinFrame(ph,pal){const key=ph+'_'+pal;if(DLPX[key])return DLPX[key];const Z=DLZ,W=Math.round(60*Z),H=Math.round(34*Z),c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),M=new Uint8Array(W*H),C=new Array(W*H).fill(null);
  const PAL=pal==='rosa'?{B:'#a85068',b:'#d07c96',S:'#eaa8bc',W:'#ffe4ec',k:'#4a1a2a',e:'#2a0a14'}:{B:'#36444f',b:'#56677a',S:'#8798aa',W:'#e8eef4',k:'#10161e',e:'#06080c'};
  const kf=(K,s)=>{for(let i=1;i<K.length;i++)if(s<=K[i][0]){const a=K[i-1],b=K[i],k=(s-a[0])/(b[0]-a[0]),q=k*k*(3-2*k);return a[1]+(b[1]-a[1])*q}return K[K.length-1][1]};
- const TOP=[[.1,1],[.22,2.2],[.4,5.4],[.56,7.2],[.72,7.2],[.82,6.6],[.88,5.6],[.91,3.4],[.93,1.6],[1,1.1]],BOT=[[.1,1],[.22,2],[.4,4.8],[.56,6.6],[.72,6.4],[.82,5.2],[.88,3.8],[.91,2],[.93,1.2],[1,.9]];
+ const TOP=[[.1,1],[.22,2.2],[.4,5.4],[.56,7.2],[.72,7.2],[.82,6.6],[.88,5.6],[.91,3.4],[.93,1.6],[1,1.1]].map(q=>[q[0],q[1]*Z]),BOT=[[.1,1],[.22,2],[.4,4.8],[.56,6.6],[.72,6.4],[.82,5.2],[.88,3.8],[.91,2],[.93,1.2],[1,.9]].map(q=>[q[0],q[1]*Z]);
  const set=(x,y,col)=>{x=Math.round(x);y=Math.round(y);if(x<0||y<0||x>=W||y>=H)return;M[x+y*W]=1;C[x+y*W]=col};
- const X=s=>s*(W-2),cy=s=>18+Math.sin(ph-(1-s)*3)*1.6*Math.pow(1-s,1.7);
- for(let x=6;x<W-1;x++){const s=x/(W-2),cc=cy(s),T=kf(TOP,s),Bt=kf(BOT,s);
+ const X=s=>s*(W-2),cy=s=>18*Z+Math.sin(ph-(1-s)*3)*1.6*Z*Math.pow(1-s,1.7);
+ for(let x=Math.round(6*Z);x<W-1;x++){const s=x/(W-2),cc=cy(s),T=kf(TOP,s),Bt=kf(BOT,s);
   for(let y=Math.round(cc-T);y<=Math.round(cc+Bt);y++){const u=y-cc,vt=-u/T,vb=u/Bt;let col=vt>.5?PAL.B:vt>-.05?PAL.b:PAL.S;
    if(u>0&&vb>.3&&s>.3&&s<.93)col=PAL.W;
    if(s>.42&&s<.78&&u>-T*.25&&u<Bt*.25&&Math.abs(u-(-T*.05+(s-.42)*6))<1)col=PAL.S;
    if(vt>.86&&s>.3&&s<.85)col=PAL.k===col?col:PAL.B;
    set(x,y,col)}}
  /* dorsal em foice, ponta pra trás (o rabo fica à esquerda) */
- {const xa=X(.43),xb=X(.6),ap=X(.4),Hh=9;for(let k=1;k<=Hh;k++){const t=k/Hh,xr=xb-(xb-ap)*Math.pow(t,.75),xl=ap+(xa+2-ap)*Math.pow(1-t,1.8);for(let x=Math.floor(xl);x<=Math.ceil(xr);x++){const s=x/(W-2);const by=cy(s)-kf(TOP,s);set(x,by-k+.5,k>Hh*.7||x>xr-1.5?PAL.b:PAL.B)}}}
+ {const xa=X(.43),xb=X(.6),ap=X(.4),Hh=Math.round(9*Z);for(let k=1;k<=Hh;k++){const t=k/Hh,xr=xb-(xb-ap)*Math.pow(t,.75),xl=ap+(xa+2-ap)*Math.pow(1-t,1.8);for(let x=Math.floor(xl);x<=Math.ceil(xr);x++){const s=x/(W-2);const by=cy(s)-kf(TOP,s);set(x,by-k+.5,k>Hh*.7||x>xr-1.5?PAL.b:PAL.B)}}}
  /* peitoral: pá curta descendo pra trás */
- {const s0=.73,x0=X(s0),y0=cy(s0)+kf(BOT,s0)*.55;for(let k=0;k<6;k++){const w=Math.max(1,3.2-k*.5);for(let j=0;j<w;j++)set(x0-k*.85-j*.5,y0+k*.95+j*.25,k>3?PAL.B:PAL.b)}}
+ {const s0=.73,x0=X(s0),y0=cy(s0)+kf(BOT,s0)*.55;for(let k=0;k<Math.round(6*Z);k++){const w=Math.max(1,(3.2-k*.5)*Z);for(let j=0;j<w;j++)set(x0-k*.85-j*.5,y0+k*.95+j*.25,k>3?PAL.B:PAL.b)}}
  /* rabo horizontal: lâmina com as duas pontas */
- {const yb=cy(.1);for(let x=0;x<8;x++){set(x,yb,PAL.B);if(x<5){set(x,yb-1,PAL.B);set(x,yb+1,PAL.b)}if(x<2){set(x,yb-2,PAL.B);set(x,yb+2,PAL.b)}}set(0,yb-3,PAL.B);set(0,yb+3,PAL.b)}
+ {const yb=cy(.1);for(let x=0;x<6;x++){set(x,yb,PAL.B);if(x<4){set(x,yb-1,PAL.B);set(x,yb+1,PAL.b)}if(x<2){set(x,yb-2,PAL.B);set(x,yb+2,PAL.b)}}set(0,yb-3,PAL.B);set(0,yb+3,PAL.b)}
  /* bico, boca e olho */
  {for(let x=Math.round(X(.9));x<W-2;x++){const s=x/(W-2);set(x,Math.round(cy(s)+.7),PAL.k)}const s=.85,x=Math.round(X(s)),y=Math.round(cy(s)-kf(TOP,s)*.15);set(x,y,PAL.e);set(x-1,y,PAL.e);set(x,y+1,PAL.e);set(x-1,y-1,'#ffffff')}
  const out=[];for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(M[x+y*W])continue;if((x>0&&M[x-1+y*W])||(x<W-1&&M[x+1+y*W])||(y>0&&M[x+(y-1)*W])||(y<H-1&&M[x+(y+1)*W]))out.push(x,y)}
@@ -6379,13 +6379,13 @@ drawChestAt=function(x,y){chestDraw('small',x,y)};
  const base=_df(ph,'rosa'),W=base.W,H=base.H,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');g.drawImage(base.c,0,0);
  /* tinge pra rosa-choque */
  const id=g.getImageData(0,0,W,H),d=id.data;for(let i=0;i<d.length;i+=4){if(!d[i+3])continue;const r=d[i],gg=d[i+1],b=d[i+2];if(r<70&&gg<40)continue;const l=(r+gg+b)/3;d[i]=Math.min(255,l*1.25+70);d[i+1]=Math.max(0,l*.35);d[i+2]=Math.min(255,l*.95+40)}g.putImageData(id,0,0);
- const X=s=>Math.round(s*(W-2)),cy=s=>18+Math.sin(ph-(1-s)*3)*1.6*Math.pow(1-s,1.7),P=(x,y,col)=>{g.fillStyle=col;g.fillRect(x,y,1,1)};
+ const X=s=>Math.round(s*(W-2)),cy=s=>18*DLZ+Math.sin(ph-(1-s)*3)*1.6*DLZ*Math.pow(1-s,1.7),P=(x,y,col)=>{g.fillStyle=col;g.fillRect(x,y,1,1)};
  /* olho preguiçoso e sorriso */
  {const ex=X(.85),ey=Math.round(cy(.85))-2;g.fillStyle='#ffffff';g.fillRect(ex-2,ey,3,2);P(ex,ey+1,'#0a0a10');P(ex-1,ey+1,'#0a0a10');g.fillStyle='#3a0a2a';g.fillRect(ex-3,ey-1,5,1);P(ex-3,ey-2,'#3a0a2a');P(ex+1,ey-2,'#3a0a2a');
   for(let k=0;k<5;k++)P(X(.86)+k,Math.round(cy(.9))+1+(k>2?-(k-2):0),'#3a0a2a')}
  /* chapéu de palha */
- {const hx0=X(.6),hx1=X(.82),hy=Math.round(cy(.7))-8;g.fillStyle='#10080a';g.fillRect(hx0-1,hy-1,hx1-hx0+3,3);g.fillStyle='#e8c020';g.fillRect(hx0,hy,hx1-hx0+1,1);g.fillStyle='#b89010';g.fillRect(hx0,hy+1,hx1-hx0+1,1);
-  const cx0=X(.64),cx1=X(.77);g.fillStyle='#10080a';g.fillRect(cx0-1,hy-6,cx1-cx0+3,7);g.fillStyle='#f0cc30';g.fillRect(cx0,hy-5,cx1-cx0+1,5);g.fillStyle='#ffe680';g.fillRect(cx0,hy-5,cx1-cx0+1,1);g.fillStyle='#8a3ab0';g.fillRect(cx0,hy-2,cx1-cx0+1,2);g.fillStyle='#b06ad8';g.fillRect(cx0,hy-2,cx1-cx0+1,1)}
+ {const hx0=X(.6),hx1=X(.82),hy=Math.round(cy(.7))-6;g.fillStyle='#10080a';g.fillRect(hx0-1,hy-1,hx1-hx0+3,3);g.fillStyle='#e8c020';g.fillRect(hx0,hy,hx1-hx0+1,1);g.fillStyle='#b89010';g.fillRect(hx0,hy+1,hx1-hx0+1,1);
+  const cx0=X(.64),cx1=X(.77);g.fillStyle='#10080a';g.fillRect(cx0-1,hy-5,cx1-cx0+3,6);g.fillStyle='#f0cc30';g.fillRect(cx0,hy-4,cx1-cx0+1,4);g.fillStyle='#ffe680';g.fillRect(cx0,hy-4,cx1-cx0+1,1);g.fillStyle='#8a3ab0';g.fillRect(cx0,hy-2,cx1-cx0+1,2);g.fillStyle='#b06ad8';g.fillRect(cx0,hy-2,cx1-cx0+1,1)}
  DLPX[key]={c,W,H};return DLPX[key]}}
 SP.golfsafado={id:'golfsafado',n:'Golfinho Safado',a:'dolph',b:'dolph',d:999,hp:46,sp:180,r:7,c:['#f04ab8','#ffc0ea','#d0309a'],g:40,mass:2,ag:200,dm:1,xp:20,pal:'safado'};
 /* desenho: animação contínua, nunca de cabeça pra baixo (espelha de lado e só inclina), pirueta */
@@ -6520,6 +6520,31 @@ const isEasy=()=>typeof DIFFS!=='undefined'&&DIFF===DIFFS.facil;
 {const _f=flowAt;flowAt=function(){const r=_f.apply(this,arguments);return r&&isEasy()?[r[0]*.5,r[1]*.5]:r}}
 {const _u=upE;upE=function(e,dt){if(dt&&isEasy()&&e&&e.S&&!e.S.boss&&!e.S.part&&!e.par&&!e.S.neutral)return _u.call(this,e,dt*.78);return _u.apply(this,arguments)}}
 {const _tp=tickParry;tickParry=function(dt){_tp.apply(this,arguments);if(!isEasy()||!pj)return;for(const q of pj)if(q.e&&!q.ez){q.ez=1;q.vx*=.7;q.vy*=.7;if(q.life)q.life*=1.3}}}
+/* ================= GOLFINHO: desenho limpo (tamanho real do pixel, ângulos fixos e suaves, piscar branco só no corpo, sem esmagar) ================= */
+const DLWH={};
+function dolphinWhite(F,key){if(DLWH[key])return DLWH[key];const c=document.createElement('canvas');c.width=F.c.width;c.height=F.c.height;const g=c.getContext('2d');g.drawImage(F.c,0,0);g.globalCompositeOperation='source-atop';g.fillStyle='#ffffff';g.fillRect(0,0,c.width,c.height);return DLWH[key]=c}
+DRAW.dolph=(e,S,C)=>{const ph=Math.floor(((e.dph||0)%TAU+TAU)%TAU/TAU*10)/10*TAU,pal=S.pal||'cinza',F=dolphinFrame(ph,pal),a=e.hd!==undefined?e.hd:Math.atan2(e.fy||0,e.fx||1);
+ if(e.face===undefined){e.face=Math.cos(a)<0?-1:1;e.fs=e.face}if(Math.cos(a)>.25)e.face=1;else if(Math.cos(a)<-.25)e.face=-1;
+ /* virar de lado: o corpo gira (encolhe e abre do outro lado) em vez de trocar na hora */
+ e.fs+=(e.face-e.fs)*.2;if(Math.abs(e.face-e.fs)<.02)e.fs=e.face;const fs=Math.abs(e.fs)<.18?Math.sign(e.fs||e.face)*.18:e.fs,side=Math.sign(fs);
+ /* inclinação suave */
+ const raw=Math.max(-.7,Math.min(.7,Math.atan2(Math.sin(a),Math.abs(Math.cos(a))))),tgt=Math.round(raw/.22)*.22;e.tlt=e.tlt===undefined?tgt:e.tlt+(tgt-e.tlt)*.18;const tilt=Math.round(e.tlt/.11)*.11;
+ /* curva do corpo: vem da velocidade da virada (cauda e cabeça dobram pro lado da curva) */
+ let dh=a-(e.lhd===undefined?a:e.lhd);dh=Math.atan2(Math.sin(dh),Math.cos(dh));e.lhd=a;
+ const want=Math.max(-.55,Math.min(.55,dh*9))*(Math.cos(a)<0?-1:1);e.bd=(e.bd||0)+(want-(e.bd||0))*.14;
+ const bend=Math.round(e.bd*20)/20,swim=Math.sin(ph)*.06;
+ const roll=e.roll||0,cr=roll?Math.cos(roll):1,sy=Math.abs(cr)>.55?Math.sign(cr):Math.sign(cr||1)*.55;
+ const hitk=e.flash>0,jx=hitk?(Math.random()<.5?-1:1):0,IMG=hitk&&Math.floor(time*30)%2===0?dolphinWhite(F,ph+'_'+pal):F.c;
+ ctx.save();ctx.translate(Math.round(e.x)+jx,Math.round(e.y));
+ if(hitk)ctx.scale(1/1.16,1/.86);
+ ctx.scale(fs,1);ctx.rotate(tilt*side*side);ctx.scale(1,sy);ctx.imageSmoothingEnabled=false;
+ const ox=-Math.round(F.W*.55),oy=-Math.round(18*DLZ),L=F.W*.5;
+ if(Math.abs(bend)<.03&&Math.abs(swim)<.01)ctx.drawImage(IMG,ox,oy);
+ else for(let cx=0;cx<F.W;cx++){const u=cx+ox,k=u<0?1:.45,b=bend+(u<0?swim:0),yo=b*k*u*u/(2*L),th=Math.atan(b*k*u/L);
+  ctx.save();ctx.translate(u,Math.round(yo));ctx.rotate(th);ctx.drawImage(IMG,cx,0,1,F.H,0,oy,1.6,F.H);ctx.restore()}
+ ctx.restore();
+ if(S.id==='golfsafado'&&Math.random()<.15)pt.push({x:e.x+R(12)-6,y:e.y-8,vx:0,vy:-14,life:.7,ml:.7,c:pick(['#ffc0ea','#fff','#ff7ad0']),s:1})};
+SP.golfinho.r=8;SP.boto.r=8;SP.golfsafado.r=9;
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
 </script>
