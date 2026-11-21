@@ -3224,6 +3224,7 @@ function curNear(c,x,y){if(x<c.x||x>c.x+c.w||y<c.y||y>c.y+c.h)return null;let bd
  const d=Math.sqrt(bd);if(d>c.r)return null;return{i:bi,t:bt,d,s:c.S[bi]+(c.S[bi+1]-c.S[bi])*bt}}
 function curPos(c,s){let i=0;while(i<c.S.length-2&&c.S[i+1]<s)i++;const k=(s-c.S[i])/((c.S[i+1]-c.S[i])||1),P=c.P;return[P[i][0]+(P[i+1][0]-P[i][0])*k,P[i][1]+(P[i+1][1]-P[i][1])*k,c.T[i][0],c.T[i][1]]}
 function curAt(x,y){let fx=0,fy=0,on=0;for(const c of curs){if(!c.P)continue;const n=curNear(c,x,y);if(!n)continue;const T=c.T[n.i],f=(1-(n.d/c.r)**2)*Math.min(1,n.s/40,(c.L-n.s)/40),P=c.P[n.i],cx=P[0]+(c.P[n.i+1][0]-P[0])*n.t,cy=P[1]+(c.P[n.i+1][1]-P[1])*n.t;
+  if(n.d>6&&!los(x,y,cx,cy))continue;
   fx+=T[0]*c.str*f+(cx-x)*1.2;fy+=T[1]*c.str*f+(cy-y)*1.2;on=1}return on?[fx,fy]:null}
 function tickCurs(dt){for(const c of curs){if(!c.P)continue;for(const d of c.deb){d.s+=c.str*d.sp*dt*.9;d.t+=dt;if(d.s>c.L)d.s=0;if(d.k===3&&state==='play'){const q=curPos(c,d.s),x=q[0]-q[3]*d.o*c.r*.7,y=q[1]+q[2]*d.o*c.r*.7;if(hyp(p.x-x,p.y-y)<p.r+3){hurtP(1,{x,y});d.s=0}}}}}
 function drawCurs(vx0,vy0,vx1,vy1){for(const c of curs){if(!c.P||c.x>vx1||c.x+c.w<vx0||c.y>vy1||c.y+c.h<vy0)continue;const P=c.P,n=P.length;
