@@ -6500,6 +6500,19 @@ function mimicParts(){if(MIMPX.lid)return MIMPX;const S=chestSprite('small'),cw=
  for(let i=0;i<lw;i++){const h=lift(Math.max(1,Math.min(lw-2,i)));ctx.drawImage(LS,i,0,1,M.cut,x0+i,y0-h,1,M.cut)}
  if(op>1)for(let i=4;i<lw-2;i+=3){const h=lift(i);ctx.fillStyle='#f4f0e0';ctx.fillRect(x0+i,hy-h,2,1);ctx.fillRect(x0+i+1,hy-h+1,1,1)}
  ctx.restore()}}
+/* ================= COLISÃOZINHA ENTRE OS BICHOS: um não entra mais dentro do outro (e nem fica todo dentro do mergulhador) ================= */
+function sepOk(e){return e&&!e.dead&&e.S&&!e.S.boss&&!e.S.part&&!e.S.static&&!e.par&&!e.att&&e.S.b!=='burrow'&&e.S.b!=='ghost'&&e.S.b!=='trap'&&e.st!=='disg'&&e.st!=='hold'}
+{const _tp=tickParry;tickParry=function(dt){_tp.apply(this,arguments);if(!dt||!p||state!=='play'||!map||!en||en.length<1)return;
+ const L=[];for(const e of en)if(sepOk(e)&&Math.abs(e.x-p.x)<VW&&Math.abs(e.y-p.y)<VH)L.push(e);
+ const k=Math.min(1,dt*14);
+ for(let i=0;i<L.length;i++){const a=L[i],ra=Math.min(a.r,12)*.85,ma=a.S.mass||1;
+  for(let j=i+1;j<L.length;j++){const b=L[j],rb=Math.min(b.r,12)*.85,dx=b.x-a.x,dy=b.y-a.y,md=ra+rb;if(Math.abs(dx)>=md||Math.abs(dy)>=md)continue;let d=hyp(dx,dy);if(d>=md)continue;
+   let ux,uy;if(d<.01){const t=R(TAU);ux=Math.cos(t);uy=Math.sin(t);d=0}else{ux=dx/d;uy=dy/d}
+   const ov=(md-d)*k,mb=b.S.mass||1,wa=mb/(ma+mb),wb=ma/(ma+mb);
+   const ax=a.x-ux*ov*wa,ay=a.y-uy*ov*wa,bx=b.x+ux*ov*wb,by=b.y+uy*ov*wb;
+   if(!blocked(ax,ay,Math.min(a.r,6))){a.x=ax;a.y=ay}if(!blocked(bx,by,Math.min(b.r,6))){b.x=bx;b.y=by}}
+  /* com o mergulhador: só um empurrãozinho no bicho pra não ficar empilhado em cima dele */
+  const dx=a.x-p.x,dy=a.y-p.y,md=(ra+p.r)*.75,d=hyp(dx,dy);if(d<md&&d>.01){const ov=(md-d)*k*.5,nx=a.x+dx/d*ov,ny=a.y+dy/d*ov;if(!blocked(nx,ny,Math.min(a.r,6))){a.x=nx;a.y=ny}}}}}
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
 </script>
