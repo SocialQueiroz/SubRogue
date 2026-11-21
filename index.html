@@ -4435,15 +4435,30 @@ function pitGo(){if(PIT.busy||state!=='play')return;PIT.busy=1;p.inv=4;shake=18;
  radio(pick(['A fossa te cuspiu pra cima! Você voltou uma fenda, marujo!','PRESSÃO NEGATIVA! Volta tudo pra cima! Eu avisei da correnteza vermelha!','Que azar! A fossa te jogou uma fenda pra cima.']));
  setTimeout(()=>{if(state!=='play'||!p||p.hp<=0){PIT.busy=0;return}fadeTo(()=>{depth=Math.max(1,depth-1);mod=MODS.normal;newLevel();state='play';$('#hud').hidden=false;$('#abil').hidden=false;banner('SUGADO PRA CIMA',M(depth));if(typeof runSnap==='function')runSnap()})},650)}
 const _tcP=tickCurs;tickCurs=function(dt){_tcP(dt);if(!p||state!=='play')return;
- for(const q of pits){q.t+=dt;const dx=q.x-p.x,dy=q.y-p.y,d=hyp(dx,dy)||1;const see=d<130&&los(p.x,p.y,q.x,q.y);if(see&&!q.warn){q.warn=1;ftxt(q.x,q.y-26,'FOSSA! CUIDADO!','#ff5a5a');pt.push({x:q.x,y:q.y,vx:0,vy:0,life:.6,ml:.6,ring:70,c:'#ff3a3a'})}if(d<70&&see&&p.dashing<=0){const f=(1-d/70)*340;p.vx+=dx/d*f*dt;p.vy+=dy/d*f*dt}if(d<q.r-4&&see)pitGo();
-  if(Math.random()<.5){const a=R(TAU),rr=30+R(40);pt.push({x:q.x+Math.cos(a)*rr,y:q.y+Math.sin(a)*rr,vx:-Math.cos(a)*rr*2.2,vy:-Math.sin(a)*rr*2.2,life:.45,ml:.45,c:pick(['#ff5a5a','#8a1020','#ffb0b0']),s:1})}}
+ for(const q of pits){q.t+=dt;const dx=q.x-p.x,dy=q.y-p.y,d=hyp(dx,dy)||1;const see=d<170&&los(p.x,p.y,q.x,q.y);if(see&&!q.warn){q.warn=1;ftxt(q.x,q.y-26,'FOSSA! CUIDADO!','#ff5a5a');pt.push({x:q.x,y:q.y,vx:0,vy:0,life:.6,ml:.6,ring:100,c:'#ff3a3a'})}if(d<100&&see&&p.dashing<=0){const f=(1-d/100)*360;p.vx+=dx/d*f*dt;p.vy+=dy/d*f*dt}if(d<q.r-4&&see)pitGo();
+  if(Math.random()<.5){const a=R(TAU),rr=40+R(60);pt.push({x:q.x+Math.cos(a)*rr,y:q.y+Math.sin(a)*rr,vx:-Math.cos(a)*rr*2.2,vy:-Math.sin(a)*rr*2.2,life:.45,ml:.45,c:pick(['#ff5a5a','#8a1020','#ffb0b0']),s:1})}}
  if(!PIT.warned)for(const q of pits)if(curNear(q.c,p.x,p.y)){PIT.warned=1;radio('Essa correnteza VERMELHA leva pra uma fossa de pressão negativa! Se cair lá, você volta uma fenda pra cima! SAI DE LADO!');break}};
 const _dcP=drawCurs;drawCurs=function(vx0,vy0,vx1,vy1){_dcP(vx0,vy0,vx1,vy1);
  for(const c of curs){if(!c.neg||!c.P)continue;const P=c.P;ctx.lineCap='round';ctx.strokeStyle='#ff2a3a';ctx.globalAlpha=.16+.06*Math.sin(time*4);ctx.lineWidth=c.r*2;ctx.beginPath();ctx.moveTo(P[0][0],P[0][1]);for(let i=1;i<P.length;i++)ctx.lineTo(P[i][0],P[i][1]);ctx.stroke();ctx.globalAlpha=1;ctx.lineCap='butt'}
- for(const q of pits){if(q.x<vx0-90||q.x>vx1+90||q.y<vy0-90||q.y>vy1+90)continue;const T=time;wglow(q.x,q.y,80,'#ff2a3a',.25+.1*Math.sin(T*3));
-  for(let arm=0;arm<5;arm++){ctx.lineCap='round';for(let j=0;j<26;j++){const k=j/26,ang=arm*TAU/5+T*2.2+k*5.5,rr=q.r*.3+k*58;const x=q.x+Math.cos(ang)*rr,y=q.y+Math.sin(ang)*rr*.62;ctx.globalAlpha=(1-k)*.55;ctx.fillStyle=k<.3?'#2a0006':j%3?'#a01828':'#ff6a6a';ctx.fillRect(Math.round(x),Math.round(y),k<.5?2:1,k<.5?2:1)}}
-  ctx.globalAlpha=1;for(let i=5;i>=0;i--){ctx.globalAlpha=.25+.12*i;ctx.fillStyle=i%2?'#3a040c':'#12000a';ctx.beginPath();ctx.ellipse(q.x,q.y,q.r*(.35+i*.14),q.r*(.22+i*.09),T*.6+i,0,TAU);ctx.fill()}
-  ctx.globalAlpha=1;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(q.x,q.y,q.r*.35,q.r*.22,0,0,TAU);ctx.fill();ctx.strokeStyle='#ff3a4a';ctx.lineWidth=1;ctx.globalAlpha=.6+.3*Math.sin(T*6);ctx.beginPath();ctx.ellipse(q.x,q.y,q.r*1.05,q.r*.66,0,0,TAU);ctx.stroke();ctx.globalAlpha=1}};
+ for(const q of pits){if(q.x<vx0-130||q.x>vx1+130||q.y<vy0-130||q.y>vy1+130)continue;drawVortex(q)}};
+/* vórtice da pressão negativa: núcleo escuro com brilhos e braços vermelhos longos girando em espiral */
+function drawVortex(q){const T=time,x0=Math.round(q.x),y0=Math.round(q.y),N=11,L=96;wglow(x0,y0,110,'#ff2a3a',.22+.08*Math.sin(T*3));
+ ctx.lineCap='round';
+ for(let arm=0;arm<N;arm++){const a0=arm*TAU/N+T*.9,curl=2.1+.35*Math.sin(arm*1.7),len=L*(.75+.25*Math.sin(arm*2.3+1)),seg=22;let px=null,py=null;
+  for(let j=0;j<=seg;j++){const k=j/seg,ang=a0+k*curl+Math.sin(k*5+T*2.4+arm)*.12,rr=q.r*.62+k*len,x=x0+Math.cos(ang)*rr,y=y0+Math.sin(ang)*rr;
+   if(px!==null){const w=Math.max(1,Math.round(3.2*(1-k)));ctx.globalAlpha=Math.min(1,(1-k)*1.3)*.9;
+    ctx.strokeStyle=OUT;ctx.lineWidth=w+1.4;ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke();
+    ctx.strokeStyle=k<.18?'#5a0818':k<.55?'#c81830':'#ff4a5a';ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke()}
+   px=x;py=y}
+  /* faísca correndo pra dentro do braço */
+  const kk=1-((T*.55+arm*.37)%1),ang=a0+kk*curl,rr=q.r*.62+kk*len;ctx.globalAlpha=.9*kk;ctx.fillStyle='#ffb0c0';ctx.fillRect(Math.round(x0+Math.cos(ang)*rr),Math.round(y0+Math.sin(ang)*rr),1,1)}
+ ctx.globalAlpha=1;ctx.lineCap='butt';
+ /* núcleo: bola escura com contorno, brilho roxo e pontinhos */
+ const R=Math.round(q.r*.8);disc(x0,y0,R+1,OUT);disc(x0,y0,R,'#2a0a1e');disc(x0+1,y0+1,R-2,'#1a0412');disc(x0+1,y0+2,R-5,'#0c0008');
+ for(let k=0;k<14;k++){const a=k*2.39996+T*(k%2?.8:-.6),r=(k*5.3%R)*.9,sx=Math.round(x0+Math.cos(a)*r),sy=Math.round(y0+Math.sin(a)*r);if(Math.sin(T*4+k*1.7)>.1){ctx.fillStyle=k%3?'#ff3a6a':'#ffa0c8';ctx.fillRect(sx,sy,1,1)}}
+ ctx.fillStyle='#6a2a5a';ctx.fillRect(x0-R+3,y0-R+4,2,1);ctx.fillRect(x0-R+4,y0-R+3,1,1);
+ ctx.globalAlpha=.5+.3*Math.sin(T*5);ctx.strokeStyle='#ff3a4a';ctx.lineWidth=1;ctx.beginPath();ctx.arc(x0,y0,R+3+Math.sin(T*5)*1.5,0,TAU);ctx.stroke();ctx.globalAlpha=1}
+{const _sh=sceneHoles;sceneHoles=function(ox,oy){_sh.apply(this,arguments);if(typeof pits!=='undefined')for(const q of pits)hole(q.x+ox,q.y+oy,70,.45)}}
 /* baús pequenos agora soltam coisas */
 function chestBonus(c){const r=Math.random();if(r<.16)drop(c.x,c.y,'relic');else if(r<.42)drop(c.x,c.y,'heart');else if(r<.62)drop(c.x,c.y,'pearl');else if(r<.75){p.bombs=Math.min(6,p.bombs+1);ftxt(c.x,c.y-10,'+1 BOMBA','#ffd45e')}if(Math.random()<.25)drop(c.x,c.y,'pearl')}
 /* loja cheia */
