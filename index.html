@@ -4433,7 +4433,7 @@ const _nlP=newLevel;newLevel=function(){_nlP.apply(this,arguments);pits=[];PIT.b
   if(Math.random()<.85){chests.push({x:e[0],y:e[1]});if(Math.random()<.35)chests.push({x:e[0]+R(16)-8,y:e[1]+R(16)-8})}}};
 function pitGo(){if(PIT.busy||state!=='play')return;PIT.busy=1;p.inv=4;shake=18;flash=.6;SFX.roar();burst(p.x,p.y,'#ff3a3a',30,200,2);ftxt(p.x,p.y-16,'PRESSÃO NEGATIVA!','#ff5a5a');
  radio(pick(['A fossa te cuspiu pra cima! Você voltou uma fenda, marujo!','PRESSÃO NEGATIVA! Volta tudo pra cima! Eu avisei da correnteza vermelha!','Que azar! A fossa te jogou uma fenda pra cima.']));
- setTimeout(()=>fadeTo(()=>{depth=Math.max(1,depth-1);mod=MODS.normal;newLevel();state='play';$('#hud').hidden=false;$('#abil').hidden=false;banner('SUGADO PRA CIMA',M(depth));if(typeof runSnap==='function')runSnap()}),650)}
+ setTimeout(()=>{if(state!=='play'||!p||p.hp<=0){PIT.busy=0;return}fadeTo(()=>{depth=Math.max(1,depth-1);mod=MODS.normal;newLevel();state='play';$('#hud').hidden=false;$('#abil').hidden=false;banner('SUGADO PRA CIMA',M(depth));if(typeof runSnap==='function')runSnap()})},650)}
 const _tcP=tickCurs;tickCurs=function(dt){_tcP(dt);if(!p||state!=='play')return;
  for(const q of pits){q.t+=dt;const dx=q.x-p.x,dy=q.y-p.y,d=hyp(dx,dy)||1;const see=d<130&&los(p.x,p.y,q.x,q.y);if(see&&!q.warn){q.warn=1;ftxt(q.x,q.y-26,'FOSSA! CUIDADO!','#ff5a5a');pt.push({x:q.x,y:q.y,vx:0,vy:0,life:.6,ml:.6,ring:70,c:'#ff3a3a'})}if(d<70&&see&&p.dashing<=0){const f=(1-d/70)*340;p.vx+=dx/d*f*dt;p.vy+=dy/d*f*dt}if(d<q.r-4&&see)pitGo();
   if(Math.random()<.5){const a=R(TAU),rr=30+R(40);pt.push({x:q.x+Math.cos(a)*rr,y:q.y+Math.sin(a)*rr,vx:-Math.cos(a)*rr*2.2,vy:-Math.sin(a)*rr*2.2,life:.45,ml:.45,c:pick(['#ff5a5a','#8a1020','#ffb0b0']),s:1})}}
@@ -6562,6 +6562,10 @@ SP.golfinho.r=8;SP.boto.r=8;SP.golfsafado.r=9;
   if(!Number.isFinite(p.x)||!Number.isFinite(p.y)){const ok=Number.isFinite(p.safeX)&&Number.isFinite(p.safeY);p.x=ok?p.safeX:exit.x>0?exit.x:MW*TS/2;p.y=ok?p.safeY:exit.y>0?exit.y:MH*TS/2;p.vx=p.vy=0;camx=p.x-VW/2;camy=p.y-VH/2;console.warn('posição inválida corrigida')}
   if(!Number.isFinite(p.vx))p.vx=0;if(!Number.isFinite(p.vy))p.vy=0;if(!Number.isFinite(camx)||!Number.isFinite(camy)){camx=p.x-VW/2;camy=p.y-VH/2}}}catch(e){}return r}}
 {const _nl=newLevel;newLevel=function(){const r=_nl.apply(this,arguments);if(p){p.safeX=p.x;p.safeY=p.y}return r}}
+/* ================= NUNCA VIVO COM A VIDA ZERADA ================= */
+/* morrer durante a troca de fenda (fossa, caverna) deixava o jogo voltar pro mergulho com os corações vazios e sem morrer */
+{const _u=update;update=function(dt){const r=_u.apply(this,arguments);try{if(p&&state==='play'){if(Number.isFinite(p.hp))p._hpOk=p.hp;else p.hp=Number.isFinite(p._hpOk)&&p._hpOk>0?p._hpOk:1;
+  if(p.hp<=0&&!(typeof TUT!=='undefined'&&TUT.on)){p.inv=0;p.dashing=0;if(p.buoys>0)hurtP(0,null);if(p.hp<=0&&state==='play')die()}}}catch(e){console.warn(e)}return r}}
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
 </script>
