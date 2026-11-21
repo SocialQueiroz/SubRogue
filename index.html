@@ -4428,17 +4428,17 @@ RS.bk=Object.keys((META&&META.bk)||{}).length;
 let pits=[];const PIT={busy:0,warned:0};
 const _nlP=newLevel;newLevel=function(){_nlP.apply(this,arguments);pits=[];PIT.busy=0;
  if(depth<2||mod===MODS.lair||(typeof TUT!=='undefined'&&TUT.on))return;const L=curs.filter(c=>c.P&&!c.lair&&c.L>160).sort((a,b)=>b.L-a.L);let pitDone=depth<3;
- for(const c of L){const e=c.P[c.P.length-1];if(!pitDone&&Math.random()<.55){pitDone=1;c.neg=1;c.str*=1.4;c.r*=1.15;pits.push({x:e[0],y:e[1],r:20,c,t:R(9)});continue}
+ for(const c of L){const e=c.P[c.P.length-1];if(!pitDone&&Math.random()<.55){pitDone=1;c.neg=1;c.str*=1.1;c.r*=1.1;pits.push({x:e[0],y:e[1],r:20,c,t:R(9)});continue}
   if(Math.random()<.85){chests.push({x:e[0],y:e[1]});if(Math.random()<.35)chests.push({x:e[0]+R(16)-8,y:e[1]+R(16)-8})}}};
 function pitGo(){if(PIT.busy||state!=='play')return;PIT.busy=1;p.inv=4;shake=18;flash=.6;SFX.roar();burst(p.x,p.y,'#ff3a3a',30,200,2);ftxt(p.x,p.y-16,'PRESSÃO NEGATIVA!','#ff5a5a');
  radio(pick(['A fossa te cuspiu pra cima! Você voltou uma fenda, marujo!','PRESSÃO NEGATIVA! Volta tudo pra cima! Eu avisei da correnteza vermelha!','Que azar! A fossa te jogou uma fenda pra cima.']));
  setTimeout(()=>fadeTo(()=>{depth=Math.max(1,depth-1);mod=MODS.normal;newLevel();state='play';$('#hud').hidden=false;$('#abil').hidden=false;banner('SUGADO PRA CIMA',M(depth));if(typeof runSnap==='function')runSnap()}),650)}
 const _tcP=tickCurs;tickCurs=function(dt){_tcP(dt);if(!p||state!=='play')return;
- for(const q of pits){q.t+=dt;const dx=q.x-p.x,dy=q.y-p.y,d=hyp(dx,dy)||1;if(d<90){const f=(1-d/90)*420;p.vx+=dx/d*f*dt;p.vy+=dy/d*f*dt}if(d<q.r)pitGo();
+ for(const q of pits){q.t+=dt;const dx=q.x-p.x,dy=q.y-p.y,d=hyp(dx,dy)||1;const see=d<130&&los(p.x,p.y,q.x,q.y);if(see&&!q.warn){q.warn=1;ftxt(q.x,q.y-26,'FOSSA! CUIDADO!','#ff5a5a');pt.push({x:q.x,y:q.y,vx:0,vy:0,life:.6,ml:.6,ring:70,c:'#ff3a3a'})}if(d<70&&see&&p.dashing<=0){const f=(1-d/70)*340;p.vx+=dx/d*f*dt;p.vy+=dy/d*f*dt}if(d<q.r-4&&see)pitGo();
   if(Math.random()<.5){const a=R(TAU),rr=30+R(40);pt.push({x:q.x+Math.cos(a)*rr,y:q.y+Math.sin(a)*rr,vx:-Math.cos(a)*rr*2.2,vy:-Math.sin(a)*rr*2.2,life:.45,ml:.45,c:pick(['#ff5a5a','#8a1020','#ffb0b0']),s:1})}}
  if(!PIT.warned)for(const q of pits)if(curNear(q.c,p.x,p.y)){PIT.warned=1;radio('Essa correnteza VERMELHA leva pra uma fossa de pressão negativa! Se cair lá, você volta uma fenda pra cima! SAI DE LADO!');break}};
 const _dcP=drawCurs;drawCurs=function(vx0,vy0,vx1,vy1){_dcP(vx0,vy0,vx1,vy1);
- for(const c of curs){if(!c.neg||!c.P)continue;const P=c.P;ctx.lineCap='round';ctx.strokeStyle='#ff2a3a';ctx.globalAlpha=.09+.04*Math.sin(time*4);ctx.lineWidth=c.r*2;ctx.beginPath();ctx.moveTo(P[0][0],P[0][1]);for(let i=1;i<P.length;i++)ctx.lineTo(P[i][0],P[i][1]);ctx.stroke();ctx.globalAlpha=1;ctx.lineCap='butt'}
+ for(const c of curs){if(!c.neg||!c.P)continue;const P=c.P;ctx.lineCap='round';ctx.strokeStyle='#ff2a3a';ctx.globalAlpha=.16+.06*Math.sin(time*4);ctx.lineWidth=c.r*2;ctx.beginPath();ctx.moveTo(P[0][0],P[0][1]);for(let i=1;i<P.length;i++)ctx.lineTo(P[i][0],P[i][1]);ctx.stroke();ctx.globalAlpha=1;ctx.lineCap='butt'}
  for(const q of pits){if(q.x<vx0-90||q.x>vx1+90||q.y<vy0-90||q.y>vy1+90)continue;const T=time;wglow(q.x,q.y,80,'#ff2a3a',.25+.1*Math.sin(T*3));
   for(let arm=0;arm<5;arm++){ctx.lineCap='round';for(let j=0;j<26;j++){const k=j/26,ang=arm*TAU/5+T*2.2+k*5.5,rr=q.r*.3+k*58;const x=q.x+Math.cos(ang)*rr,y=q.y+Math.sin(ang)*rr*.62;ctx.globalAlpha=(1-k)*.55;ctx.fillStyle=k<.3?'#2a0006':j%3?'#a01828':'#ff6a6a';ctx.fillRect(Math.round(x),Math.round(y),k<.5?2:1,k<.5?2:1)}}
   ctx.globalAlpha=1;for(let i=5;i>=0;i--){ctx.globalAlpha=.25+.12*i;ctx.fillStyle=i%2?'#3a040c':'#12000a';ctx.beginPath();ctx.ellipse(q.x,q.y,q.r*(.35+i*.14),q.r*(.22+i*.09),T*.6+i,0,TAU);ctx.fill()}
