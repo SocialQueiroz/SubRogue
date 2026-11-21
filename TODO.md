@@ -187,3 +187,14 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Bandos de 3 a 5 que rodeiam juntos e se revezam nas travessuras: trombada que empurra e ROUBA moedas (matando o ladrão, devolve), bolha na cara (cega um pouco), pirueta e risadinhas ("HIHIHI!"); encostar sem querer não machuca, só a trombada
 - [x] Animação certa: o rabo não pula mais quando muda a velocidade e o golfinho nunca fica de cabeça pra baixo (espelha e só inclina)
 - [x] Golfinho Safado (2% por golfinho): rosa-choque com chapéu de palha amarelo de faixa roxa, olho preguiçoso e sorrisinho; matando, conquista "Pegou o Safado" e o "Chapéu do Golfinho Safado" no vestiário
+
+## Correções (rodada de bugs)
+- [x] Dash travava depois de continuar a corrida (o save guardava a hora do último impulso).
+- [x] Espada acerta e bomba destrói o ninho de ovos de peixe.
+- [x] Peixe-baú revelado no mesmo pixel art dos baús novos (tampa vira boca).
+- [x] Colisãozinha entre os bichos (não entram um dentro do outro).
+- [x] Golfinho: curva o corpo, gira ao trocar de lado, sprite no tamanho certo, piscar branco só no corpo.
+- [x] Fossa de pressão negativa: só suga se você enxerga a fossa, sucção mais curta, aviso "FOSSA!".
+- [x] Correnteza não puxa mais através da parede (era o "teleporte pro começo do mapa": a vermelha te levava pra fossa pelo túnel vizinho).
+- [x] Orca volta a aparecer na cena dos tubarões-baleia.
+- [x] Fácil mais fácil: metade do dano, correnteza pela metade, bichos e tiros mais lentos.
