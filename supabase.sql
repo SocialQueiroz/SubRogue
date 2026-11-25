@@ -60,12 +60,12 @@ begin
   if coalesce((n->>'_wipe')::numeric, 0) > coalesce((o->>'_wipe')::numeric, 0) then
     return new;  -- zerar progresso de propósito
   end if;
-  foreach k in array array['own','ach','bk','cards','cs','evts','syn','relSeen'] loop
+  foreach k in array array['own','ach','bk','cards','cs','evts','syn','relSeen','lore'] loop
     if jsonb_typeof(o->k) = 'object' then
       n := jsonb_set(n, array[k], (o->k) || (case when jsonb_typeof(n->k) = 'object' then n->k else '{}'::jsonb end));
     end if;
   end loop;
-  foreach k in array array['orca','sereia','famSaved','helmet','luz','moby','cthulhu','tut','tutSeen','_wipe'] loop
+  foreach k in array array['orca','sereia','famSaved','helmet','luz','moby','cthulhu','tut','tutSeen','lgSereia','lgNessie','lgMoby','_wipe'] loop
     if (o ? k) and (o->k) not in ('false'::jsonb, '0'::jsonb, 'null'::jsonb) and not (n ? k and (n->k) not in ('false'::jsonb, '0'::jsonb, 'null'::jsonb)) then
       n := jsonb_set(n, array[k], o->k);
     end if;

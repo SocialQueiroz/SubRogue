@@ -207,4 +207,13 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Conquistas e roupas nunca somem: a junção da nuvem só soma, cofre local em cada aparelho e trava no banco (rodar o fim do supabase.sql). Só "Zerar progresso" apaga
 - [x] Roupas novas por conquista rara: traje "Orca" (Lenda do Abismo) e nadadeiras "Cauda de Sereia" (Canto Silenciado); quem já tem a conquista ganha na hora
 - [x] Barris de dinamite saíram; ficou o barril RADIOATIVO raro (4% por fenda, 25% no naufrágio, garantido no santuário), com raio enorme, dano altíssimo, aviso e símbolo de radiação
-- [ ] Estaleiro novo: rever o que tem, dar sentido às pérolas (quem joga mais tem vantagem, sem quebrar o roguelike), visual novo e uma fala do Tião por item
+
+## Saves na conta, mapas e chefes lendários (feedback novo)
+- [x] Progresso só na conta (nada de save no notebook): o jogo segura uma cópia na memória enquanto está aberto; save antigo do navegador é juntado na conta e apagado; gravação nunca passa por cima de versão mais nova da nuvem; sair da conta avisa se não deu pra salvar
+- [x] Estaleiro novo: prateleira de MAPAS DO FUNDO (pergaminho, selo, enigma) e REFORMAS DO BARCO; fala do Tião pra cada item (ao olhar, ao comprar e no máximo); mapa precisa de dois cliques pra comprar
+- [x] Mapas-enigma (ficam na conta): Partitura Encharcada (60), Fotografia Rasgada (90), Diário Sem Capitão (120). Escolhe "levar mapa" na dificuldade; ele sai da conta na hora; na fenda do enigma aparece um sinal; morreu = o mar fica com o mapa (inclusive no checkpoint do fácil)
+- [x] LORELEI, a Rainha do Canto (700 m): 3 fases, ondas de canto aparáveis, coro de notas, varrida de cauda, chicote de cabelo, afogadas, encanto, lamento em espiral e mergulho roxo; valsa etérea; Traje da Rainha + Notas do Canto
+- [x] NESSIE, a Sombra do Lago (1.400 m): lago de salmoura, pescoço com cinemática inversa, bote, onda, cuspe, saída do lago, chicote, nadadeira, mergulho, rugido com pedras, investida roxa e redemoinho; gaita escocesa; Escamas do Lago + Névoa do Lago
+- [x] MOBY DICK, a Baleia Branca (2.200 m): cemitério do Pequod, arpões com cordas (ponto fraco), eco aparável, passagem fantasma, cordas, salto, aríete, cauda, redemoinho e mordida; trilha épica com canto de baleia; Pele da Baleia Branca + Espuma Branca
+- [x] Cada lenda: abertura de cinema (barras pretas, nome, câmera), legenda de lore por fase, fragmento da história do Zeca no fim, conquista e roupa que nunca somem
+- [ ] Rodar o fim do supabase.sql no Supabase (trava que impede qualquer aparelho de apagar conquista/roupa)

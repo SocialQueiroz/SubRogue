@@ -6623,7 +6623,7 @@ SKC.fin.L.push(['sereia','Cauda de Sereia',['#3ad8c8','#b06aff'],{srn:1}]);
    Antes, uma aba velha (ou o salvamento ao fechar a página) podia mandar pra nuvem um save sem a peça nova, e a junção
    de 3 versões entendia isso como "apagou de propósito" e apagava no aparelho que tinha. Agora a junção é sempre por união,
    e Só o ZERAR PROGRESSO (com marca _wipe) apaga. */
-const PERMA_OBJ=['own','ach','bk','cards','cs','evts','syn','relSeen'],PERMA_FLAG=['orca','sereia','famSaved','helmet','luz','moby','cthulhu','tut','tutSeen'],
+const PERMA_OBJ=['own','ach','bk','cards','cs','evts','syn','relSeen','lore'],PERMA_FLAG=['orca','sereia','famSaved','helmet','luz','moby','cthulhu','tut','tutSeen','lgSereia','lgNessie','lgMoby'],
  PERMA_MAX=['best','wins','gk','maxc','bro','golfSafado','parries','bottles','runs','kills'];
 const isObj=v=>!!v&&typeof v==='object'&&!Array.isArray(v),wipeOf=m=>(m&&+m._wipe)||0;
 function permaUnion(o,src){if(!o||!isObj(src))return false;let ch=false;
@@ -6816,7 +6816,7 @@ function legWin(){const L=LG,B=L.B,D=L.D;B.st='dying';B.t=D.dieT||4.5;B.hp=0;slo
 function legFrag(){const L=LG,D=L.D;document.body.insertAdjacentHTML('beforeend','<div id="lgfrag"><div class="pg"><h3>'+D.frag[0]+'</h3><h4>'+D.name+' foi derrotada</h4>'+D.frag.slice(1).map(t=>'<p>'+t+'</p>').join('')+
  '<p style="font-size:.85em;color:#6b4a20">Recompensa: '+D.reward+' · +'+(D.pearls||40)+' pérolas</p><div class="bot"><button class="btn nav sel" id="lgok">CONTINUAR O MERGULHO</button></div></div></div>');
  state='pausefrag';const go=()=>{const f=$('#lgfrag');if(f)f.remove();legClean();state='play';newLevel();banner('DE VOLTA AO MERGULHO',M(depth));radio(D.tiaoWin)};$('#lgok').onclick=go}
-{const _die=die;die=function(){legClean();return _die.apply(this,arguments)}}
+{const _die=die;die=function(){legClean();if(p&&p.mapC){p.mapC=null;try{if(META.ckpt&&META.ckpt.p)META.ckpt.p.mapC=null;if(META.run&&META.run.p)META.run.p.mapC=null;saveMeta()}catch(e){}}return _die.apply(this,arguments)}}
 /* ---------- música própria de cada lenda ---------- */
 {const _s=sched;sched=function(){if(!LG||!LG.D.mus||!AC||AC.state!=='running')return _s.apply(this,arguments);const Z=LG.D.mus,sd=60/Z.bpm/2,now=AC.currentTime,ph=LG.B.ph,dy=LG.B.st==='dying';
  lpf.frequency.setTargetAtTime(dy?900:Z.cut+ph*900,now,.6);cmbBus.gain.setTargetAtTime(0,now,.5);
@@ -7294,6 +7294,67 @@ window.legTest=id=>{if(state!=='play')return;p.mapC=id;legStart(id)};
   touchDmg:1});
  ACHL.push(['lgmoby','Me Chame de Sobrevivente','Derrote Moby Dick, a Baleia Branca (mapa: Diário Sem Capitão)',m=>!!m.lgMoby]);
  SKC.suit.L.push(['moby','Pele da Baleia Branca',['#eeece2','#a8a69a','#c83a3a'],{lg:'moby'}]);SKC.trail.L.push(['espuma','Espuma Branca',['#ffffff'],{lg:'moby'}]);}
+
+/* ---------------- ESTALEIRO NOVO: mapas do fundo + reformas, com fala do Tião pra cada item ---------------- */
+const YDL={
+ hp:['Chapa de aço nova no casco. Bicho morde, o barco nem sente... e você também não.','Martelei a noite inteira. Pode bater a cabeça na pedra que aguenta.','O casco já tá no máximo. Mais chapa que isso e o barco afunda sozinho.'],
+ o2:['Dois cilindros soldados um no outro. Mais ar, menos desespero lá embaixo.','Enchi até a boca. Respira devagar que rende.','Mais cilindro não cabe nas suas costas, marujo. Já tá no máximo.'],
+ gold:['Um cofrinho de lata. Todo mergulho começa com uns trocados pra loja lá de baixo.','Botei umas moedas aí dentro. Não gasta tudo em bolacha.','O cofrinho tá cheio até a tampa.'],
+ bomb:['Caixa de bomba do tempo da pesca proibida. Shhh, ninguém precisa saber.','Embrulhei no jornal. Não deixa cair no pé.','Mais bomba que isso e o fiscal aparece.'],
+ luck:['Dente de tubarão com fitinha do Bonfim. Coisa rara aparece mais pra quem usa.','Amarrei no seu pulso. Agora não tira nem pra tomar banho.','Sorte demais também dá azar. Tá no máximo.'],
+ kit:['Uma maleta com surpresa boa: você começa o mergulho já escolhendo um poder.','Arrumei a maleta do jeito que o Zeca gostava.','A maleta já tá pronta, marujo.'],
+ torp:['A planta de um torpedo de verdade. Com isso a loja lá de baixo começa a vender.','Mandei o projeto pro ferreiro do fundo. Já já tem torpedo na prateleira.','Esse projeto já foi entregue.'],
+ bum:['Bumerangue de arpão. Vai e volta, igual saudade.','Projeto aprovado. Agora o bumerangue aparece na loja.','Esse projeto já foi entregue.'],
+ deck:['Baralho com as cartas marcadas. Você escolhe a carta da corrida entre mais opções.','Marquei as cartas boas com a unha. Ninguém percebe.','O baralho já tá marcado todinho.'],
+ sereia:['Uma partitura que nunca seca. Quando eu toco ela no violão, o mar fica quieto pra escutar.','Guarda dentro da roupa. Se você morrer lá embaixo, o mar leva ela de volta pra dona.','Você já fez ela parar de cantar. Mas a partitura voltou pro barco sozinha... quer ouvir de novo?'],
+ nessie:['Essa foto tava no quarto do meu irmão. Atrás tem a letra dele... e um enigma.','Cuida bem dela, marujo. É a única foto que sobrou.','Você já viu ela afundar. A foto continua aqui, ainda molhada.'],
+ moby:['Um diário de bordo de duzentos anos. As últimas páginas têm uma letra que eu conheço bem.','Lê o enigma com calma. E se achar quem eu tô pensando... manda um abraço meu.','A baleia branca descansou. Mas o diário ainda pede pra ser lido.']};
+const YDI={hp:'vest',o2:'tank',gold:'coins',bomb:'bombs',luck:'clover',kit:'chest',torp:'torpedo',bum:'boomerang',deck:'card'};
+let YD={sel:null,line:''};
+function ydIcon(cv,id){const g=cv.getContext('2d'),W=cv.width,H=cv.height;g.imageSmoothingEnabled=false;g.clearRect(0,0,W,H);const P=(x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(x,y,w,h)};
+ if(id==='sereia'){for(let k=0;k<5;k++)P(4,8+k*5,W-8,1,'#7a5a3a');const N=[[9,22],[17,17],[25,20],[33,12],[41,15]];N.forEach(([x,y],k)=>{P(x,y,4,3,'#3a2410');P(x+3,y-8,1,9,'#3a2410');if(k%2)P(x+3,y-8,4,2,'#3a2410')});P(W-12,4,6,6,'#b04aff')}
+ else if(id==='nessie'){P(0,24,W,H-24,'#6a7a5a');for(let x=0;x<W;x+=2)P(x,24+(Math.sin(x*.4)>0?0:1),2,1,'#3a4a30');const C=[[14,24],[15,20],[17,15],[20,11],[24,9],[28,9]];C.forEach(([x,y],k)=>P(x,y,4,k?4:3,'#2a2a20'));P(29,9,2,1,'#e8d8a0');P(36,22,5,3,'#2a2a20');P(44,23,4,2,'#2a2a20');P(0,0,W,3,'#d8c8a0');P(W-3,0,3,H,'#d8c8a0')}
+ else if(id==='moby'){g.save();g.translate(W/2,H/2);g.rotate(-.35);P(-22,-1,36,2,'#5a3a1a');g.fillStyle='#3a3a40';g.beginPath();g.moveTo(14,-4);g.lineTo(22,0);g.lineTo(14,4);g.closePath();g.fill();g.restore();g.strokeStyle='#8a6a3a';g.beginPath();g.moveTo(10,26);g.quadraticCurveTo(20,34,34,28);g.stroke();P(30,6,12,2,'#7a5a3a');P(30,10,9,1,'#7a5a3a');P(30,13,11,1,'#7a5a3a')}}
+renderMeta=function(line){if(line)YD.line=line;meta.its=metaItems();const pe=META.pearls,M0=META.maps||{};
+ const maps=LEGO.map(id=>{const D=LEGS[id],own=(M0[id]||0)>0,beat=!!META[D.flag],no=pe<D.price;return'<button class="nav yd-map'+(own?' own':'')+(no&&!own?' no':'')+(YD.sel==='m:'+id?' sel':'')+'" data-y="m:'+id+'" style="--wax:'+D.barc+'"><canvas width="52" height="36" data-ic="'+id+'"></canvas><b>'+D.map+'</b><span class="yd-pr">'+(own?'NA BOLSA':img('pearl',12)+D.price)+'</span>'+(beat?'<i class="yd-beat">VENCIDA</i>':'')+'<u></u></button>'}).join('');
+ const ups=meta.its.map(it=>{const k=MUP[it.i][0];return'<button class="nav yd-up'+(it.done?' done':pe<it.price?' no':'')+(YD.sel==='u:'+k?' sel':'')+'" data-y="u:'+k+'">'+img(YDI[k]||it.ic||'chest',30)+'<b>'+it.name+'</b><span class="yd-pips">'+Array.from({length:it.max},(_,j)=>'<i class="'+(j<it.lv?'on':'')+'"></i>').join('')+'</span><span class="yd-pr">'+(it.done?'MÁX':img('pearl',12)+it.price)+'</span></button>'}).join('');
+ $('#metabox').innerHTML='<h2>ESTALEIRO</h2><div class="keeper"><img class="face" src="'+FACE()+'" alt=""><div class="bubble"></div></div>'+
+  '<div class="yd-t">MAPAS DO FUNDO<small>caros, e uma chance só: se morrer, o mar fica com o mapa</small></div><div class="yd-maps">'+maps+'</div>'+
+  '<div class="yd-t">REFORMAS DO BARCO<small>valem pra todos os mergulhos</small></div><div class="yd-ups">'+ups+'</div>'+
+  '<div class="bot"><span class="purse">'+img('pearl',26)+pe+'</span><button class="btn nav" id="mback">VOLTAR</button></div>';
+ $('#metabox').querySelectorAll('canvas[data-ic]').forEach(c=>ydIcon(c,c.dataset.ic));
+ say(YD.line||pick(TL.yard),META.runs?META.runs+' mergulho'+(META.runs>1?'s':'')+' até agora. Recorde: '+M(META.best)+'.':'Pérola se acha em baú, em elite e em chefe.');
+ try{persDeco($('#metabox'))}catch(e){}};
+function ydInfo(k){const[t,id]=k.split(':');if(t==='m'){const D=LEGS[id],own=((META.maps||{})[id]||0)>0,beat=!!META[D.flag];return{line:YDL[id][beat&&!own?2:0],extra:'“'+D.riddle+'” · '+(own?'Já tá na sua bolsa. Leve ele escolhendo o mapa antes de mergulhar.':D.price+' pérolas'+(META.pearls<D.price?'. Faltam '+(D.price-META.pearls)+'.':'. Toca de novo pra levar.'))}}
+ const it=meta.its.find(x=>MUP[x.i][0]===id);if(!it)return{line:'',extra:''};return{line:YDL[id]?YDL[id][it.done?2:0]:it.desc,extra:it.desc+(it.done?'':' · '+it.price+' pérolas'+(META.pearls<it.price?'. Faltam '+(it.price-META.pearls)+'.':'. Toca de novo pra comprar.'))}}
+function ydBuy(k){const[t,id]=k.split(':');
+ if(t==='m'){const D=LEGS[id];META.maps=META.maps||{};if((META.maps[id]||0)>0){SFX.tick();return renderMeta('Esse já tá na bolsa, marujo. Um de cada vez.')}if(META.pearls<D.price){SFX.no();return renderMeta('Faltam '+(D.price-META.pearls)+' pérolas. Esse mapa é caro, mas vale.')}META.pearls-=D.price;META.maps[id]=1;saveMeta();SFX.pearl();return renderMeta(YDL[id][1])}
+ const it=meta.its.find(x=>MUP[x.i][0]===id);if(!it)return;if(it.done){SFX.no();return renderMeta(YDL[id]?YDL[id][2]:pick(TL.max))}if(META.pearls<it.price){SFX.no();return renderMeta('Faltam '+(it.price-META.pearls)+' pérolas. Mergulha mais um pouco.')}
+ META.pearls-=it.price;META.up[id]=it.lv+1;saveMeta();SFX.pearl();renderMeta(YDL[id]?YDL[id][1]:pick(TL.buy))}
+$('#metabox').onclick=ev=>{const el=ev.target.closest('[data-y],#mback');if(!el)return;if(el.id==='mback'){$('#meta').hidden=true;$('#title').hidden=false;titleInfo();YD.sel=null;return}
+ const k=el.dataset.y;if(typeof justSel!=='undefined'&&justSel===el){justSel=null}
+ if(YD.sel!==k){YD.sel=k;YD.arm=null;$('#metabox').querySelectorAll('[data-y]').forEach(x=>x.classList.toggle('sel',x===el));const I=ydInfo(k);SFX.tick();say(I.line,I.extra);if(k[0]==='m')YD.arm=k;return}
+ if(k[0]==='m'&&YD.arm!==k){YD.arm=k;const I=ydInfo(k);SFX.tick();say(I.line,I.extra);return}YD.arm=null;ydBuy(k)};
+$('#metabox').addEventListener('navsel',e=>{const k=e.target&&e.target.dataset&&e.target.dataset.y;if(k&&YD.sel!==k){YD.sel=k;YD.arm=null;const I=ydInfo(k);say(I.line,I.extra)}});
+openMeta=function(){$('#title').hidden=true;meta={selKey:null};YD.sel=null;YD.line=pick(TL.yard);renderMeta();$('#meta').hidden=false};
+{const st=document.createElement('style');st.textContent=`
+#metabox .yd-t{font:9px 'Press Start 2P',monospace;color:#ffd98a;letter-spacing:1px;margin:12px 0 6px;text-shadow:0 2px 0 #000}#metabox .yd-t small{display:block;font:15px 'VT323',monospace;color:#d8c8a8;letter-spacing:0;margin-top:3px;text-shadow:none}
+.yd-maps{display:flex;gap:10px;flex-wrap:wrap}
+.yd-map{position:relative;width:150px;padding:10px 10px 8px;border:3px solid #000;background:radial-gradient(circle at 20% 15%,#f6ead0,#e2cfa2 55%,#b8955a);box-shadow:inset 0 0 14px rgba(90,50,10,.55),0 4px 0 #000;color:#3a2410;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transform:rotate(-1.2deg);transition:transform .15s}
+.yd-map:nth-child(2){transform:rotate(1deg)}.yd-map:nth-child(3){transform:rotate(-.4deg)}
+.yd-map:hover,.yd-map.sel{transform:rotate(0) translateY(-4px) scale(1.04);box-shadow:inset 0 0 14px rgba(90,50,10,.55),0 0 0 3px #ffd98a,0 8px 0 #000}
+.yd-map canvas{width:104px;height:72px;image-rendering:pixelated;background:rgba(255,255,255,.18);border:1px dashed rgba(90,60,30,.5)}
+.yd-map b{font:9px 'Press Start 2P',monospace;line-height:1.4;text-align:center}
+.yd-map u{position:absolute;right:-8px;top:-8px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff8,var(--wax) 40%,#0008);border:2px solid #000}
+.yd-map .yd-pr{font:20px 'VT323',monospace;color:#5a3010;display:flex;align-items:center;gap:3px}.yd-map.own .yd-pr{color:#2a6a2a;font:8px 'Press Start 2P',monospace}
+.yd-map.no{filter:saturate(.6) brightness(.85)}.yd-beat{position:absolute;left:-6px;top:14px;transform:rotate(-14deg);font:7px 'Press Start 2P',monospace;color:#a01818;border:2px solid #a01818;padding:2px 4px;background:#f6ead0cc;font-style:normal}
+.yd-ups{display:flex;gap:7px;flex-wrap:wrap}
+.yd-up{width:92px;min-height:96px;padding:6px 4px;border:3px solid #000;background:linear-gradient(#3a2414,#24160c);box-shadow:inset 0 0 0 2px #6a4424,0 3px 0 #000;color:#f0dcb8;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+.yd-up img{width:30px;height:30px}.yd-up b{font:15px 'VT323',monospace;line-height:1;text-align:center;min-height:30px}
+.yd-up.sel,.yd-up:hover{box-shadow:inset 0 0 0 2px #ffd98a,0 0 0 2px #ffd98a,0 3px 0 #000}.yd-up.no{opacity:.65}.yd-up.done{opacity:.8;background:linear-gradient(#24361c,#14200e)}
+.yd-pips{display:flex;gap:2px}.yd-pips i{width:6px;height:6px;background:#4a3020;border:1px solid #000}.yd-pips i.on{background:#ffd45e}
+.yd-up .yd-pr{font:19px 'VT323',monospace;color:#ffd98a;display:flex;align-items:center;gap:3px}
+@media(max-width:560px){.yd-map{width:calc(50% - 8px)}.yd-up{width:calc(33% - 6px)}}`;document.head.appendChild(st)}
 
 /*LEG-END*/
 const _li=initProfiles();titleBG();if(!_li)openLogin();
