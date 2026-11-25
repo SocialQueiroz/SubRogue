@@ -6986,6 +6986,7 @@ window.legTest=id=>{if(state!=='play')return;p.mapC=id;legStart(id)};
    if(B.t<=0){B.pur=0;begin(B,'tired')}}
   else if(B.st==='tired'){B.vx*=.9;B.vy*=.9;if(B.t<=0)begin(B,'idle')}
   phys(B,dt)}
+ window.__beg_sereia=begin;
  legDef('sereia',{name:'LORELEI',title:'A RAINHA DO CANTO',short:'Lórelei',map:'Partitura Encharcada',price:60,depth:7,flag:'lgSereia',pearls:40,barc:'#c878ff',hitc:'#ffd0f0',
   riddle:'Sete vezes cem braças abaixo do casco, onde a pedra virou plateia e a plateia virou pedra, alguém ainda ensaia. Não aplauda.',
   phases:['O CANTO','AS AFOGADAS','O LAMENTO'],th:[.66,.33],shotMul:.6,swordMul:1.7,introT:5.6,dieT:5,light:190,
@@ -7014,6 +7015,147 @@ window.legTest=id=>{if(state!=='play')return;p.mapC=id;legStart(id)};
   touchDmg:1});
  ACHL.push(['lgsereia','A Última Nota','Derrote Lórelei, a Rainha do Canto (mapa: Partitura Encharcada)',m=>!!m.lgSereia]);
  SKC.suit.L.push(['rainha','Traje da Rainha',['#d8c8f0','#6a5aa8','#7fe9ff'],{lg:'sereia'}]);SKC.trail.L.push(['canto','Notas do Canto',['#e0b8ff'],{lg:'sereia'}]);}
+
+/* ---------------- LENDA 2: NESSIE, A SOMBRA DO LAGO ---------------- */
+{const SK=['#0e1c12','#1f3a24','#355a34','#5a7e48','#a8b878'],BEL='#7a8a5a',SPOT='#16281a',EYE='#ffd23a',BRINE='#1a2a20',BR2='#3a5a3a';
+ const C0=()=>[MW*TS/2,MH*TS/2],LAKE=()=>MH*TS/2+7*TS;
+ const NN=13,NL=9.6;
+ function neckBase(B){return[B.x+Math.cos(B.ang)*30*B.f-Math.sin(B.ang)*-12,B.y+Math.sin(B.ang)*30*B.f+Math.cos(B.ang)*-12]}
+ function neckInit(B){const b=neckBase(B);B.neck=[];for(let i=0;i<NN;i++)B.neck.push([b[0]+B.f*i*NL*.7,b[1]-i*NL*.7])}
+ function fabrik(B,tx,ty){const P=B.neck,b=neckBase(B),n=P.length;const d=hyp(tx-b[0],ty-b[1]),R=NL*(n-1)*.98;if(d>R){tx=b[0]+(tx-b[0])/d*R;ty=b[1]+(ty-b[1])/d*R}
+  const d2=hyp(tx-b[0],ty-b[1]),SL=Math.min(NL,Math.max(NL*.5,d2/((n-1)*.9)));B.sl=(B.sl||SL)+(SL-(B.sl||SL))*.2;const sl=B.sl;
+  for(let i=1;i<n-1;i++){const u=i/(n-1),ax=b[0]+(tx-b[0])*u,ay=b[1]+(ty-b[1])*u-Math.sin(u*Math.PI)*12;P[i]=[P[i][0]+(ax-P[i][0])*.08,P[i][1]+(ay-P[i][1])*.08]}
+  for(let it=0;it<3;it++){P[n-1]=[tx,ty];for(let i=n-2;i>=0;i--){const a=P[i],c=P[i+1],l=hyp(a[0]-c[0],a[1]-c[1])||1;P[i]=[c[0]+(a[0]-c[0])/l*sl,c[1]+(a[1]-c[1])/l*sl]}
+   P[0]=b;for(let i=1;i<n;i++){const a=P[i-1],c=P[i],l=hyp(a[0]-c[0],a[1]-c[1])||1;P[i]=[a[0]+(c[0]-a[0])/l*sl,a[1]+(c[1]-a[1])/l*sl]}}}
+ function headPos(B){const P=B.neck;return P[P.length-1]}
+ function headAng(B){const P=B.neck,n=P.length;return Math.atan2(P[n-1][1]-P[n-3][1],P[n-1][0]-P[n-3][0])}
+ const NW=i=>9.5-i*.42;
+ function drawNessie(B){const T=B.tt,f=B.f,g0=ctx.globalAlpha;ctx.globalAlpha=g0*B.alpha;
+  const ca=Math.cos(B.ang),sa=Math.sin(B.ang),W=(lx,ly)=>[B.x+ca*lx*f-sa*ly,B.y+sa*lx*f+ca*ly],sw=Math.sin(T*(B.fast?6:3));
+  /* cauda */
+  const TP=[];for(let i=0;i<10;i++){const u=i/9,lx=-34-i*8,ly=-2+i*1.4+Math.sin(T*2.4-i*.6)*(1.5+i*.9)*(B.fast?1.6:1);TP.push(W(lx,ly))}
+  /* nadadeiras de trás (lado de lá) */
+  const fl=(x,y,ph,far)=>{const st=Math.sin(T*(B.fast?6:3)+ph),base=Math.PI/2+f*(.75+st*.5)+B.ang,[bx,by]=W(x,y),L=far?30:34,c=far?SK[1]:SK[2];
+   const pts=[[bx,by]];for(let k=1;k<=7;k++){const u=k/7,aa=base+f*Math.sin(T*(B.fast?6:3)+ph-u*1.6)*.18*u;pts.push([pts[k-1][0]+Math.cos(aa)*L/7,pts[k-1][1]+Math.sin(aa)*L/7])}tube(pts,i=>[5,7.2,8,7.6,6.4,4.8,3,1.2][i],c,{lt:far?.05:.28,dk:-.38,up:far?0:SK[3]})};
+  fl(-22,10,1.6,1);fl(18,12,0,1);
+  tube(TP,i=>Math.max(1.5,14-i*1.35),SK[2],{belly:BEL,lt:.22,dk:-.4,band:2,bandc:SK[1]});
+  /* corpo */
+  const BP=[];for(let i=0;i<=14;i++){const u=i/14;BP.push(W(38-u*76,Math.sin(u*Math.PI)*-2.4+Math.sin(T*1.5+u*3)*.6))}
+  tube(BP,i=>{const u=i/14;return 12+13*Math.pow(Math.sin(Math.PI*(.12+u*.82)),.7)},SK[2],{belly:BEL,lt:.22,dk:-.42,up:SK[3]});
+  for(let k=0;k<14;k++){const u=(k*.37)%1,v=((k*.61)%1)*.7-.6,[x,y]=W(30-u*64,v*18);disc(x,y,1.6+(k%3)*.6,SPOT)}
+  for(let k=0;k<8;k++){const[x,y]=W(26-k*8,-22.5+Math.abs(k-3.5)*.7);disc(x,y,1.9,SK[1]);disc(x-.5,y-.6,1,SK[3])}
+  /* nadadeiras da frente */
+  fl(-24,12,1.6+Math.PI,0);fl(16,14,Math.PI,0);
+  /* pescoço */
+  const P=B.neck;tube(P,NW,SK[2],{belly:BEL,lt:.25,dk:-.42,up:SK[3]});for(let i=2;i<P.length-1;i+=2){const a=Math.atan2(P[i+1][1]-P[i-1][1],P[i+1][0]-P[i-1][0]),nx=-Math.sin(a)*f,ny=Math.cos(a)*f;disc(P[i][0]-nx*NW(i)*.55,P[i][1]-ny*NW(i)*.55,1.2,SPOT)}
+  /* cabeça */
+  const[hx,hy]=headPos(B),ha=headAng(B),jaw=B.jaw||0;ctx.save();ctx.translate(hx,hy);ctx.rotate(ha);ctx.scale(1.3,Math.cos(ha)<0?-1.3:1.3);
+  ctx.fillStyle=OUT;ctx.beginPath();ctx.ellipse(2,0,13,8.2,0,0,TAU);ctx.fill();
+  ctx.save();ctx.rotate(jaw*.5);ctx.fillStyle=OUT;ctx.beginPath();ctx.moveTo(-6,2);ctx.quadraticCurveTo(8,9,17,4);ctx.lineTo(16,1.5);ctx.lineTo(-6,0);ctx.closePath();ctx.fill();ctx.fillStyle=BEL;ctx.beginPath();ctx.moveTo(-5,2);ctx.quadraticCurveTo(8,7.6,15.6,3.6);ctx.lineTo(15,2);ctx.lineTo(-5,1);ctx.closePath();ctx.fill();if(jaw>.1)for(let k=0;k<5;k++){ctx.fillStyle='#f4ecd0';ctx.fillRect(2+k*2.8,1.2,1,1.6)}ctx.restore();
+  if(jaw>.1){ctx.fillStyle='#3a0a10';ctx.beginPath();ctx.moveTo(-4,1);ctx.lineTo(15,1.5);ctx.lineTo(15,1.5+jaw*7);ctx.closePath();ctx.fill()}
+  ctx.fillStyle=SK[2];ctx.beginPath();ctx.ellipse(2,-.5,12,7,0,0,TAU);ctx.fill();ctx.fillStyle=SK[3];ctx.beginPath();ctx.ellipse(0,-3,8,3.2,0,0,TAU);ctx.fill();
+  ctx.fillStyle=SK[2];ctx.beginPath();ctx.moveTo(6,-5);ctx.quadraticCurveTo(15,-4,17.5,0);ctx.quadraticCurveTo(16,2.4,8,2);ctx.closePath();ctx.fill();
+  if(jaw>.1)for(let k=0;k<5;k++){ctx.fillStyle='#f4ecd0';ctx.fillRect(4+k*2.6,1,1,1.8)}
+  disc(15.5,-1.5,.8,OUT);for(const hx2 of[-6,-2])disc(hx2,-7,1.8,SK[1]),disc(hx2,-7.6,1,SK[3]);
+  const ey=B.ph>=2?'#ff4a2a':EYE;disc(4,-3,2.6,OUT);disc(4,-3,2,ey);ctx.fillStyle=OUT;ctx.fillRect(4,-4.6,1,3.2);if(B.ph>=2)wglow(4,-3,9,'#ff4a2a',.5);
+  for(let k=0;k<3;k++)disc(-3+k*3,2.6,.7,SPOT);
+  ctx.restore();ctx.globalAlpha=g0}
+ /* lago de salmoura por cima do que está submerso */
+ function lake(B){const ly=LAKE(),T=time,x0=camx-20,x1=camx+VW+20;ctx.globalAlpha=.78;ctx.fillStyle=BRINE;ctx.fillRect(x0,ly,x1-x0,MH*TS-ly);ctx.globalAlpha=.25;ctx.fillStyle='#4a7a4a';for(let y=ly+8;y<ly+260;y+=14)ctx.fillRect(x0,y+Math.sin(T+y)*2,x1-x0,1);
+  ctx.globalAlpha=1;ctx.fillStyle=BR2;for(let x=Math.floor(x0/2)*2;x<x1;x+=2){const y=ly+Math.sin(x*.05+T*1.6)*1.6+Math.sin(x*.13-T*2.3)*.8;ctx.fillRect(x,y,2,2)}ctx.fillStyle='#9ac08a';for(let x=Math.floor(x0/2)*2;x<x1;x+=2){const y=ly+Math.sin(x*.05+T*1.6)*1.6+Math.sin(x*.13-T*2.3)*.8;if((x+Math.floor(T*20))%9===0)ctx.fillRect(x,y-1,2,1)}
+  for(const r of B.rip||[]){ctx.globalAlpha=Math.max(0,r.l)*.7;ctx.strokeStyle='#c8e0b8';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(r.x,ly,r.r,r.r*.18,0,0,TAU);ctx.stroke()}ctx.globalAlpha=1;
+  if(B.wp){ctx.globalAlpha=.5;ctx.strokeStyle='#6a9a5a';for(let k=0;k<4;k++){ctx.beginPath();ctx.ellipse(B.wp.x,ly,30+k*22+Math.sin(T*6+k)*4,6+k*3,0,T*3+k,T*3+k+4.5);ctx.stroke()}ctx.globalAlpha=1}}
+ function back(B){const[cx,cy]=C0(),T=time;
+  for(let k=0;k<9;k++){const x=cx-400+k*100+((k*37)%30),h=40+((k*53)%60);ctx.fillStyle='#14201a';ctx.beginPath();ctx.moveTo(x-14,cy-300);ctx.lineTo(x+14,cy-300);ctx.lineTo(x+2,cy-300+h+60);ctx.closePath();ctx.fill();ctx.fillStyle='#1e2e24';ctx.beginPath();ctx.moveTo(x-6,cy-300);ctx.lineTo(x+4,cy-300);ctx.lineTo(x+1,cy-300+h+40);ctx.closePath();ctx.fill()}
+  for(let k=0;k<3;k++){ctx.globalAlpha=.08;ctx.fillStyle='#cfe8d0';const y=cy-40+k*40+Math.sin(T*.3+k)*6;ctx.fillRect(cx-420,y,840,16)}ctx.globalAlpha=1;
+  ctx.globalAlpha=.35;ctx.fillStyle='#0c1610';ctx.beginPath();ctx.moveTo(cx-430,LAKE());ctx.quadraticCurveTo(cx-300,cy-120,cx-180,LAKE());ctx.fill();ctx.beginPath();ctx.moveTo(cx+140,LAKE());ctx.quadraticCurveTo(cx+300,cy-150,cx+440,LAKE());ctx.fill();ctx.globalAlpha=1}
+ function draw(B){if(B.hf>0){ctx.save();ctx.globalAlpha=.65}drawNessie(B);if(B.hf>0)ctx.restore();lake(B)}
+ function over(B){if(B.st==='chicote'&&B.n===0){const b=neckBase(B),k=1-B.t/B.T0;ctx.globalAlpha=.12+.3*k*(Math.floor(time*14)%2?1:.5);ctx.fillStyle='#ff5d6c';ctx.beginPath();ctx.moveTo(b[0],b[1]);ctx.arc(b[0],b[1],125,B.wa-1.3,B.wa+1.3);ctx.closePath();ctx.fill();ctx.globalAlpha=1}
+  if(B.ring){ctx.globalAlpha=Math.max(0,1-B.ring.r/B.ring.max);ctx.strokeStyle='#c8e0b8';ctx.lineWidth=3;ctx.beginPath();ctx.arc(B.ring.x,B.ring.y,B.ring.r,0,TAU);ctx.stroke();ctx.lineWidth=1;ctx.globalAlpha=1}
+  if(B.pur){const[hx,hy]=headPos(B);wglow(hx,hy,34,PURP,.55);if(B.st==='investida')wglow(B.x,B.y,70,PURP,.4)}
+  if(B.st==='tired'){const[hx,hy]=headPos(B);wglow(hx,hy,30,'#ffd45e',.25+.12*Math.sin(time*10))}
+  if(B.st==='stun'){const[hx,hy]=headPos(B);for(let k=0;k<4;k++){const a=time*4+k*1.6;disc(hx+Math.cos(a)*12,hy-12+Math.sin(a)*4,1.5,'#ffd45e')}}
+  for(const g of B.gl||[]){disc(g.x,g.y,3.4,OUT);disc(g.x,g.y,2.6,'#8ac05a');disc(g.x-.8,g.y-.8,.9,'#d8ffb0')}}
+ function shape(B){const H=[],[hx,hy]=headPos(B),sub=B.y>LAKE()+10;H.push([hx+Math.cos(headAng(B))*4,hy+Math.sin(headAng(B))*4,12,1.8,1]);for(let i=2;i<B.neck.length-1;i+=2){const q=B.neck[i];if(q[1]<LAKE()+4||!sub)H.push([q[0],q[1],NW(i)*.85,.8,1])}
+  if(!sub){const ca=Math.cos(B.ang),sa=Math.sin(B.ang);for(const lx of[-20,0,20])H.push([B.x+ca*lx*B.f,B.y+sa*lx*B.f,22,1,1])}else H.push([B.x,B.y,24,.35,0]);B.H=H;
+  const sub2=B.y>LAKE();B.cx=sub2?(hx+B.x)/2:B.x+B.f*20;B.cy=sub2?Math.min(hy,LAKE()-40):B.y-20}
+ function steer(B,tx,ty,k,dt,mx){B.vx+=((tx-B.x)*k-B.vx)*Math.min(1,dt*1.6);B.vy+=((ty-B.y)*k-B.vy)*Math.min(1,dt*1.6);const s=hyp(B.vx,B.vy);if(s>mx){B.vx*=mx/s;B.vy*=mx/s}}
+ function headTo(B,tx,ty,dt,sp){B.hx+=(tx-B.hx)*Math.min(1,dt*(sp||4));B.hy+=(ty-B.hy)*Math.min(1,dt*(sp||4))}
+ function phys(B,dt){const[cx,cy]=C0(),ly=LAKE();B.x+=B.vx*dt;B.y+=B.vy*dt;B.x=cl(B.x,cx-380,cx+380);B.y=cl(B.y,cy-230,MH*TS-90);
+  if(B.under)B.y+=((ly+45)-B.y)*Math.min(1,dt*2);else if(B.y>ly-30&&B.st!=='mergulho'&&B.st!=='salto')B.vy-=500*dt;
+  {const tf=Math.abs(B.vx)>25?Math.sign(B.vx):B.f;if(B.st!=='investida')B.f=tf||1}
+  B.ang+=(cl(B.vy*.0018*B.f,-.45,.45)-B.ang)*Math.min(1,dt*3);fabrik(B,B.hx,B.hy);B.jaw=Math.max(0,(B.jaw||0)-dt*2);B.fast=hyp(B.vx,B.vy)>120;
+  B.rip=(B.rip||[]).filter(r=>(r.l-=dt*.6)>0);for(const r of B.rip)r.r+=dt*40;if(B.under){const[hx]=headPos(B);if(Math.random()<dt*3)B.rip.push({x:hx,r:6,l:1})}
+  if(p.y>ly-p.r&&state==='play'){p.vy-=900*dt;if(p.y>ly+6)p.y=ly+6;if(B.st==='redemoinho'&&p.inv<=0&&p.dashing<=0){legHurt(1,p.x,ly);ftxt(p.x,p.y-12,'SALMOURA!','#9ac08a')}}
+  for(let i=(B.gl||[]).length-1;i>=0;i--){const g=B.gl[i];g.t+=dt;const k=g.t/g.T;g.x=g.x0+(g.x1-g.x0)*k;g.y=g.y0+(g.y1-g.y0)*k-Math.sin(Math.PI*k)*60;if(k>=1){B.gl.splice(i,1);goo.push({x:g.x1,y:g.y1,r:16,life:5,ml:5,c:'#5a8a3a',own:'e',dmg:1,slow:1});burst(g.x1,g.y1,'#8ac05a',12,90,2);if(hyp(p.x-g.x1,p.y-g.y1)<18)legHurt(1,g.x1,g.y1)}}
+  if(B.ring){B.ring.r+=dt*190;const dr=Math.abs(hyp(p.x-B.ring.x,p.y-B.ring.y)-B.ring.r);if(dr<6&&!B.ring.hit&&p.dashing<=0&&p.wup<=0){B.ring.hit=1;legHurt(1,p.x,p.y)}if(B.ring.r>B.ring.max)B.ring=null}}
+ const MV=[['espreita','bote','onda','cuspe','bote'],['caca','chicote','nadadeira','bote','mergulho','cuspe'],['rugido','investida','chicote','redemoinho','investida','nadadeira','mergulho']];
+ function nextMove(B){const L=MV[B.ph].filter(m=>m!==B.last);const m=pick(L);B.last=m;begin(B,m)}
+ function begin(B,m){B.st=m;B.n=0;B.c=0;const K=legK(),[cx,cy]=C0(),ly=LAKE();
+  if(m==='idle'){B.t=.6+R(.5)}
+  else if(m==='espreita'){B.t=2.2;B.px=cl(p.x+R(200)-100,cx-340,cx+340)}
+  else if(m==='bote'){B.t=B.T0=.85*K.warn;const[hx,hy]=headPos(B),b=neckBase(B);B.ba=Math.atan2(p.y+p.vy*.3-hy,p.x+p.vx*.3-hx);let L=10;while(L<170&&hyp(hx+Math.cos(B.ba)*(L+5)-b[0],hy+Math.sin(B.ba)*(L+5)-b[1])<NL*(NN-1)*.97)L+=5;B.bl=L;B.purN=Math.random()<.45;bwarn({k:'line',x:hx,y:hy,a:B.ba,len:L,w:20,t:B.t,c:B.purN?PURP:'#ff5d6c'});B.hx-=Math.cos(B.ba)*18;B.hy-=Math.sin(B.ba)*18}
+  else if(m==='onda'){B.t=2;B.c=0;B.wx=cx-360;B.wd=Math.random()<.5?1:-1;if(B.wd<0)B.wx=cx+360}
+  else if(m==='cuspe'){B.t=1.8;B.c=.5;B.gl=B.gl||[]}
+  else if(m==='caca'){B.t=2.6+R(1)}
+  else if(m==='chicote'){B.t=B.T0=.8*K.warn;B.wa=Math.atan2(p.y-B.y,p.x-B.x);B.wd=Math.random()<.5?1:-1}
+  else if(m==='nadadeira'){B.t=1.1}
+  else if(m==='mergulho'){B.t=1;B.under=1}
+  else if(m==='rugido'){B.t=2.4;B.c=0;shake=20;SFX.roar();radio('O teto tá caindo! Olha as sombras!')}
+  else if(m==='investida'){B.t=1*K.warn;B.purN=Math.random()<.5;B.ia=Math.atan2(p.y-B.y,p.x-B.x);B.ia=Math.abs(Math.cos(B.ia))>.4?B.ia:(Math.cos(B.ia)>=0?.4:Math.PI-.4)*Math.sign(Math.sin(B.ia)||1);bwarn({k:'line',x:B.x,y:B.y,a:B.ia,len:700,w:48,t:B.t,c:B.purN?PURP:'#ff5d6c'})}
+  else if(m==='redemoinho'){B.t=3.6;B.under=1;B.wp={x:p.x}}
+  else if(m==='tired'){B.t=1.4}}
+ function tick(B,dt,K){const[cx,cy]=C0(),ly=LAKE(),T=B.tt;B.t-=dt;const[hx,hy]=headPos(B);
+  if(B.st==='idle'){if(B.under){steer(B,p.x,ly+45,1,dt,90);headTo(B,B.x+B.f*60,ly-50+Math.sin(T)*10,dt)}else{steer(B,p.x-B.f*120,Math.min(p.y-10,ly-60),1,dt,120);headTo(B,p.x-Math.cos(Math.atan2(p.y-hy,p.x-hx))*60,p.y-30,dt,2.5)}if(B.t<=0)nextMove(B)}
+  else if(B.st==='trans'){B.vx*=.92;B.vy*=.92;B.jaw=1;headTo(B,B.x+B.f*40,B.y-110,dt,3);if(B.ph===1&&B.n===0&&B.t<1.6){B.n=1;B.under=0;B.vy=-520;B.vx=B.f*60;shake=24;flash=.4;for(let k=0;k<40;k++)pt.push({x:B.x+R(80)-40,y:ly,vx:R(160)-80,vy:-120-R(200),life:1.2,ml:1.2,c:pick(['#9ac08a','#cfe8c0','#3a5a3a']),s:2,dr:2});B.rip.push({x:B.x,r:20,l:1.2});radio('Ela SAIU do lago! Agora ela vem atrás de você!')}if(B.t<=0)nextMove(B)}
+  else if(B.st==='espreita'){steer(B,B.px-B.f*50,ly+45,1,dt,80);headTo(B,B.px+Math.sin(T*1.2)*30,ly-80+Math.sin(T*2)*8,dt,2);if(B.t<1.2&&B.t+dt>=1.2)B.jaw=.6;if(B.t<=0)begin(B,'bote')}
+  else if(B.st==='bote'){if(B.n===0){B.hx-=Math.cos(B.ba)*6*dt;B.hy-=Math.sin(B.ba)*6*dt;if(B.t<=0){B.n=1;B.t=.45;B.pur=B.purN?1:0;B.jaw=1;SFX.roar();B.bx=hx+Math.cos(B.ba)*(B.bl+18);B.by=hy+Math.sin(B.ba)*(B.bl+18)}}
+   else if(B.n===1){B.jaw=1;headTo(B,B.bx,B.by,dt,14);if(!B.pur||!(p.pt>0)){if(p.dashing<=0&&p.wup<=0&&hyp(hx-p.x,hy-p.y)<10+p.r){legHurt(2,hx,hy);B.n=2}}if(B.t<=0){B.n=2;B.t=.6}}
+   else{B.pur=0;if(B.t<=0)begin(B,Math.random()<.35?'tired':'idle')}}
+  else if(B.st==='onda'){B.wx+=B.wd*dt*320;steer(B,B.wx,ly+45,1,dt,340);headTo(B,B.wx+B.wd*30,ly-30,dt,4);B.c-=dt;if(B.c<=0){B.c=.11;for(const vy of[-150,-110])pj.push({x:B.wx,y:ly-2,vx:B.wd*20,vy,r:2.6,d:1,life:2.4,e:1,kind:'orb',c:'#9ac08a',t:0,grav:1})}if(B.t<=0)begin(B,'idle')}
+  else if(B.st==='cuspe'){headTo(B,B.x+B.f*40,Math.min(B.y-90,ly-90),dt,3);B.c-=dt;if(B.c<=0&&B.n<3+B.ph){B.c=.42;B.n++;B.jaw=1;const tx=p.x+R(70)-35+p.vx*.5,ty=Math.min(p.y+R(40)-20,ly-8),T0=.9;B.gl.push({x0:hx,y0:hy,x1:tx,y1:ty,x:hx,y:hy,t:0,T:T0});warns.push({k:'circle',x:tx,y:ty,r:16,t:T0,ml:T0,c:'#8ac05a',boss:1});SFX.dash()}if(B.t<=0)begin(B,'idle')}
+  else if(B.st==='caca'){const tx=p.x-Math.cos(Math.atan2(p.y-B.y,p.x-B.x))*50,ty=Math.min(p.y,ly-50);steer(B,tx,ty,1.5,dt,170+B.ph*30);headTo(B,p.x,p.y,dt,2.2);if(hyp(hx-p.x,hy-p.y)<40&&B.t>.4&&Math.random()<dt*2){B.t=0;begin(B,'bote');return}if(B.t<=0)nextMove(B)}
+  else if(B.st==='chicote'){const b=neckBase(B);if(B.n===0){B.vx*=.85;B.vy*=.85;headTo(B,b[0]+Math.cos(B.wa-B.wd*1.4)*95,b[1]+Math.sin(B.wa-B.wd*1.4)*95,dt,5);if(B.t<=0){B.n=1;B.t=.42;B.sa=B.wa-B.wd*1.4;SFX.roar();B.jaw=1}}
+   else{B.sa+=B.wd*dt*6.6;B.hx=b[0]+Math.cos(B.sa)*112;B.hy=b[1]+Math.sin(B.sa)*112;for(let i=4;i<B.neck.length;i+=2){const q=B.neck[i];if(p.dashing<=0&&p.wup<=0&&hyp(q[0]-p.x,q[1]-p.y)<NW(i)+p.r+2){legHurt(2,q[0],q[1]);p.vx+=Math.cos(B.sa+B.wd*Math.PI/2)*300;p.vy+=Math.sin(B.sa+B.wd*Math.PI/2)*300;B.n=2;break}}if(B.t<=0)begin(B,'tired')}}
+  else if(B.st==='nadadeira'){B.vx*=.9;B.vy*=.9;B.vy-=40*dt;headTo(B,B.x+B.f*30,B.y-100,dt,3);if(B.t<.35&&!B.ring){B.ring={x:B.x+B.f*10,y:B.y+12,r:20,max:260};shake=12;SFX.boom();burst(B.x,B.y+20,'#c8e0b8',20,140,2)}if(B.t<=0)begin(B,'idle')}
+  else if(B.st==='mergulho'){if(B.n===0){steer(B,B.x,ly+60,1,dt,260);headTo(B,B.x+B.f*20,ly+40,dt,4);if(B.t<=0){B.n=1;B.t=1.1*K.warn;B.ex=p.x;warns.push({k:'circle',x:B.ex,y:ly-6,r:46,t:B.t,ml:B.t,c:'#ff5d6c',boss:1})}}
+   else if(B.n===1){steer(B,B.ex,ly+60,1.6,dt,300);headTo(B,B.x+B.f*20,ly+40,dt,4);if(B.t<=0){B.n=2;B.under=0;B.x=B.ex;B.vy=-560;B.t=.8;shake=20;SFX.roar();B.jaw=1;for(let k=0;k<30;k++)pt.push({x:B.ex+R(60)-30,y:ly,vx:R(120)-60,vy:-140-R(180),life:1,ml:1,c:pick(['#9ac08a','#cfe8c0']),s:2,dr:2});if(p.dashing<=0&&Math.abs(p.x-B.ex)<50&&p.y>ly-140)legHurt(2,B.ex,ly)}}
+   else{headTo(B,B.x+B.f*30,B.y-100,dt,4);if(B.t<=0)begin(B,'tired')}}
+  else if(B.st==='rugido'){B.vx*=.9;B.vy*=.9;B.jaw=1;headTo(B,B.x+B.f*60,B.y-80,dt,3);B.c-=dt;if(B.c<=0){B.c=.2;const x=p.x+R(260)-130,y=camy+R(40),T0=.8;warns.push({k:'circle',x,y:Math.min(p.y+R(60)-30,ly-10),r:12,t:T0,ml:T0,c:'#ffb347',boss:1,fn:()=>{pj.push({x,y:camy-8,vx:0,vy:260,r:3.5,d:2,life:2.5,e:1,kind:'orb',c:'#8a7a6a',t:0})}})}if(B.t<=0)begin(B,'idle')}
+  else if(B.st==='investida'){if(B.n===0){B.vx*=.85;B.vy*=.85;B.f=Math.cos(B.ia)>=0?1:-1;headTo(B,B.x+Math.cos(B.ia)*80,B.y+Math.sin(B.ia)*80-10,dt,5);if(B.t<=0){B.n=1;B.t=1;B.pur=B.purN?1:0;B.vx=Math.cos(B.ia)*440*K.sp;B.vy=Math.sin(B.ia)*440*K.sp;SFX.roar();B.jaw=1}}
+   else{headTo(B,B.x+Math.cos(B.ia)*90,B.y+Math.sin(B.ia)*90,dt,8);if(B.pur&&p.pt>0)legParryCheck(B,PARRY_R+8);if(B.st!=='investida')return;if(p.dashing<=0&&p.wup<=0)for(const h of B.H)if(hyp(h[0]-p.x,h[1]-p.y)<h[2]+p.r){legHurt(2,h[0],h[1]);break}
+    if(Math.abs(B.x-cx)>360||B.y<cy-220){B.pur=0;B.vx*=-.2;B.vy*=-.2;shake=18;SFX.boom();burst(B.x,B.y,'#8a7a6a',30,160,2);legStun(B,2);ftxt(B.x,B.y-40,'BATEU NA ROCHA!','#ffd45e');return}if(B.t<=0){B.pur=0;begin(B,'tired')}}}
+  else if(B.st==='redemoinho'){B.wp.x+=(p.x-B.wp.x)*dt*.6;const a=T*3;steer(B,B.wp.x+Math.cos(a)*60,ly+45+Math.sin(a)*20,2,dt,260);headTo(B,B.x+B.f*30,ly+30,dt,4);const dx=B.wp.x-p.x;p.vx+=Math.sign(dx)*Math.min(90,Math.abs(dx))*dt*2.2;p.vy+=150*dt;if(B.t<=0){B.wp=null;B.under=0;B.vy=-420;shake=12;begin(B,'idle')}}
+  else if(B.st==='tired'){B.vx*=.9;B.vy*=.9;headTo(B,B.x+B.f*50,Math.max(B.y-20,ly-40),dt,1.5);if(B.t<=0)begin(B,'idle')}
+  for(const q of pj)if(q.grav&&q.e)q.vy+=160*dt;
+  phys(B,dt)}
+ window.__beg_nessie=begin;
+ legDef('nessie',{name:'NESSIE',title:'A SOMBRA DO LAGO',short:'Nessie',map:'Fotografia Rasgada',price:90,depth:14,flag:'lgNessie',pearls:55,barc:'#7ab05a',hitc:'#c8e0b8',
+  riddle:'Há um lago que não cabe em terra nenhuma. Desça catorze vezes cem e procure a água que não se mistura com a água. O que parece um tronco tem olhos.',
+  phases:['A SOMBRA NO LAGO','A CAÇADA','O ÚLTIMO DINOSSAURO'],th:[.66,.33],shotMul:1,swordMul:1.4,introT:6,dieT:5.5,light:230,
+  lore:['“Antes do mar ter nome, eu já nadava aqui.”','“O lago que vocês procuraram lá em cima nunca foi um lago. Era uma janela. E eu olhava por ela.”','“Sou a última. Quando eu cair, ninguém mais vai lembrar como era o mundo antes de vocês.”','“...ele também me olhou assim. Sem medo. Siga a luz dele.”'],
+  frag:['FRAGMENTO II · A FOTOGRAFIA','Presa num dente que caiu no sal, uma fotografia rasgada: um pescoço saindo da água, 1934. Alguém riscou a palavra FALSA.','No verso, com a letra apertada do Zeca:','“O lago de sal fica a mil e quatrocentos metros. Ela me deixou passar. Ela sabe pra onde a luz leva. Tião, ela não é monstro. É memória.”'],
+  reward:'Escamas do Lago e rastro Névoa do Lago',
+  tiaoNear:'A fotografia tá tremendo na sua mão, marujo. Tem água que não se mistura nessa fenda... procura um círculo escuro.',tiaoIn:'Isso é... um LAGO debaixo do mar?! E aquilo não é um tronco, não! TEM OLHO!',tiaoWin:'Ela afundou devagar, como quem dorme. Eu já vi essa foto, marujo. Na parede do quarto do Zeca.',
+  arena(){const cx=MW/2,cy=MH/2;legCarve((x,y)=>{const dx=(x-cx)/28,dy=(y-cy)/19;return dx*dx+dy*dy<1+Math.sin(x*.7+y*.4)*.03});p.x=cx*TS-80;p.y=(cy+1)*TS;p.vx=p.vy=0;for(const q of p.sp){q.x=p.x;q.y=p.y}camx=p.x-VW/2;camy=p.y-VH/2},
+  make(){const H=Math.round((1100+depth*85)*DIFF.hp),[cx]=C0(),ly=LAKE();const B={x:cx+60,y:ly+45,vx:0,vy:0,hp:H,mhp:H,f:-1,ang:0,under:1,jaw:0,rip:[],gl:[]};neckInit(B);const[hx,hy]=[B.x-50,ly+30];B.hx=hx;B.hy=hy;return B},
+  intro(B,dt,ct){const ly=LAKE();B.tt+=0;if(ct<1.2){B.hx=B.x-40;B.hy=ly+20}else if(ct<3.6){headTo(B,B.x-60,ly-90-Math.sin(ct)*6,dt,1.2);if(Math.random()<dt*4)B.rip.push({x:B.hx,r:6,l:1})}else{headTo(B,p.x,p.y-20,dt,1.5);B.jaw=ct>4.2&&ct<5?1:B.jaw;if(ct>4.2&&!B.rr){B.rr=1;SFX.roar();shake=16}}phys(B,dt)},
+  go(B){begin(B,'espreita');radio('O corpo dela tá no sal: bate na CABEÇA! E quando o pescoço brilhar ROXO, apara!')},
+  phase(B){B.st='trans';B.t=2.4;B.n=0;B.jaw=1;if(B.ph===2)radio('Os olhos dela ficaram vermelhos... é o último fôlego de um dinossauro, marujo!')},
+  tick,shape,draw,back,over,stunned(B,dt){B.jaw=.3;headTo(B,B.x+B.f*40,B.y+10,dt,2);phys(B,dt)},
+  dying(B,dt){B.alpha=Math.max(0,B.t/5.5);B.under=1;B.vy=30;B.jaw=.5;headTo(B,B.x+B.f*30,LAKE()+40,dt,.7);phys(B,dt);if(Math.random()<.5){B.rip.push({x:B.x+R(120)-60,r:4,l:1});bub(B.x+R(60)-30,B.y-20,1)}},
+  holes(B,ox,oy){const[hx,hy]=headPos(B);hole(hx+ox,hy+oy,70,.8)},
+  sig(S){const T=S.t;wglow(S.x,S.y,50,'#7ab05a',.4);for(let k=0;k<4;k++){ctx.globalAlpha=.6-k*.12;ctx.strokeStyle='#9ac08a';ctx.beginPath();ctx.ellipse(S.x,S.y,10+k*8+Math.sin(T*2+k)*2,(10+k*8)*.35,0,0,TAU);ctx.stroke()}ctx.globalAlpha=1;disc(S.x,S.y,6,'#0c1610');
+   const k=(T*.4)%1;if(k<.5){const x=S.x-20+k*80;ctx.globalAlpha=Math.sin(k*2*Math.PI)*.5;tube([[x,S.y],[x+3,S.y-8],[x+6,S.y-15],[x+11,S.y-18]],i=>2.2-i*.3,'#1f3a24',{lt:0,dk:0});ctx.globalAlpha=1}},
+  mus:{bpm:72,key:50,sc:[0,2,4,5,7,9,10,12,14,16],cut:2600,ch:[[0,7,12],[0,7,12],[-2,5,10],[0,7,12]],mel:'4...5.4.2...0.2.4...7...5.4.2.....4.5.7...9.7.5.4...2.0.2.4.....',
+   step(t,s,st,bar,ph,sd){const Z=this,K=Z.key;
+    if(st===0){for(const n of[0,7]){const g=env(musBus,t,.3,sd*9,.05);osc('sawtooth',mtof(K+n-12),t,sd*10,g,n?5:-5)}osc('sawtooth',mtof(K-24),t,sd*10,env(musBus,t,.3,sd*9,.06))}
+    const m=Z.mel[s%Z.mel.length];if(m!=='.'){const f=mtof(K+Z.sc[+m]+12),g=env(musBus,t,.01,sd*1.8,.05);if(st%2===0)osc('square',f*1.122,t,.04,env(musBus,t,.002,.04,.04));osc('square',f,t+.035,sd*2,g,-6);osc('sawtooth',f,t+.035,sd*2,env(musBus,t+.035,.01,sd*1.6,.02),6)}
+    if(st===0||st===3||(ph>=1&&st===6))kick(t,.45,musBus);if(st===4||(ph>=2&&st===7))nz(t,.18,'lowpass',260,.3,musBus);if(ph>=1&&st%2===1)nz(t,.05,'bandpass',900,.08,musBus);if(ph>=2&&st%2===0)kick(t+sd/2,.2,musBus);
+    if(s%32===0&&ph>=1)nz(t,sd*12,'lowpass',90,.2,musBus)}},
+  touchDmg:1});
+ ACHL.push(['lgnessie','Lago Sem Fundo','Derrote Nessie, a Sombra do Lago (mapa: Fotografia Rasgada)',m=>!!m.lgNessie]);
+ SKC.suit.L.push(['nessie','Escamas do Lago',['#355a34','#1a2e1e','#c8d870'],{lg:'nessie'}]);SKC.trail.L.push(['turfa','Névoa do Lago',['#5a7a4a'],{lg:'nessie'}]);}
 
 /*LEG-END*/
 const _li=initProfiles();titleBG();if(!_li)openLogin();
