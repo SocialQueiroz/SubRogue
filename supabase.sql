@@ -43,3 +43,41 @@ language sql stable as $$
   ) s order by s.depth desc, s.kills desc, s.created_at asc limit least(lim, 100);
 $$;
 grant execute on function public.top_scores(timestamptz, int) to anon, authenticated;
+
+-- ============================================================
+-- Trava: conquistas e roupas NUNCA somem do save na nuvem.
+-- Mesmo que um aparelho velho mande um save sem elas, o banco
+-- junta o que já tinha. Só o "Zerar progresso" (marca _wipe) apaga.
+-- Pode rodar de novo sem problema.
+-- ============================================================
+create or replace function public.saves_keep_unlocks() returns trigger
+language plpgsql as $$
+declare
+  k text;
+  o jsonb := coalesce(old.meta, '{}'::jsonb);
+  n jsonb := coalesce(new.meta, '{}'::jsonb);
+begin
+  if coalesce((n->>'_wipe')::numeric, 0) > coalesce((o->>'_wipe')::numeric, 0) then
+    return new;  -- zerar progresso de propósito
+  end if;
+  foreach k in array array['own','ach','bk','cards','cs','evts','syn','relSeen'] loop
+    if jsonb_typeof(o->k) = 'object' then
+      n := jsonb_set(n, array[k], (o->k) || (case when jsonb_typeof(n->k) = 'object' then n->k else '{}'::jsonb end));
+    end if;
+  end loop;
+  foreach k in array array['orca','sereia','famSaved','helmet','luz','moby','cthulhu','tut','tutSeen','_wipe'] loop
+    if (o ? k) and (o->k) not in ('false'::jsonb, '0'::jsonb, 'null'::jsonb) and not (n ? k and (n->k) not in ('false'::jsonb, '0'::jsonb, 'null'::jsonb)) then
+      n := jsonb_set(n, array[k], o->k);
+    end if;
+  end loop;
+  foreach k in array array['best','wins','gk','maxc','bro','golfSafado','parries','bottles'] loop
+    if jsonb_typeof(o->k) = 'number' and (coalesce(jsonb_typeof(n->k), '') <> 'number' or (n->>k)::numeric < (o->>k)::numeric) then
+      n := jsonb_set(n, array[k], o->k);
+    end if;
+  end loop;
+  new.meta := n;
+  return new;
+end $$;
+drop trigger if exists saves_keep_unlocks on public.saves;
+create trigger saves_keep_unlocks before update on public.saves
+  for each row execute function public.saves_keep_unlocks();

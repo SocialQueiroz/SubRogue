@@ -1621,8 +1621,20 @@ function bomb(){if(state!=='play'||p.bombs<1)return;p.bombs--;SFX.boom();shake=1
  const br=80*(1+.25*P('bombkit')+F('bombSize'));for(const e of en.slice()){if(hyp(e.x-p.x,e.y-p.y)<br){dmgE(e,(10+depth*1.5)*dmgMul(),Math.atan2(e.y-p.y,e.x-p.x),5,'fx');if(F('bombStun')&&!e.S.boss)e.stun=2;if(F('bombPois')){e.pois=8;e.pdps=Math.max(e.pdps||0,2)}}}
  pj=pj.filter(q=>!q.e||hyp(q.x-p.x,q.y-p.y)>br+10);if(F('bombPois'))for(let i=0;i<6;i++)goo.push({x:p.x+R(60)-30,y:p.y+R(60)-30,r:12,life:5,ml:5,c:'#9dff6a',own:'p',el:'pois'});if(F('bombStun'))for(let i=0;i<3;i++)cloud(p.x+R(40)-20,p.y+R(40)-20,16);
  for(const m of mines)if(!m.fuse&&hyp(m.x-p.x,m.y-p.y)<br)m.fuse=.15+R(.2);boomWorld(p.x,p.y,br)}
+/* hitbox do corpo inteiro: distância de (x,y) até a superfície do bicho (negativa = dentro).
+   Peixes "chain" testam cabeça, todos os gomos do corpo (na posição desenhada, com a ondulação) e a nadadeira do rabo.
+   Só muda o teste de acerto: desenho, animação e movimento ficam iguais. */
+const EH={x:0,y:0};
+function eSurf(e,x,y){let b=hyp(e.x-x,e.y-y)-e.r;EH.x=e.x;EH.y=e.y;const sp=e.sp;if(!sp||sp.length<2||e.S.a!=='chain')return b;
+ if(b>sp.length*e.r*(e.puff||1)*2.2+12)return b;
+ const n=sp.length,Q=e._Q&&e._Q.length===n&&hyp(e._Q[0][0]-e.x,e._Q[0][1]-e.y)<e.r*2+6?e._Q:null,s=e.r*(e.puff||1);
+ let ax=e.x,ay=e.y,ar=e.r;
+ const seg=(bx,by,br)=>{const vx=bx-ax,vy=by-ay,l2=vx*vx+vy*vy;let t=l2>0?((x-ax)*vx+(y-ay)*vy)/l2:0;t=t<0?0:t>1?1:t;const cx=ax+vx*t,cy=ay+vy*t,d=hyp(x-cx,y-cy)-(ar+(br-ar)*t);if(d<b){b=d;EH.x=cx;EH.y=cy}ax=bx;ay=by;ar=br};
+ for(let i=1;i<n;i++){const bx=Q?Q[i][0]:sp[i].x,by=Q?Q[i][1]:sp[i].y,br=Math.max(1.2,Q?Q[i][2]:prof(e.S.pf,i/(n-1))*s);seg(bx,by,br)}
+ const ux=ax-(Q?Q[n-2][0]:sp[n-2].x),uy=ay-(Q?Q[n-2][1]:sp[n-2].y),ul=hyp(ux,uy)||1,eel=e.S.pf==='eel'||e.S.pf==='long',fl=s*(eel?.9:1.6);
+ seg(ax+ux/ul*fl*.8,ay+uy/ul*fl*.8,Math.max(1.2,fl*.4));return b}
 function explode(x,y,r,d,hurtsP,own){if(own||!hurtsP){r*=1+F('boomSize');d*=1+F('boomDmg')}SFX.boom();shake=Math.max(shake,8);stopT=Math.max(stopT,.05);burst(x,y,'#ffb347',30,r*4,3);burst(x,y,'#fff',16,r*3,2);bub(x,y,10);pt.push({x,y,vx:0,vy:0,life:.25,ml:.25,ring:r,c:'#ffe0a0'});
- for(const e of en.slice())if(hyp(e.x-x,e.y-y)<r+e.r)dmgE(e,d,Math.atan2(e.y-y,e.x-x),3,'fx');if(hurtsP&&!F('mineProof')&&hyp(p.x-x,p.y-y)<r*.85)hurtP(2,{x,y});
+ for(const e of en.slice())if(eSurf(e,x,y)<r)dmgE(e,d,Math.atan2(e.y-y,e.x-x),3,'fx');if(hurtsP&&!F('mineProof')&&hyp(p.x-x,p.y-y)<r*.85)hurtP(2,{x,y});
  for(const m of mines)if(!m.fuse&&hyp(m.x-x,m.y-y)<r+6)m.fuse=.12+R(.1);boomWorld(x,y,r)}
 function mineBoom(m){mines.splice(mines.indexOf(m),1);explode(m.x,m.y,42,14+depth*1.5,true)}
 function sonar(){if(state!=='play'||p.son>0)return;p.son=p.sonMax=14*Math.pow(.65,P('sonarcd'))*(1-Math.min(.7,F('sonarcd')));sonarT=Math.max(sonarT,7);SFX.sonar();pt.push({x:p.x,y:p.y,vx:0,vy:0,life:.9,ml:.9,ring:130,c:'#7fe9ff'});
@@ -1794,7 +1806,7 @@ function updHook(dt){const h=p.hook;if(!h)return;
  if(d<(T?T.r+p.r+3:9)||h.t<=0){if(T){dmgE(T,(5+depth*.5)*hd,Math.atan2(dy,dx),3,'fx');T.stun=Math.max(T.stun||0,.6*(1+F('hookdmg')));p.vx=-dx/d*120;p.vy=-dy/d*120;shake=Math.max(shake,5);burst(p.x,p.y,'#fff',12,120,2)}else{p.vx*=.3;p.vy*=.3}p.hook=null}}
 /* ---------- tiros especiais ---------- */
 function fireBeam(W,lm){const a=p.aim,ux=Math.cos(a),uy=Math.sin(a),len=W.beam*(1+F('slife'));let L=len;if(!F('wallShot'))for(let s=6;s<len;s+=3)if(solid(p.x+ux*s,p.y+uy*s)){L=s;break}
- const hits=[];for(const e of en){if(e.S.neutral)continue;const ex=e.x-p.x,ey=e.y-p.y,t=ex*ux+ey*uy;if(t<0||t>L)continue;if(Math.abs(ex*uy-ey*ux)<e.r+2+F('ssize')*3)hits.push([t,e])}
+ const hits=[];for(const e of en){if(e.S.neutral)continue;const ex=e.x-p.x,ey=e.y-p.y,t=ex*ux+ey*uy;if(t>=0&&t<=L&&Math.abs(ex*uy-ey*ux)<e.r+2+F('ssize')*3){hits.push([t,e]);continue}if(e.sp&&e.sp.length>1&&e.S.a==='chain'){const w=2+F('ssize')*3;for(let s2=0;s2<=L;s2+=3)if(eSurf(e,p.x+ux*s2,p.y+uy*s2)<w){hits.push([s2,e]);break}}}
  hits.sort((a,b)=>a[0]-b[0]);const np=1+P('pierce')+Math.round(F('pierce')),d=W.d*dmgMul()*lm;
  for(let i=0;i<Math.min(np,hits.length);i++){const e=hits[i][1];if(i===np-1)L=hits[i][0];dmgE(e,d,a,.3,'shot',{vx:ux,vy:uy,quiet:1})}
  for(const m of mines)if(!m.fuse){const ex=m.x-p.x,ey=m.y-p.y,t=ex*ux+ey*uy;if(t>0&&t<L&&Math.abs(ex*uy-ey*ux)<5)m.fuse=.01}
@@ -2035,6 +2047,23 @@ function breakWalls(x,y,r){let n=0;const rr=Math.ceil(r/TS)+1,cx=Math.floor(x/TS
 function openBigs(x,y,r){for(const b of bigs)if(!b.open&&hyp(b.x-x,b.y-y)<r+18){b.open=1;SFX.chest();SFX.boom();shake=14;flash=.5;burst(b.x,b.y,'#ffd45e',50,200,3);burst(b.x,b.y,'#fff',20,160,2);
   let g=40+depth*4;while(g>0){const v=g>=5?5:1;g-=v;const a=R(TAU),s=60+R(110);co.push({x:b.x,y:b.y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,t:'coin',v,life:16,ph:R(9)})}
   for(let i=0;i<2;i++)drop(b.x,b.y,'pearl');drop(b.x,b.y,'heart');if(Math.random()<.45)drop(b.x,b.y,'relic');p.bombs=Math.min(6,p.bombs+1);ftxt(b.x,b.y-16,'BAÚ ABERTO!','#ffd45e')}}
+/* ===== BARRIL RADIOATIVO: raro, fortíssimo e com raio enorme (substitui os barris de dinamite) ===== */
+const RADB={r:150,fuse:.95};
+function radBoom(b){const R0=RADB.r,x=b.x,y=b.y;explode(x,y,R0,80+depth*8,false,1);const rr=R0*(1+F('boomSize'));
+ flash=Math.max(flash||0,.7);shake=Math.max(shake,22);stopT=Math.max(stopT,.12);burst(x,y,'#7dff4a',60,rr*3.2,3);burst(x,y,'#d8ff6a',40,rr*2.4,2);burst(x,y,'#ffffff',24,rr*1.6,3);
+ pt.push({x,y,vx:0,vy:0,life:.45,ml:.45,ring:rr,c:'#7dff4a'});pt.push({x,y,vx:0,vy:0,life:.7,ml:.7,ring:rr*.6,c:'#d8ff6a'});
+ for(let k=0;k<26;k++){const a=R(TAU),v=20+R(60);pt.push({x:x+R(20)-10,y:y+R(20)-10,vx:Math.cos(a)*v,vy:Math.sin(a)*v-25,life:1.4+R(1),ml:2.4,c:pick(['#7dff4a','#b8ff7a','#3a8a2a']),s:2})}
+ if(!F('mineProof')&&state==='play'){const d=hyp(p.x-x,p.y-y);if(d<rr*.45)hurtP(3,{x,y});else if(d<rr*.9)hurtP(2,{x,y})}}
+function drawRadBarrel(b){const x=Math.round(b.x),y=Math.round(b.y),T=time,pul=.5+.5*Math.sin(T*3+x),arm=b.fuse>0,bl=arm&&Math.floor(T*(b.fuse<.35?40:20))%2;
+ wglow(x,y,20+pul*6+(arm?14:0),'#7dff4a',(arm?.55:.22)+pul*.12);
+ if(arm){const rr=RADB.r*(1+F('boomSize'));ctx.strokeStyle=bl?'rgba(255,90,90,.8)':'rgba(125,255,74,.55)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.lineDashOffset=-T*30;ctx.beginPath();ctx.arc(x,y,rr*(1-b.fuse/RADB.fuse*.15),0,TAU);ctx.stroke();ctx.setLineDash([])}
+ const Rf=(a,b2,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x+a,y+b2,w,h)};
+ Rf(-7,-10,14,20,OUT);Rf(-6,-9,12,18,bl?'#ffffff':'#e8c21a');Rf(-6,-9,3,18,bl?'#ffffff':'#ffe46a');Rf(4,-9,2,18,'#a8860a');
+ Rf(-7,-7,14,2,OUT);Rf(-7,6,14,2,OUT);Rf(-6,-7,12,1,'#6a5208');Rf(-6,6,12,1,'#6a5208');Rf(-4,-11,8,2,OUT);Rf(-3,-11,6,1,'#8a8a8a');
+ /* trifólio (símbolo de radiação) */
+ ctx.fillStyle='#111';for(let k=0;k<3;k++){const a=-Math.PI/2+k*TAU/3;ctx.beginPath();ctx.moveTo(x+.5+Math.cos(a-.52)*1.6,y+.5+Math.sin(a-.52)*1.6);ctx.arc(x+.5,y+.5,4.6,a-.52,a+.52);ctx.arc(x+.5,y+.5,1.6,a+.52,a-.52,true);ctx.closePath();ctx.fill()}
+ ctx.beginPath();ctx.arc(x+.5,y+.5,1,0,TAU);ctx.fill();
+ if(Math.random()<.04)pt.push({x:x+R(10)-5,y:y-10,vx:R(6)-3,vy:-10-R(8),life:1,ml:1,c:'#7dff4a',s:1})}
 function boomWorld(x,y,r){breakWalls(x,y,r);openBigs(x,y,r);for(const b of barrels)if(!b.fuse&&hyp(b.x-x,b.y-y)<r+8)b.fuse=.12+R(.1)}
 /* ---------- correntezas que levam aos covis ---------- */
 function carveLairs(m){lairs=[];const n=mod.lair!==undefined?mod.lair:(depth>2&&!BOSS_AT.includes(depth)&&Math.random()<.4?1:0),q=m.d.q,mx=m.d[q[q.length-1]];
@@ -2055,11 +2084,12 @@ function carveCaves(){cavs=[];const n=1+(depth>15?1:0)+(Math.random()<.4?1:0);
 function genFeatures(spot){bigs=[];barrels=[];redT=0;
  buildFlow();
  const elitePool=Object.values(SP).filter(s=>!s.boss&&!s.neutral&&s.d<=depth&&!s.grp&&s.b!=='mine'&&!s.static);
- for(const L of lairs){bigs.push({x:L.x,y:L.y+6});for(let i=0;i<3;i++){const a=i*TAU/3+.4,x=L.x+Math.cos(a)*30,y=L.y+Math.sin(a)*22;if(!blocked(x,y,5))barrels.push({x,y})}
+ for(const L of lairs){bigs.push({x:L.x,y:L.y+6});
   for(let i=0;i<4;i++){const a=R(TAU),x=L.x+Math.cos(a)*48,y=L.y+Math.sin(a)*40;if(!blocked(x,y,5))mines.push({x,y,ph:R(9),fuse:0,vx:0,vy:0})}
   if(!mod.noEnemy&&elitePool.length)for(let i=0;i<2+Math.floor(depth/25);i++){const a=R(TAU),x=L.x+Math.cos(a)*36,y=L.y+Math.sin(a)*30;if(!blocked(x,y,6))addE(pick(elitePool).id,x,y,true)}}
- for(let i=0;i<(mod.big||0)+(Math.random()<.22&&depth>2?1:0);i++){const s=spot(12);if(!s)continue;bigs.push({x:s.x,y:s.y});for(let j=0;j<2;j++){const a=R(TAU),x=s.x+Math.cos(a)*22,y=s.y+Math.sin(a)*16;if(!blocked(x,y,5))barrels.push({x,y})}}
- for(let i=0;i<(mod.barrels||0)+(depth>1?RI(3):0);i++){const s=spot(6);if(s)barrels.push({x:s.x+R(6)-3,y:s.y})}
+ for(let i=0;i<(mod.big||0)+(Math.random()<.22&&depth>2?1:0);i++){const s=spot(12);if(!s)continue;bigs.push({x:s.x,y:s.y})}
+ /* barril radioativo: raríssimo (4% por fenda; 25% no naufrágio; garantido no santuário, que não tem bicho) */
+ if(depth>1&&Math.random()<(mod.radBarrel||.04)){const s=spot(10);if(s)barrels.push({x:s.x,y:s.y,rad:1})}
  for(const c of cavs){chests.push({x:c.x,y:c.y});for(let i=0;i<8+depth;i++){const a=R(TAU),r=R(18);co.push({x:c.x+Math.cos(a)*r,y:c.y+Math.sin(a)*r,vx:0,vy:0,t:'coin',v:1,life:1e9,ph:R(9)})}if(Math.random()<.5)co.push({x:c.x+6,y:c.y,vx:0,vy:0,t:'pearl',v:1,life:1e9,ph:R(9)})}
  for(const m of mines){m.vx=m.vx||R(12)-6;m.vy=m.vy||R(12)-6}}
 /* ---------- tique do cenário ---------- */
@@ -2067,9 +2097,10 @@ function tickScene(dt){
  /* minas à deriva */
  for(const m of mines){if(m.fuse>0)continue;mineMove(m,dt)}
  /* barris */
- for(let i=barrels.length-1;i>=0;i--){const b=barrels[i];if(b.fuse>0){b.fuse-=dt;if(b.fuse<=0){barrels.splice(i,1);explode(b.x,b.y,40,12+depth*1.4,true,1)}}}
+ for(let i=barrels.length-1;i>=0;i--){const b=barrels[i];if(b.fuse>0){if(!b.arm){b.arm=1;b.fuse=RADB.fuse;b.bp=0;ftxt(b.x,b.y-16,'RADIAÇÃO! CORRE!','#7dff4a')}b.fuse-=dt;b.bp-=dt;if(b.bp<=0){b.bp=Math.max(.05,b.fuse*.16);SFX.tick()}if(b.fuse<=0){barrels.splice(i,1);radBoom(b)}}
+  else if(hyp(b.x-p.x,b.y-p.y)<110)hint('radb','Barril RADIOATIVO! Isso arrasa tudo num raio enorme. Atira de BEM longe e sai correndo.')}
  /* baús grandes: aviso */
- for(const b of bigs)if(!b.open&&hyp(b.x-p.x,b.y-p.y)<34)hint('big','Esse baú grandão tá trancado com corrente. Só explosão abre: bomba, mina, barril...');
+ for(const b of bigs)if(!b.open&&hyp(b.x-p.x,b.y-p.y)<34)hint('big','Esse baú grandão tá trancado com corrente. Só explosão abre: bomba, mina, barril radioativo...');
  if(lairs.length&&lairs.some(L=>hyp(L.x-p.x,L.y-p.y)<120))hint('lair','Isso aí é um covil. Bicho forte, minas e tesouro. Entra preparado!');
  if(flowN&&curs.some(c=>c.lair&&curNear(c,p.x,p.y)))hint('flow','Essa correnteza puxa forte pra um covil. Dá pra lutar contra ela com o impulso.');
  /* plantas que acendem */
@@ -2086,7 +2117,7 @@ function drawScene(){
  for(let i=0;i<MW*MH;i++){if(!flow[i*2]&&!flow[i*2+1])continue;const tx=i%MW,ty=(i-tx)/MW,x=tx*TS+8,y=ty*TS+8;if(x<camx-20||x>camx+VW+20||y<camy-20||y>camy+VH+20)continue;
   const fx=Math.sign(flow[i*2]),fy=Math.sign(flow[i*2+1]),o=((time*60+tx*5+ty*5)%16)-8,cx=x+fx*o,cy=y+fy*o;ctx.fillStyle='rgba(159,232,255,.35)';for(let k=0;k<4;k++){ctx.fillRect(Math.round(cx-fx*k-fy*k),Math.round(cy-fy*k+fx*k),1,1);ctx.fillRect(Math.round(cx-fx*k+fy*k),Math.round(cy-fy*k-fx*k),1,1)}}
  for(const L of lairs)if(Math.abs(L.x-p.x)<VW&&Math.abs(L.y-p.y)<VH){ctx.globalAlpha=.12+.05*Math.sin(time*2);disc(L.x,L.y,60,'#ff3a5a');ctx.globalAlpha=1;for(let k=0;k<6;k++){const a=k*TAU/6+time*.2,x=L.x+Math.cos(a)*58,y=L.y+Math.sin(a)*46;ctx.fillStyle='#e8e0d0';ctx.fillRect(Math.round(x)-1,Math.round(y)-1,3,2);ctx.fillRect(Math.round(x),Math.round(y)-2,1,4)}}
- for(const b of barrels){const x=Math.round(b.x),y=Math.round(b.y);ctx.fillStyle=OUT;ctx.fillRect(x-5,y-7,10,13);ctx.fillStyle=b.fuse>0&&Math.floor(time*30)%2?'#fff':'#b02a2a';ctx.fillRect(x-4,y-6,8,11);ctx.fillStyle='#ff5d4a';ctx.fillRect(x-4,y-6,3,11);ctx.fillStyle='#5a4a3a';ctx.fillRect(x-4,y-4,8,1);ctx.fillRect(x-4,y+2,8,1);ctx.fillStyle='#ffe14a';ctx.fillRect(x-1,y-2,2,2);ctx.fillStyle='#000';ctx.fillRect(x,y-1,1,1)}
+ for(const b of barrels)drawRadBarrel(b);
  for(const b of bigs){const x=Math.round(b.x),y=Math.round(b.y+Math.sin(time*2+b.x)*1);if(b.open){chestDraw('open',x,y);continue}chestDraw('big',x,y);const sp=Math.sin(time*1.7+b.y);if(sp>.8){ctx.fillStyle='#fff';ctx.fillRect(x+11,y-13,1,3);ctx.fillRect(x+10,y-12,3,1)}}}
 function sceneHoles(ox,oy){for(const L of lairs)hole(L.x+ox,L.y+oy,70,.55);for(const b of bigs)hole(b.x+ox,b.y+oy,30,.7);for(const b of barrels)hole(b.x+ox,b.y+oy,12,.4);
  if(p.lamp&&p.bat>0&&!(p.bat<15&&Math.random()<.25)){const L=lampLen(),ha=.5*(1+F('lampWide')),x=p.x+ox,y=p.y+oy,g=dctx.createRadialGradient(x,y,6,x,y,L);g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(.7,'rgba(0,0,0,.85)');g.addColorStop(1,'rgba(0,0,0,0)');dctx.fillStyle=g;dctx.beginPath();dctx.moveTo(x,y);dctx.arc(x,y,L,p.aim-ha,p.aim+ha);dctx.closePath();dctx.fill()}}
@@ -2099,14 +2130,14 @@ calm:{n:'Águas calmas',t:'Menos bichos e duas colunas de ar a mais. O ouro rend
 frenzy:{n:'Frenesi',t:'Quase o dobro de bichos, e 50% mais experiência.',en:1.8,xp:1.5,dg:3,rw:2,ic:'school'},
 murky:{n:'Breu',t:'Você enxerga pela metade. O ouro vale 70% mais.',light:.5,gold:1.7,dg:2,rw:2,ic:'fog'},
 current:{n:'Correntezas',t:'Correntes fortes, e um covil cheio de tesouro no fim delas.',cur:6,lair:1,chest:1,dg:2,rw:3,ic:'current'},
-wreck:{n:'Naufrágio',t:'Um navio afundado: baús, barris de pólvora e minas.',chest:3,mine:2.2,barrels:6,dg:2,rw:2,ic:'ship'},
+wreck:{n:'Naufrágio',t:'Um navio afundado: baús e minas. Às vezes, carga radioativa.',chest:3,mine:2.2,radBarrel:.25,dg:2,rw:2,ic:'ship'},
 hunt:{n:'Caçada',t:'Três elites; cada uma pode deixar uma relíquia.',elite:3,relicElite:.5,dg:3,rw:3,ic:'cross'},
 pearl:{n:'Veio de pérolas',t:'Os baús guardam pérolas.',pearl:1,en:1.15,dg:1,rw:2,ic:'pearl'},
 deep:{n:'Corrente de fundo',t:'Desce 300 m de uma vez. Os bichos têm 20% mais vida.',jump:3,en:1.3,ehp:.2,dg:3,rw:2,ic:'current'},
 school:{n:'Cardume',t:'Cardumes enormes por toda parte. 30% mais experiência.',school:3,xp:1.3,dg:2,rw:2,ic:'school'},
 thermal:{n:'Campo termal',t:'Gêiseres pra todo lado, e o calor rouba o ar.',therm:8,o2:1.3,gold:1.3,dg:2,rw:2,ic:'fire'},
 pressure:{n:'Pressão extrema',t:'O ar acaba 60% mais rápido, mas tem um baú grande garantido.',o2:1.6,big:1,dg:3,rw:3,ic:'anchor'},
-sanct:{n:'Santuário',t:'Nenhum bicho. Só ar, um baú grande e barris pra abrir ele.',noEnemy:1,vents:3,big:1,barrels:3,dg:0,rw:2,ic:'shield'},
+sanct:{n:'Santuário',t:'Nenhum bicho. Só ar, um baú grande e um barril radioativo pra abrir ele.',noEnemy:1,vents:3,big:1,radBarrel:1,dg:0,rw:2,ic:'shield'},
 lairs:{n:'Toca dos covis',t:'Dois covis cheios de bicho forte e baús trancados.',lair:2,dg:3,rw:3,ic:'skull'},
 red:{n:'Maré vermelha',t:'A água queima: perde 1 de vida a cada 25 s. Experiência em dobro.',redTide:1,xp:2,dg:2,rw:2,ic:'drop'},
 lair:{n:'Covil do chefe',t:'O guardião espera.',dg:3,rw:3,ic:'skull'}});
@@ -2388,7 +2419,7 @@ function update(dt){time+=dt;p.st.t+=dt;tickBeat(dt);mythPost(dt);tickParry(dt);
  const ax=(keys.arrowright?1:0)-(keys.arrowleft?1:0),ay=(keys.arrowdown?1:0)-(keys.arrowup?1:0);let firing=mouse.down;
  if(ax||ay){p.aim=Math.atan2(ay,ax);firing=true;mouse.used=false}else if(touch.a){if(hyp(touch.a.dx,touch.a.dy)>.25){p.aim=Math.atan2(touch.a.dy,touch.a.dx);firing=true}}else if(mouse.used)p.aim=Math.atan2(mouse.y/zoom+camy-p.y,mouse.x/zoom+camx-p.x);if(GP.aim!==null){p.aim=GP.aim;if(GP.as||GP.fire)firing=true}else if(!(ax||ay)&&!touch.a&&!mouse.used&&(p.ix||p.iy))p.aim=Math.atan2(p.iy,p.ix)
  const spd=92*(1+.1*P('spd'))*(1+.06*(p.up.spd||0))*(p.slow>0?.55:1)*Math.max(.4,1+F('spd'))*(p.r>5?.88:p.r<3?1.15:1);
- if(p.dashing>0){p.dashing-=dt;p.vx=p.ddx*330;p.vy=p.ddy*330;p.tr.push({x:p.x,y:p.y,l:.25});const dd=3*P('dashd')+3*F('dashDmg');if(dd)for(const e of en.slice())if(!p.dh.has(e)&&hyp(e.x-p.x,e.y-p.y)<e.r+9){p.dh.add(e);dmgE(e,dd*dmgMul(),Math.atan2(p.ddy,p.ddx),3,'fx')}if(p.dashing<=0)onDashEnd()}
+ if(p.dashing>0){p.dashing-=dt;p.vx=p.ddx*330;p.vy=p.ddy*330;p.tr.push({x:p.x,y:p.y,l:.25});const dd=3*P('dashd')+3*F('dashDmg');if(dd)for(const e of en.slice())if(!p.dh.has(e)&&eSurf(e,p.x,p.y)<9){p.dh.add(e);dmgE(e,dd*dmgMul(),Math.atan2(p.ddy,p.ddx),3,'fx')}if(p.dashing<=0)onDashEnd()}
  else{p.vx+=ix*spd*7*dt;p.vy+=iy*spd*7*dt;{const cf=curAt(p.x,p.y);if(cf){const cr=1-.7*Math.min(1,F('curRes'));p.vx+=cf[0]*2.6*dt*cr;p.vy+=cf[1]*2.6*dt*cr;hint('cur','CORRENTEZA! Contra ela não dá pra nadar. Nada pro LADO pra sair, ou dá um impulso!')}}{const f=flowAt(p.x,p.y);if(f){const cr=1-.6*Math.min(1,F('curRes'));p.vx+=f[0]*3*dt*cr;p.vy+=f[1]*3*dt*cr}}const k=Math.exp(-7*dt);p.vx*=k;p.vy*=k}
  if(p.grab){const g=p.grab;g.t-=dt;if(g.e.dead||g.t<=0)p.grab=null;else{const dx=g.e.x-p.x,dy=g.e.y-p.y,l=hyp(dx,dy)||1;p.vx=dx/l*150;p.vy=dy/l*150;if(l<g.e.r+p.r+4){p.grab=null;hurtP(2,g.e)}}}
  updHook(dt);move(p,p.vx*dt,p.vy*dt,p.r);const v=hyp(p.vx,p.vy);if(v>8){const k=Math.min(1,dt*10);p.fx+=(p.vx/v-p.fx)*k;p.fy+=(p.vy/v-p.fy)*k}
@@ -2440,14 +2471,14 @@ function update(dt){time+=dt;p.st.t+=dt;tickBeat(dt);mythPost(dt);tickParry(dt);
   let dead=q.life<=0;const ox=q.x,oy=q.y,ms=q.e?ebs:1;q.x+=q.vx*dt*ms;q.y+=q.vy*dt*ms;
   if(solid(q.x,q.y)&&!q.back&&!q.thru&&!(F('wallShot')&&!q.e&&q.x>TS*2&&q.y>TS*2&&q.x<(MW-2)*TS&&q.y<(MH-2)*TS)){if(q.kind==='bum'&&!q.e){q.back=1;q.hit.clear();q.x=ox;q.y=oy}else if(q.bounce>0&&!q.e){q.bounce--;if(solid(q.x,oy)&&!solid(ox,q.y)){q.vy*=-1}else if(solid(ox,q.y)&&!solid(q.x,oy)){q.vx*=-1}else{q.vx*=-1;q.vy*=-1}q.x=ox;q.y=oy;q.hit.clear()}else{dead=true;burst(ox,oy,q.e?q.c:'#cfefff',4,50,1)}}
   if(!dead&&q.e){q.t+=dt;const dq=hyp(q.x-p.x,q.y-p.y);if(dq<q.r+p.r-1&&p.dashing<=0&&p.inv<=0&&!(p.hook&&p.hook.st==='zip')){if(q.kind==='tent'&&q.own&&!q.own.dead){p.grab={e:q.own,t:1.6};ftxt(p.x,p.y-14,'AGARRADO!','#ff9a7a');hint('grab','A lula te agarrou! Dá um impulso pra se soltar.')}else hurtP(q.d,q);dead=true}else if(p.dashing>0&&!q.gz&&dq<q.r+p.r+7+4*F('perfect')){q.gz=1;perfect(q)}}
-  else if(!dead){for(const e of en){if(q.hit.has(e)||e.S.neutral)continue;if(hyp(e.x-q.x,e.y-q.y)<e.r+q.r+1){q.hit.add(e);if(e.S.reflect&&!e.stun&&e.st!=='rest'&&(q.vx*e.fx+q.vy*e.fy)<0&&q.kind!=='bum'&&!q.thru){q.e=1;q.vx*=-.8;q.vy*=-.8;q.d=1+edmAdd(depth);q.c='#cfefff';q.kind='orb';q.life=2;burst(q.x,q.y,'#cfefff',6,60);SFX.zap();dead=1;break}const a=Math.atan2(q.vy,q.vx);
+  else if(!dead){for(const e of en){if(q.hit.has(e)||e.S.neutral)continue;if(eSurf(e,q.x,q.y)<q.r+1){q.hit.add(e);if(e.S.reflect&&!e.stun&&e.st!=='rest'&&(q.vx*e.fx+q.vy*e.fy)<0&&q.kind!=='bum'&&!q.thru){q.e=1;q.vx*=-.8;q.vy*=-.8;q.d=1+edmAdd(depth);q.c='#cfefff';q.kind='orb';q.life=2;burst(q.x,q.y,'#cfefff',6,60);SFX.zap();dead=1;break}const a=Math.atan2(q.vy,q.vx);
     if(e.S.shield&&e.st!=='open'&&!q.giant&&q.kind!=='sonic'&&q.kind!=='vortex'){const fa=Math.atan2(e.fy,e.fx),ia=Math.atan2(q.y-e.y,q.x-e.x);if(Math.abs(Math.atan2(Math.sin(fa-ia),Math.cos(fa-ia)))<1.25){burst(q.x,q.y,'#fff',5,60,1);if(Math.random()<.35)ftxt(e.x,e.y-e.r-4,'TINK','#c9d3da');dead=true;break}}
     q.hitE=1;if(q.kind==='pmine'){dead=true;break}dmgE(e,q.d,a,q.kb,'shot',q);
     if(q.split&&!q.frag)for(let k=0;k<=q.split;k++){const fa=a+(k-q.split/2)*.7,fs=230;pj.push({x:q.x,y:q.y,vx:Math.cos(fa)*fs,vy:Math.sin(fa)*fs,r:1.5,d:q.d*.45,life:.35,ml:.35,pierce:0,bounce:0,hit:new Set([e]),kind:'harp',kb:.5,chain:0,home:0,aoe:0,split:0,frag:1})}
     if(q.chain){let c=q.chain,from=e;const seen=new Set([e]);while(c-->0){let bst=null,bd=70;for(const o of en){if(seen.has(o))continue;const d=hyp(o.x-from.x,o.y-from.y);if(d<bd){bd=d;bst=o}}if(!bst)break;seen.add(bst);pt.push({x:from.x,y:from.y,x2:bst.x,y2:bst.y,life:.12,ml:.12,zap:1});dmgE(bst,q.d*.6,Math.atan2(bst.y-from.y,bst.x-from.x),.5);SFX.zap();from=bst}}
     if(q.pierce-->0)continue;dead=true;break}}
    if(!dead)for(const m of mines)if(!m.fuse&&hyp(m.x-q.x,m.y-q.y)<6){m.fuse=.01;dead=q.pierce<=0;break}
-   if(!dead)for(const b of barrels)if(!b.fuse&&hyp(b.x-q.x,b.y-q.y)<7){b.fuse=.08;dead=true;break}
+   if(!dead)for(const b of barrels)if(!b.fuse&&hyp(b.x-q.x,b.y-q.y)<10){b.fuse=.08;dead=true;break}
    if(!dead)for(const th of therm){const ph=th.t%5.5;if(ph<3.5&&hyp(q.x-th.x,q.y-th.y+5)<7){th.t+=3.6-ph;dead=true;burst(q.x,q.y,'#ffb347',8,60);break}}
    if(Math.random()<dt*(q.kind==='torp'?40:20))pt.push({x:q.x,y:q.y,vx:0,vy:-6,life:.35,ml:.35,c:'#cfefff',bub:1})}
   if(dead){if(q.kind==='ink')cloud(q.x,q.y,15);if(q.aoe&&!q.e)explode(q.x,q.y,q.aoe,q.d*.8,false);if(!q.e&&q.kind==='net')nets.push({x:q.x,y:q.y,r:24*(1+F('ssize')),life:2.6,got:new Set});if(!q.e&&q.kind==='pmine'){if(q.hitE)explode(q.x,q.y,30,q.d,false,1);else if(pmines.length<12)pmines.push({x:q.x,y:q.y,t:0,life:25,d:q.d})}pj.splice(i,1)}}
@@ -3478,7 +3509,7 @@ const EQUIP=[['colete','Colete de chumbo','Mais 2 de vida máxima.',0,'vest',{hp
 ['socorro','Kit de primeiros socorros','Corações curam o dobro.',0,'medkit',{heartPlus:1}],['reserva','Garrafa de ar reserva','Uma vez por fenda, quando o ar acaba, ela enche o tanque.',1,'tank',{airSpare:1}],['lastro','Cinto de lastro','Correntezas e empurrões te afetam bem menos.',0,'anchor',{curRes:1,kbRes:.6}],
 ['visor','Visor noturno','Enxerga 30% mais longe no escuro.',1,'eye',{light:.3}],['isqueiro','Isqueiro à prova d’água','Os tiros queimam de leve.',0,'fire',{burn:.4}],['tubo','Tubo de veneno','Os tiros envenenam de leve.',0,'drop',{poison:.4}],
 ['mochila','Mochila de bombas','Mais 2 bombas agora, e cabem até 9.',0,'bombs',{bombs:2,bombCap:3}],['espinhos','Traje de espinhos','Quem encosta em você leva dano.',0,'urchin',{thorn:2.5}],['termico','Traje térmico','Gêiseres e água fervendo não te machucam.',1,'fire',{heatProof:1}],
-['detector','Detector de minas','Explosões de mina e barril não te machucam.',1,'minew',{mineProof:1}],['saco','Saco de pérolas','Cada chefe derrotado dá mais 3 pérolas.',2,'pearl',{pearlBoss:3}],
+['detector','Detector de minas','Explosões de mina e de barril radioativo não te machucam.',1,'minew',{mineProof:1}],['saco','Saco de pérolas','Cada chefe derrotado dá mais 3 pérolas.',2,'pearl',{pearlBoss:3}],
 ['cronom','Cronômetro de mergulho','O combo dura 50% mais.',0,'hourglass',{combo:.5}],['cantil','Cantil de algas','Recupera 1 de vida a cada 40 s.',1,'medkit',{regen:.7}],['lente','Lente de foco','A esquiva perfeita fica mais fácil de acertar.',0,'eye',{perfect:1}]].map(a=>({id:a[0],n:a[1],t:a[2],r:a[3],ic:a[4],fx:a[5],kind:'equip'}));
 /* ---------- relíquias: raras e fortes ---------- */
 const RELICS=[['leviata','Coração do Leviatã','Mais 3 de vida máxima, e regenera 1 a cada 20 s.','heart',{hp:3,regen:1.4}],['olho','Lente do Olho Abissal','Seus tiros atravessam paredes.','eye',{wallShot:1}],
@@ -3577,7 +3608,7 @@ $('#logo').innerHTML='<em>INTO</em><span class="l2">'+[...'HADAL DEEP'].map((c,i
 function titleInfo(){$('#best').innerHTML='perfil: '+PROF.cur+(META.best?'  |  recorde: '+M(META.best):'')+(META.wins?'  |  '+META.wins+' vitória'+(META.wins>1?'s':''):'');$('#tpearl').innerHTML=img('pearl',20)+META.pearls}
 $('#tmenu').onclick=e=>{const b=e.target.closest('.mi');if(!b)return;initAudio();if(AC)AC.resume();const a=b.dataset.a;if(a==='start'){$('#title').hidden=true;newGame();SFX.down()}else if(a==='yard')openMeta();else if(a==='album')openAlbum();else if(a==='ward')openWard();else if(a==='prof')openProf();else if(a==='ach')openAch();else if(a==='rank')openRank();else if(a==='cont')runResume();else if(a==='tut')tutStart();else openHow()};
 function openHow(){$('#title').hidden=true;$('#howbox').innerHTML='<h2>COMO JOGAR</h2><div class="keys">'+
- [[['W','A','S','D'],'nadar'],[['MOUSE'],'mirar e atirar (ou as setas)'],[['ESPAÇO 2x'],'APARAR: dê o impulso e aperte de novo bem no FIM dele. Só projétil ROXO pode ser aparado, e ele volta com tudo no inimigo'],[['ESPAÇO'],'impulso; passar raspando num ataque é esquiva perfeita'],[['Q'],'bomba'],[['F'],'sonar: deixa os bichos tontos e mostra o mapa'],[['E'],'trocar de arma'],[['M'],'liga e desliga o mapa'],[['ESC'],'pausa']].map(r=>'<div>'+r[0].map(k=>'<kbd>'+k+'</kbd>').join('')+'<span>'+r[1]+'</span></div>').join('')+
+ [[['W','A','S','D'],'nadar'],[['MOUSE'],'mirar e atirar (ou as setas)'],[['ESPAÇO 2x'],'APARAR: aperte DUAS VEZES rapidinho (sai o parry na hora, sem impulso), ou aperte de novo no meio de um impulso. Só o que é ROXO pode ser aparado, e volta com tudo no inimigo'],[['ESPAÇO'],'impulso; passar raspando num ataque é esquiva perfeita'],[['Q'],'bomba'],[['F'],'sonar: deixa os bichos tontos e mostra o mapa'],[['E'],'trocar de arma'],[['M'],'liga e desliga o mapa'],[['ESC'],'pausa']].map(r=>'<div>'+r[0].map(k=>'<kbd>'+k+'</kbd>').join('')+'<span>'+r[1]+'</span></div>').join('')+
  '</div><p class="say">🎮 Controle de Xbox ou PlayStation: analógico esquerdo nada, direito mira e atira, RT/R2 também atira (pra frente, se o direito estiver solto). A/✕ ou LT/L2 impulso (duas vezes seguidas = APARAR), RB/R1 ou B/○ bomba, X/□ sonar, LB/L1 ou Y/△ troca arma, Start pausa.</p><p class="say">No celular, o dedo esquerdo nada e o direito mira e atira.<br>O ar acaba rápido. As colunas de bolhas enchem o tanque.</p><div class="bot"><button class="btn nav sel" id="howback">VOLTAR</button></div>';$('#how').hidden=false;$('#howback').onclick=()=>{$('#how').hidden=true;$('#title').hidden=false}}
 function newGame(){p=newPlayer();p.mhp+=MU('hp');p.hp=p.mhp;p.mo2+=10*MU('o2');p.o2=p.mo2;p.gold+=20*MU('gold');p.bombs+=MU('bomb');depth=1;mod=MODS.normal;pickQ=[];pets=[];FX={};fxT={};
  openDeal(startRun)}
@@ -4399,7 +4430,7 @@ TADD(TL,'yard',['Estaleiro do Tião: aqui o barco fica forte e você também.','
 TADD(TL,'buy',['Martelada aqui, prego ali... pronto!','Ficou novinho. Quase.','Isso vai te ajudar muito lá embaixo.']);
 TADD(TL,'max',['Esse já tá no máximo. Não tem mais o que apertar.','Mais que isso, só milagre.']);
 /* rádio durante o mergulho */
-const RAD={amb:[['Tá ouvindo? Esse silêncio aí embaixo é que me assusta.','Respira devagar, marujo. O tanque agradece.','Peixe pequeno em cardume é problema grande.','Se o ar apertar, procura coluna de bolha.','Barril quebrado é moeda no bolso.','Fica longe das minas velhas, elas balançam na corrente.','Lembra: bala roxa você apara. As outras, desvia.','Contra correnteza não adianta nadar. Vai de lado!','Já tô fazendo o café pra quando você subir.','Tem baú escondido em parede oca. Bate nas paredes!','Viu um bicho piscando roxo? Espera ele chegar e apara!','Combo alto dá mais ouro. Não para de atirar.'],
+const RAD={amb:[['Tá ouvindo? Esse silêncio aí embaixo é que me assusta.','Respira devagar, marujo. O tanque agradece.','Peixe pequeno em cardume é problema grande.','Se o ar apertar, procura coluna de bolha.','Viu barril amarelo com o símbolo de radiação? Atira de longe e corre.','Fica longe das minas velhas, elas balançam na corrente.','Lembra: bala roxa você apara. As outras, desvia.','Contra correnteza não adianta nadar. Vai de lado!','Já tô fazendo o café pra quando você subir.','Tem baú escondido em parede oca. Bate nas paredes!','Viu um bicho piscando roxo? Espera ele chegar e apara!','Combo alto dá mais ouro. Não para de atirar.'],
  ['Água tá ficando escura, hein? Liga essa lanterna.','Aí já é mar aberto. Tubarão gosta de lá.','Cuidado com as águas-vivas, elas não pedem desculpa.','A essa altura eu já tinha voltado. Mas eu sou velho.','Sente o frio? É o fundo chamando.'],
  ['Zona do crepúsculo... aqui os bichos começam a brilhar.','Tem coisa aí que caça pela luz. Cuidado com a lanterna.','Daqui pra baixo, meu rádio começa a chiar.','Se ouvir um canto bonito, não segue.'],
  ['Meia-noite eterna. Aqui o sol nunca chegou.','Os bichos daí nunca viram gente. Melhor assim.','Tô te ouvindo mal... fala alto se precisar.','Aqui embaixo, até a pressão tem dente.'],
@@ -5184,7 +5215,7 @@ let SWG=[];
 function swing(W){const L=p.wl[p.wp]||1,lm=1+.22*(L-1);p.fireT=W.cd/(rateMul()*(1+.08*(L-1)));const big=1+.5*F('swBig')+.4*F('ssize'),reach=W.reach*big,arc=W.arc,a0=p.aim;
  p.swD=Math.min(.2,p.fireT*.85);p.swT=p.swD;p.swDir=-(p.swDir||1);const dm=W.d*dmgMul()*lm*(p.dsh?1+F('dashShot'):1);p.dsh=0;
  SWG.push({a:a0,dir:p.swDir,r:reach,arc,t:0,ml:.18,c:F('swFire')?'#ffb347':F('swIce')?'#bfefff':F('swBolt')?'#fff35a':'#eaf6ff'});try{SFX.shoot('bub')}catch(e){}
- let hit=0;for(const e of en.slice()){if(e.dead||(e.S&&e.S.neutral))continue;const dx=e.x-p.x,dy=e.y-p.y,d=hyp(dx,dy);if(d>reach+e.r)continue;let da=Math.atan2(dy,dx)-a0;da=Math.atan2(Math.sin(da),Math.cos(da));if(Math.abs(da)>arc/2&&d>e.r+6)continue;
+ let hit=0;for(const e of en.slice()){if(e.dead||(e.S&&e.S.neutral))continue;const inArc=(x,y,dd)=>{let da=Math.atan2(y-p.y,x-p.x)-a0;da=Math.atan2(Math.sin(da),Math.cos(da));return Math.abs(da)<=arc/2||dd<=6};const d0=hyp(e.x-p.x,e.y-p.y)-e.r,sd=eSurf(e,p.x,p.y);if(!(d0<=reach&&inArc(e.x,e.y,d0))&&!(sd<=reach&&inArc(EH.x,EH.y,sd)))continue;
   hit++;const ex=F('swExec')&&!e.S.boss&&e.hp<e.mhp*.25;dmgE(e,ex?e.hp+99:dm,a0,W.kb||2,'sword',{kind:'sword',sw:1});burst(e.x,e.y,'#fff',4,70);
   if(F('swFire'))e.burn=Math.max(e.burn||0,3);if(F('swIce')&&Math.random()<.3&&!e.S.boss)e.frz=Math.max(e.frz||0,1.2);if(F('swBolt')&&typeof chainZap==='function')chainZap(e,3,dm*.5);if(F('swPois'))e.pois=Math.max(e.pois||0,4);
   p.swHits=(p.swHits||0)+1;if(F('swVamp')&&p.swHits%6===0)heal(1);if(F('swGuard'))p.inv=Math.max(p.inv,.15)}
@@ -5195,7 +5226,7 @@ function swing(W){const L=p.wl[p.wp]||1,lm=1+.22*(L-1);p.fireT=W.cd/(rateMul()*(
  p.vx+=Math.cos(a0)*30;p.vy+=Math.sin(a0)*30}
 {const _f=fire;fire=function(){const W=WP[p.wp];if(W&&W.melee){swing(W);return}_f.apply(this,arguments)}}
 {let spinT=0;const _tp=tickParry;tickParry=function(dt){_tp(dt);if(!p)return;if(p.swT>0)p.swT-=dt;for(const s of SWG)s.t+=dt;SWG=SWG.filter(s=>s.t<s.ml);
- if(state==='play'&&F('swSpin')&&p.dashing>0&&WP[p.wp]&&WP[p.wp].melee){spinT-=dt;if(spinT<=0){spinT=.07;const W=WP[p.wp];SWG.push({a:time*20,dir:1,r:W.reach*1.1,arc:TAU,t:0,ml:.12,c:'#eaf6ff'});for(const e of en.slice())if(!e.dead&&!e.S.neutral&&hyp(e.x-p.x,e.y-p.y)<W.reach*1.1+e.r)dmgE(e,W.d*dmgMul()*.4,Math.atan2(e.y-p.y,e.x-p.x),1,'sword',{kind:'sword'})}}
+ if(state==='play'&&F('swSpin')&&p.dashing>0&&WP[p.wp]&&WP[p.wp].melee){spinT-=dt;if(spinT<=0){spinT=.07;const W=WP[p.wp];SWG.push({a:time*20,dir:1,r:W.reach*1.1,arc:TAU,t:0,ml:.12,c:'#eaf6ff'});for(const e of en.slice())if(!e.dead&&!e.S.neutral&&eSurf(e,p.x,p.y)<W.reach*1.1)dmgE(e,W.d*dmgMul()*.4,Math.atan2(e.y-p.y,e.x-p.x),1,'sword',{kind:'sword'})}}
  if(state==='play'&&F('bottles')){const b=META.bottles||0;if(p._bot===undefined)p._bot=b;if(b>p._bot){p._bot=b;p.gold+=25;ftxt(p.x,p.y-16,'+25 OURO DO CORREIO','#ffd45e')}}}}
 {const _dp=drawParryFx;drawParryFx=function(){_dp();if(!p)return;for(const s of SWG){const k=s.t/s.ml,al=1-k;ctx.save();ctx.translate(p.x,p.y);ctx.lineCap='round';
  const a1=s.a-s.arc/2,a2=s.a+s.arc/2,sw=s.arc>=TAU-.01;for(let j=0;j<3;j++){ctx.globalAlpha=al*(.9-j*.28);ctx.strokeStyle=j?s.c:'#fff';ctx.lineWidth=4-j;ctx.beginPath();const st=sw?0:(s.dir>0?a1:a2),en2=sw?TAU:(s.dir>0?a1+(a2-a1)*Math.min(1,k*2.2+.3):a2-(a2-a1)*Math.min(1,k*2.2+.3));ctx.arc(0,0,s.r-j*4,Math.min(st,en2),Math.max(st,en2));ctx.stroke()}ctx.restore()}ctx.globalAlpha=1;ctx.lineCap='butt'}}
@@ -5874,7 +5905,7 @@ if(typeof orcaStart==='function'){const _o=orcaStart;orcaStart=function(){const 
   const dx=p.x-q.x,dy=p.y-q.y,dist=hyp(dx,dy),band=Math.abs(dist-q.r);if(band>p.r+PARRY_R)continue;
   const ang=Math.atan2(dy,dx),tol=Math.min(.4,(p.r+1)/Math.max(8,dist)),inP=q.all||q.segs.some(s=>angD(ang,s.a)<s.w/2+tol);
   if(inP&&p.pt>0){q.hit=1;q.pass=ang;parryFlash(p.x,p.y,false);parryWin(1);ftxt(p.x,p.y-16,'ATRAVESSOU!',PURP);p.pt=0;continue}
-  if(band<p.r+1.2){q.hit=1;if(p.inv>0)continue;const dd=p.dashing;p.dashing=0;hurtP(1,{x:q.x,y:q.y});p.dashing=dd;ftxt(p.x,p.y-16,inP?'ERA PRA APARAR!':'A ONDA TE PEGOU!',inP?PURP:'#bff4ff');burst(p.x,p.y,'#bff4ff',8,90,1)}}
+  if(band<p.r+1.2){q.hit=1;if(p.inv>0)continue;const dd=p.dashing,ww=p.wup;p.dashing=0;p.wup=0;hurtP(1,{x:q.x,y:q.y});p.dashing=dd;p.wup=ww;ftxt(p.x,p.y-16,inP?'ERA PRA APARAR!':'A ONDA TE PEGOU!',inP?PURP:'#bff4ff');burst(p.x,p.y,'#bff4ff',8,90,1)}}
  for(let i=SNOTES.length-1;i>=0;i--){const n=SNOTES[i];n.x+=n.vx*dt+Math.sin(time*4+i)*6*dt;n.y+=n.vy*dt;n.vx*=.97;n.life-=dt;if(n.life<=0)SNOTES.splice(i,1)}
  for(let i=SRDEAD.length-1;i>=0;i--){const d=SRDEAD[i];d.t+=dt;d.y+=12*dt;if(d.t>2.2)SRDEAD.splice(i,1)}}}
 function srnNote(x,y,c,a){ctx.globalAlpha=a;ctx.fillStyle=c;x=Math.round(x);y=Math.round(y);ctx.fillRect(x,y,2,2);ctx.fillRect(x+1,y-4,1,4);ctx.fillRect(x+2,y-4,1,1);ctx.fillRect(x+3,y-3,1,1)}
@@ -6004,7 +6035,7 @@ function evtMake(k){
   if(!E.ch.length)return null;return E}
  if(k==='ships'){const E=evtArea(20,7);if(!E)return null;E.k=k;E.w=[];const n=2+(Math.random()<.4?1:0);
   for(let i=0;i<n;i++){const q=evtNearX(E,E.x0+40+(E.x1-E.x0-80)*(n>1?i/(n-1):.5),20);if(!q)continue;const x=q[0],by=q[1],L=46+R(30);E.w.push({x,by,L,a:(R(.36)-.18),mast:R(1)<.7,sail:Math.random()<.6,flip:Math.random()<.5?1:-1,lamp:Math.random()<.5,ph:R(9)});
-   evtChestAt(x+R(14)-7,by-9);for(let j=0;j<2;j++){const bx=x+(j?1:-1)*(L*.55+R(8)),byy=evtFloorY(bx,E.top)-6;if(!blocked(bx,byy,4))barrels.push({x:bx,y:byy})}}
+   evtChestAt(x+R(14)-7,by-9)}
   if(!E.w.length)return null;const big=pick(E.w);bigs.push({x:big.x,y:big.by-10});
   for(let i=0;i<3+RI(3);i++){const x=E.x0+20+R(E.x1-E.x0-40),y=E.top+10+R(40);if(!blocked(x,y,5))mines.push({x,y,ph:R(9),fuse:0,vx:R(8)-4,vy:R(8)-4})}
   return E}
@@ -6581,6 +6612,89 @@ SP.golfinho.r=8;SP.boto.r=8;SP.golfsafado.r=9;
 /* morrer durante a troca de fenda (fossa, caverna) deixava o jogo voltar pro mergulho com os corações vazios e sem morrer */
 {const _u=update;update=function(dt){const r=_u.apply(this,arguments);try{if(p&&state==='play'){if(Number.isFinite(p.hp))p._hpOk=p.hp;else p.hp=Number.isFinite(p._hpOk)&&p._hpOk>0?p._hpOk:1;
   if(p.hp<=0&&!(typeof TUT!=='undefined'&&TUT.on)){p.inv=0;p.dashing=0;if(p.buoys>0)hurtP(0,null);if(p.hp<=0&&state==='play')die()}}}catch(e){console.warn(e)}return r}}
+/* ================= PERSONALIZAÇÃO: customização (vestiário) + estaleiro num lugar só ================= */
+/* --- peças novas por conquista rara: quem já tem a conquista ganha na hora --- */
+SKC.suit.L.push(['orca','Orca',['#15171d','#05060a','#f4f6f8'],{orc:1}]);
+SKC.fin.L.push(['sereia','Cauda de Sereia',['#3ad8c8','#b06aff'],{srn:1}]);
+{const _ro=skReqOk;skReqOk=function(r){if(r&&r.orc)return!!(META&&META.orca);if(r&&r.srn)return!!(META&&META.sereia);return _ro.apply(this,arguments)}}
+{const _rt=skReqTxt;skReqTxt=function(r){if(r&&r.orc)return'vença a Orca (luta secreta)';if(r&&r.srn)return'derrote uma sereia';return _rt.apply(this,arguments)}}
+/* --- o que foi desbloqueado NUNCA some ---
+   Conquistas, roupas, chefes vencidos, cartas e marcas raras (orca, sereia, golfinho safado...) só podem ser SOMADOS.
+   Antes, uma aba velha (ou o salvamento ao fechar a página) podia mandar pra nuvem um save sem a peça nova, e a junção
+   de 3 versões entendia isso como "apagou de propósito" e apagava no aparelho que tinha. Agora a junção é sempre por união,
+   e cada aparelho guarda um cofre local com tudo o que já viu desbloqueado. Só o ZERAR PROGRESSO (com marca _wipe) apaga. */
+const PERMA_OBJ=['own','ach','bk','cards','cs','evts','syn','relSeen'],PERMA_FLAG=['orca','sereia','famSaved','helmet','luz','moby','cthulhu','tut','tutSeen'],
+ PERMA_MAX=['best','wins','gk','maxc','bro','golfSafado','parries','bottles','runs','kills'];
+const isObj=v=>!!v&&typeof v==='object'&&!Array.isArray(v),wipeOf=m=>(m&&+m._wipe)||0;
+function permaUnion(o,src){if(!o||!isObj(src))return false;let ch=false;
+ for(const k of PERMA_OBJ){const v=src[k];if(!isObj(v))continue;const m=metaMergeVal(isObj(o[k])?o[k]:{},v);if(!jeq(m,o[k])){o[k]=m;ch=true}}
+ for(const k of PERMA_FLAG)if(src[k]&&!o[k]){o[k]=src[k];ch=true}
+ for(const k of PERMA_MAX){const v=src[k];if(typeof v==='number'&&isFinite(v)&&!(o[k]>=v)){o[k]=v;ch=true}}
+ return ch}
+const vKey=()=>'ihd-vault-'+((typeof PROF!=='undefined'&&PROF.cur)||'').toLowerCase();
+function vaultGet(){try{return JSON.parse(localStorage.getItem(vKey())||'null')}catch(e){return null}}
+function vaultPut(v){try{localStorage.setItem(vKey(),JSON.stringify(v))}catch(e){}}
+function vaultSync(){if(!META||typeof PROF==='undefined'||!PROF.cur)return false;let v=vaultGet();const w=wipeOf(META);if(v&&wipeOf(v)<w)v=null;
+ const ch=v?permaUnion(META,v):false;const nv={_wipe:Math.max(w,wipeOf(v))};permaUnion(nv,META);vaultPut(nv);return ch}
+{const _mm=metaMerge;metaMerge=function(L,R,B){if(!R)return L;if(!L)return R;const wl=wipeOf(L),wr=wipeOf(R);
+  if(wl>wr)return Object.assign({},L);/* este aparelho zerou depois: vale o zerado */
+  if(wr>wl){const o=Object.assign({},R);for(const k of['diff','_opt','_uid'])if(k in L)o[k]=L[k];return o}/* outro aparelho zerou depois */
+  const o=_mm.apply(this,arguments);permaUnion(o,L);permaUnion(o,R);const v=vaultGet();if(v&&wipeOf(v)>=wipeOf(o))permaUnion(o,v);return o}}
+{let inS=0;const _s=saveMeta;saveMeta=function(){if(inS)return _s.apply(this,arguments);inS=1;try{vaultSync();if(typeof skinCheck==='function')skinCheck()}catch(e){}finally{inS=0}return _s.apply(this,arguments)}}
+{const _t=titleInfo;titleInfo=function(){try{const a=vaultSync(),b=skinCheck().length;if(a&&!b)saveMeta()}catch(e){}return _t.apply(this,arguments)}}
+/* zerar progresso: única forma de apagar, e marca a hora pra nenhuma junção trazer de volta */
+$('#profbox').addEventListener('click',async ev=>{const el=ev.target.closest('[data-a="del"]');if(!el||!CL.on)return;ev.stopImmediatePropagation();ev.preventDefault();
+ if(!confirm('Zerar TODO o progresso da conta '+PROF.cur+'? Isso apaga também conquistas e roupas. Não tem volta.'))return;
+ const w=Date.now();META={pearls:0,runs:0,kills:0,best:0,wins:0,up:{},h:{},cards:{},_wipe:w};vaultPut({_wipe:w});saveMeta();await clPushNow();openProf('Progresso zerado.')},true);
+/* --- estaleiro consertado: as funções que desenhavam as reformas tinham sumido numa reforma antiga da loja (a tela nem abria) --- */
+function slotH(it,have,pearl){const no=!it.done&&have<it.price;return'<div class="slot nav'+(it.r?' r'+it.r:'')+(it.done?' done':no?' no':'')+'" data-k="'+it.key+'">'+(it.max?'<span class="dots">'+Array.from({length:it.max},(_,j)=>'<i class="'+(j<it.lv?'on':'')+'"></i>').join('')+'</span>':'')+
+ img(it.ic||'chest',44)+'<span class="pr">'+(it.done?(it.max?'máx':'--'):pearl?img('pearl',14)+it.price:'$'+it.price)+'</span></div>'}
+function itemInfo(it,have,pearl){const b=bubEl();if(!b||!it)return;clearInterval(b._ti);const pr=pearl?it.price+' pérola'+(it.price>1?'s':''):'$'+it.price;
+ b.innerHTML='<b>'+it.name+(it.max?' <em>'+it.lv+'/'+it.max+'</em>':'')+'</b>'+it.desc+'<span class="hint">'+(it.done?'Já está no máximo.':pr+(have<it.price?'. Não dá ainda.':isTouch?'. Toca de novo pra reformar.':'. Clica pra reformar.'))+'</span>'}
+/* --- tela --- */
+const PERS={on:0,tab:'roupa'};
+function persTabs(){return'<div class="wtabs ptabs"><button class="btn nav'+(PERS.tab==='roupa'?' sel':'')+'" data-pt="roupa">CUSTOMIZAÇÃO</button><button class="btn nav'+(PERS.tab==='yard'?' sel':'')+'" data-pt="yard">ESTALEIRO</button></div>'}
+function persDeco(box){if(!PERS.on||!box||box.querySelector('.ptabs'))return;const h=box.querySelector('h2');if(!h)return;h.textContent='PERSONALIZAÇÃO';h.insertAdjacentHTML('afterend',persTabs());
+ if(PERS.tab==='roupa'){let n=0,t=0;for(const c in SKC)for(const it of SKC[c].L){t++;if(skOwned(c,it[0]))n++}const s=box.querySelector('.say.tiny');if(s)s.insertAdjacentHTML('beforebegin','<p class="say tiny">Coleção: <b>'+n+'/'+t+'</b> peças. Peças de chefe e de conquista ficam com você pra sempre.</p>')}}
+{const _w=openWard;openWard=function(){const r=_w.apply(this,arguments);persDeco($('#wardbox'));return r}}
+{const _r=renderMeta;renderMeta=function(){const r=_r.apply(this,arguments);persDeco($('#metabox'));return r}}
+function openPers(tab){PERS.on=1;PERS.tab=tab||PERS.tab||'roupa';$('#title').hidden=true;$('#ward').hidden=$('#meta').hidden=true;if(PERS.tab==='yard')openMeta();else openWard()}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-pt]');if(t&&PERS.on){e.stopImmediatePropagation();SFX.tick();openPers(t.dataset.pt);return}
+ if(PERS.on&&e.target.closest&&e.target.closest('#wback,#mback'))PERS.on=0},true);
+addEventListener('keydown',e=>{if(e.key==='Escape'&&PERS.on){const b=!$('#ward').hidden?$('#wback'):!$('#meta').hidden?$('#mback'):null;if(b){e.stopImmediatePropagation();b.click()}}},true);
+{const m=$('#tmenu');if(m&&!m.querySelector('[data-a="pers"]')){const st=m.querySelector('[data-a="start"]');if(st)st.insertAdjacentHTML('afterend','<button class="mi nav" data-a="pers">PERSONALIZAÇÃO</button>')}
+ const _o=m.onclick;m.onclick=e=>{const b=e.target.closest('.mi');if(b&&b.dataset.a==='pers'){initAudio();if(AC)AC.resume();SFX.tick();openPers('roupa');return}return _o.call(m,e)}}
+/* vestiário saiu de Configurações: agora mora na Personalização */
+{const _op=openProf;openProf=function(){const r=_op.apply(this,arguments);const w=$('#pward');if(w)w.remove();return r}}
+{const st=document.createElement('style');st.textContent='.ptabs{justify-content:center;margin:4px 0 8px}';document.head.appendChild(st)}
+/* ================= PARRY INSTANTÂNEO DE VERDADE + ANIMAÇÃO DO IMPULSO =================
+   Antes o 1º toque já saía em impulso a toda velocidade e só o 2º virava parry: por mais rápido que fosse o AA, o boneco voava.
+   Agora o 1º toque PREPARA o impulso por um instante (o mergulhador encolhe, sem sair do lugar e sem levar dano):
+   - 2º toque dentro da preparação = PARRY na hora, sem impulso nenhum;
+   - sem 2º toque = sai o impulso normal;
+   - toque durante o impulso (ou logo depois) = PARRY que cancela o impulso.
+   Encolhe na preparação, estica no impulso e volta suave pro giro do parry. */
+const PW={win:.12};
+{const _d=dash;dash=function(){if(state!=='play'||!p||p.hp<=0)return;
+  if(p.wup>0){p.wup=0;p.dst=0;p.ptry=1;doParry();return}
+  const t=time-(p.dst||-9),L=p.dlen||.17;
+  if(p.dashing>0||(p.dst&&!p.ptry&&t>.001&&t<L+PARRY_AFTER))return _d.apply(this,arguments);
+  if((p.dch||0)<1)return;
+  let dx=p.ix,dy=p.iy;if(!dx&&!dy){dx=Math.cos(p.aim);dy=Math.sin(p.aim)}p.wa=Math.atan2(dy,dx);p.wup=PW.win;p.vx*=.5;p.vy*=.5;bub(p.x,p.y,2)};
+ dash.launch=_d}
+{const _h=hurtP;hurtP=function(){if(p&&p.wup>0&&state==='play')return;return _h.apply(this,arguments)}}
+{const _tp=tickParry;tickParry=function(dt){_tp.apply(this,arguments);if(!p||!dt)return;if(p.wup>0){p.wup-=dt;p.vx*=Math.exp(-10*dt);p.vy*=Math.exp(-10*dt);if(p.wup<=0){p.wup=0;if(state==='play'&&p.hp>0)dash.launch()}}}}
+{const _nl=newLevel;newLevel=function(){if(p)p.wup=0;return _nl.apply(this,arguments)}}
+{const _rr=runResume;runResume=function(){const r=_rr.apply(this,arguments);if(p)p.wup=0;return r}}
+{const _dd=drawDiver;drawDiver=function(){if(!p||p.hp<=0)return _dd.apply(this,arguments);
+ const dt=Math.min(.05,Math.max(0,time-(p._sqT||time)));p._sqT=time;let tx=1,ty=1,off=0;
+ if(p.wup>0){const k=Math.sin((1-p.wup/PW.win)*Math.PI*.5);tx=1-.18*k;ty=1+.14*k;off=-2.6*k;p._sqA=p.wa||0}
+ else if(p.dashing>0){tx=1.22;ty=.82;off=1;p._sqA=Math.atan2(p.ddy||0,p.ddx||1)}
+ const f=1-Math.exp(-dt*26);p._sx=(p._sx||1)+(tx-(p._sx||1))*f;p._sy=(p._sy||1)+(ty-(p._sy||1))*f;p._so=(p._so||0)+(off-(p._so||0))*f;
+ if(Math.abs(p._sx-1)<.004&&Math.abs(p._sy-1)<.004&&Math.abs(p._so)<.05)return _dd.apply(this,arguments);
+ const a=p._sqA||0;ctx.save();ctx.translate(p.x+Math.cos(a)*p._so,p.y+Math.sin(a)*p._so);ctx.rotate(a);ctx.scale(p._sx,p._sy);ctx.rotate(-a);ctx.translate(-p.x,-p.y);
+ if(p.wup>0&&Math.random()<.5)pt.push({x:p.x+R(10)-5,y:p.y+R(10)-5,vx:-Math.cos(a)*20,vy:-Math.sin(a)*20,life:.18,ml:.18,c:'#cfefff',s:1});
+ try{return _dd.apply(this,arguments)}finally{ctx.restore()}}}
 const _li=initProfiles();titleBG();if(!_li)openLogin();
 requestAnimationFrame(frame);
 </script>

@@ -198,3 +198,13 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Correnteza não puxa mais através da parede (era o "teleporte pro começo do mapa": a vermelha te levava pra fossa pelo túnel vizinho).
 - [x] Orca volta a aparecer na cena dos tubarões-baleia.
 - [x] Fácil mais fácil: metade do dano, correnteza pela metade, bichos e tiros mais lentos.
+
+## Hitbox, parry, personalização e barril radioativo (feedback novo)
+- [x] Hitbox dos peixes: o tiro só pegava na cabeça (o corpo inteiro era ignorado). Agora tiro, faca/espada, raio, explosão e dash acertam qualquer parte do corpo e o rabo; desenho e animação não mudaram, e tiro que passa do lado continua errando
+- [x] Parry instantâneo: AA rápido é só parry, sem dash (antes o boneco voava até 44 px antes de aparar). 1 toque = dash; toque durante o dash = parry que cancela o dash. Animação: encolhe na preparação, estica no dash e volta suave pro giro do parry
+- [x] Menu PERSONALIZAÇÃO no menu principal, com abas CUSTOMIZAÇÃO (vestiário) e ESTALEIRO
+- [x] Estaleiro voltou a abrir (estava quebrado desde uma reforma antiga da loja)
+- [x] Conquistas e roupas nunca somem: a junção da nuvem só soma, cofre local em cada aparelho e trava no banco (rodar o fim do supabase.sql). Só "Zerar progresso" apaga
+- [x] Roupas novas por conquista rara: traje "Orca" (Lenda do Abismo) e nadadeiras "Cauda de Sereia" (Canto Silenciado); quem já tem a conquista ganha na hora
+- [x] Barris de dinamite saíram; ficou o barril RADIOATIVO raro (4% por fenda, 25% no naufrágio, garantido no santuário), com raio enorme, dano altíssimo, aviso e símbolo de radiação
+- [ ] Estaleiro novo: rever o que tem, dar sentido às pérolas (quem joga mais tem vantagem, sem quebrar o roguelike), visual novo e uma fala do Tião por item
