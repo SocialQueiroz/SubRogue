@@ -6622,7 +6622,7 @@ SKC.fin.L.push(['sereia','Cauda de Sereia',['#3ad8c8','#b06aff'],{srn:1}]);
    Conquistas, roupas, chefes vencidos, cartas e marcas raras (orca, sereia, golfinho safado...) só podem ser SOMADOS.
    Antes, uma aba velha (ou o salvamento ao fechar a página) podia mandar pra nuvem um save sem a peça nova, e a junção
    de 3 versões entendia isso como "apagou de propósito" e apagava no aparelho que tinha. Agora a junção é sempre por união,
-   e cada aparelho guarda um cofre local com tudo o que já viu desbloqueado. Só o ZERAR PROGRESSO (com marca _wipe) apaga. */
+   e Só o ZERAR PROGRESSO (com marca _wipe) apaga. */
 const PERMA_OBJ=['own','ach','bk','cards','cs','evts','syn','relSeen'],PERMA_FLAG=['orca','sereia','famSaved','helmet','luz','moby','cthulhu','tut','tutSeen'],
  PERMA_MAX=['best','wins','gk','maxc','bro','golfSafado','parries','bottles','runs','kills'];
 const isObj=v=>!!v&&typeof v==='object'&&!Array.isArray(v),wipeOf=m=>(m&&+m._wipe)||0;
@@ -6631,26 +6631,55 @@ function permaUnion(o,src){if(!o||!isObj(src))return false;let ch=false;
  for(const k of PERMA_FLAG)if(src[k]&&!o[k]){o[k]=src[k];ch=true}
  for(const k of PERMA_MAX){const v=src[k];if(typeof v==='number'&&isFinite(v)&&!(o[k]>=v)){o[k]=v;ch=true}}
  return ch}
-const vKey=()=>'ihd-vault-'+((typeof PROF!=='undefined'&&PROF.cur)||'').toLowerCase();
-function vaultGet(){try{return JSON.parse(localStorage.getItem(vKey())||'null')}catch(e){return null}}
-function vaultPut(v){try{localStorage.setItem(vKey(),JSON.stringify(v))}catch(e){}}
-function vaultSync(){if(!META||typeof PROF==='undefined'||!PROF.cur)return false;let v=vaultGet();const w=wipeOf(META);if(v&&wipeOf(v)<w)v=null;
- const ch=v?permaUnion(META,v):false;const nv={_wipe:Math.max(w,wipeOf(v))};permaUnion(nv,META);vaultPut(nv);return ch}
 {const _mm=metaMerge;metaMerge=function(L,R,B){if(!R)return L;if(!L)return R;const wl=wipeOf(L),wr=wipeOf(R);
   if(wl>wr)return Object.assign({},L);/* este aparelho zerou depois: vale o zerado */
   if(wr>wl){const o=Object.assign({},R);for(const k of['diff','_opt','_uid'])if(k in L)o[k]=L[k];return o}/* outro aparelho zerou depois */
-  const o=_mm.apply(this,arguments);permaUnion(o,L);permaUnion(o,R);const v=vaultGet();if(v&&wipeOf(v)>=wipeOf(o))permaUnion(o,v);return o}}
-{let inS=0;const _s=saveMeta;saveMeta=function(){if(inS)return _s.apply(this,arguments);inS=1;try{vaultSync();if(typeof skinCheck==='function')skinCheck()}catch(e){}finally{inS=0}return _s.apply(this,arguments)}}
-{const _t=titleInfo;titleInfo=function(){try{const a=vaultSync(),b=skinCheck().length;if(a&&!b)saveMeta()}catch(e){}return _t.apply(this,arguments)}}
-/* zerar progresso: única forma de apagar, e marca a hora pra nenhuma junção trazer de volta */
-$('#profbox').addEventListener('click',async ev=>{const el=ev.target.closest('[data-a="del"]');if(!el||!CL.on)return;ev.stopImmediatePropagation();ev.preventDefault();
- if(!confirm('Zerar TODO o progresso da conta '+PROF.cur+'? Isso apaga também conquistas e roupas. Não tem volta.'))return;
- const w=Date.now();META={pearls:0,runs:0,kills:0,best:0,wins:0,up:{},h:{},cards:{},_wipe:w};vaultPut({_wipe:w});saveMeta();await clPushNow();openProf('Progresso zerado.')},true);
-/* --- estaleiro consertado: as funções que desenhavam as reformas tinham sumido numa reforma antiga da loja (a tela nem abria) --- */
-function slotH(it,have,pearl){const no=!it.done&&have<it.price;return'<div class="slot nav'+(it.r?' r'+it.r:'')+(it.done?' done':no?' no':'')+'" data-k="'+it.key+'">'+(it.max?'<span class="dots">'+Array.from({length:it.max},(_,j)=>'<i class="'+(j<it.lv?'on':'')+'"></i>').join('')+'</span>':'')+
- img(it.ic||'chest',44)+'<span class="pr">'+(it.done?(it.max?'máx':'--'):pearl?img('pearl',14)+it.price:'$'+it.price)+'</span></div>'}
-function itemInfo(it,have,pearl){const b=bubEl();if(!b||!it)return;clearInterval(b._ti);const pr=pearl?it.price+' pérola'+(it.price>1?'s':''):'$'+it.price;
- b.innerHTML='<b>'+it.name+(it.max?' <em>'+it.lv+'/'+it.max+'</em>':'')+'</b>'+it.desc+'<span class="hint">'+(it.done?'Já está no máximo.':pr+(have<it.price?'. Não dá ainda.':isTouch?'. Toca de novo pra reformar.':'. Clica pra reformar.'))+'</span>'}
+  const o=_mm.apply(this,arguments);permaUnion(o,L);permaUnion(o,R);return o}}
+{let inS=0;const _s=saveMeta;saveMeta=function(){if(inS)return _s.apply(this,arguments);inS=1;try{if(typeof skinCheck==='function')skinCheck()}catch(e){}finally{inS=0}return _s.apply(this,arguments)}}
+{const _t=titleInfo;titleInfo=function(){try{skinCheck()}catch(e){}return _t.apply(this,arguments)}}
+/* --- progresso SÓ NA CONTA ---
+   Nada de progresso fica guardado no notebook: tudo mora na conta (Supabase). O jogo só segura uma cópia na memória enquanto está aberto.
+   Quem tinha progresso guardado no navegador (versões antigas) tem ele juntado na conta na primeira vez e depois apagado daqui.
+   Cada gravação só vale se ninguém gravou na conta depois da última leitura (senão relê, junta e tenta de novo): um notebook
+   desatualizado nunca mais passa por cima do progresso feito em outro. */
+const LSK=/^ihd-(meta|base|vault)-|^ihd-scores$/,MIG={rd:0,legacy:null,base:null};
+if(CL.on){const _set=Storage.prototype.setItem,_get=Storage.prototype.getItem;
+ Storage.prototype.setItem=function(k,v){if(this===localStorage&&LSK.test(k))return;return _set.call(this,k,v)};
+ Storage.prototype.getItem=function(k){if(this===localStorage&&LSK.test(k)&&!MIG.rd)return null;return _get.call(this,k)};
+ /* progresso antigo guardado no navegador: lido uma vez só pra juntar na conta */
+ MIG.load=n=>{if(!n)return;MIG.rd=1;try{const k=n.toLowerCase();for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(!key)continue;
+   if(/^ihd-meta-/.test(key)&&key.slice(9).toLowerCase()===k){const m=JSON.parse(localStorage.getItem(key)||'null');if(isObj(m))MIG.legacy=MIG.legacy?metaMerge(MIG.legacy,m,null):m}
+   if(key==='ihd-base-'+k)MIG.base=JSON.parse(localStorage.getItem(key)||'null')}}catch(e){}MIG.rd=0;MIG.n=n};
+ MIG.clear=()=>{const del=[];for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key&&LSK.test(key))del.push(key)}for(const k of del)try{localStorage.removeItem(k)}catch(e){}};
+ {let c=null;try{c=JSON.parse(localStorage.getItem('ihd-cloud')||'null')}catch(e){}if(c&&c.n)MIG.load(c.n)}
+ CL.uat=null;
+ {const _pl=clPull;clPull=async function(){await clAuth();const r=await clReq('/rest/v1/saves?select=updated_at&user_id=eq.'+CL.uid);CL.uat=r&&r[0]?r[0].updated_at:null;
+   const row=await _pl.apply(this,arguments);
+   if(MIG.legacy&&(!MIG.legacy._uid||MIG.legacy._uid===CL.uid)&&(!row||!row.name||(row.name||'').toLowerCase()===(MIG.n||'').toLowerCase())){const lg=Object.assign({},MIG.legacy);delete lg._opt;
+    if(row&&row.meta){const op=row.meta._opt;row.meta=Object.assign(metaMerge(lg,Object.assign({},row.meta),MIG.base),{_opt:op})}MIG.legacy=null;MIG.done=1;setTimeout(()=>{clPushNow().then(()=>{if(CL.st==='ok')MIG.clear()})},400)}
+   else if(MIG.legacy){MIG.legacy=null}
+   return row}}
+ /* login num notebook novo: começa do que está na conta, nunca do que estava no navegador */
+ {const _lp=loadMetaP;loadMetaP=function(){META={pearls:0,runs:0,kills:0,best:0,wins:0,up:{},h:{},cards:{}}}}
+ clPushNow=async function(ka){if(!CL.on||!CL.uid||!PROF.cur)return;const body=()=>({meta:Object.assign({},META,{_opt:OPT,_uid:CL.uid}),updated_at:new Date().toISOString(),name:PROF.cur});
+  if(ka){if(!CL.uat)return;try{await clReq('/rest/v1/saves?user_id=eq.'+CL.uid+'&updated_at=eq.'+encodeURIComponent(CL.uat),{m:'PATCH',ka:true,h:{Prefer:'return=minimal'},b:body()})}catch(e){}return}
+  if(clPushNow._run)return clPushNow._run;CL.st='sync';try{cloudSay()}catch(e){}
+  clPushNow._run=(async()=>{try{await clAuth();
+    for(let tent=0;tent<5;tent++){const r=await clReq('/rest/v1/saves?select=meta,name,updated_at&user_id=eq.'+CL.uid);const row=r&&r[0];
+     if(row&&row.meta){const rm=Object.assign({},row.meta);delete rm._opt;if(!META._uid||META._uid===CL.uid)metaSet(metaMerge(Object.assign({},META),rm,baseGet()))}
+     META._uid=CL.uid;const b=body();let ok=false;
+     if(row){const u=await clReq('/rest/v1/saves?user_id=eq.'+CL.uid+'&updated_at=eq.'+encodeURIComponent(row.updated_at),{m:'PATCH',h:{Prefer:'return=representation'},b});ok=Array.isArray(u)&&u.length>0;if(ok)CL.uat=u[0].updated_at}
+     else{try{const u=await clReq('/rest/v1/saves',{m:'POST',h:{Prefer:'return=representation'},b:Object.assign({user_id:CL.uid},b)});ok=true;CL.uat=u&&u[0]?u[0].updated_at:null}catch(e){if(e.st!==409)throw e}}
+     if(ok){baseSet(META);CL.st='ok';CL.dirty=0;CL.retry=0;cloudBadge(1);if(state==='title')titleInfo();return}}
+    throw new Error('conflito')}
+   catch(e){CL.st='err';CL.dirty=1;cloudBadge(0);clearTimeout(CL.rt);CL.retry=Math.min(6,(CL.retry||0)+1);CL.rt=setTimeout(()=>clPushNow(),Math.min(30000,2000*Math.pow(2,CL.retry)))}
+   finally{clPushNow._run=null;try{cloudSay()}catch(e){}}})();return clPushNow._run};
+ {const _ce=clEnter;clEnter=async function(n){MIG.load(n);return _ce.apply(this,arguments)}}
+ /* sair da conta: grava, e se não conseguiu gravar avisa em vez de perder */
+ $('#profbox').addEventListener('click',async ev=>{const el=ev.target.closest('[data-a="out"]');if(!el)return;ev.stopImmediatePropagation();ev.preventDefault();clearTimeout(CL.pt);await clPushNow();
+  if(CL.st!=='ok'&&!confirm('Não consegui salvar na conta agora (sem internet?). Se sair, o que você fez desde o último salvamento se perde. Sair mesmo assim?'))return;
+  try{localStorage.removeItem('ihd-cloud');localStorage.removeItem('ihd-session')}catch(e){}MIG.clear();CL.tok=CL.ref=CL.uid='';CL.uat=null;PROF.cur='';META={pearls:0,runs:0,kills:0,best:0,wins:0,up:{},h:{},cards:{}};openLogin('Você saiu da conta.')},true);
+}
 /* --- tela --- */
 const PERS={on:0,tab:'roupa'};
 function persTabs(){return'<div class="wtabs ptabs"><button class="btn nav'+(PERS.tab==='roupa'?' sel':'')+'" data-pt="roupa">CUSTOMIZAÇÃO</button><button class="btn nav'+(PERS.tab==='yard'?' sel':'')+'" data-pt="yard">ESTALEIRO</button></div>'}
