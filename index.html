@@ -6947,7 +6947,7 @@ AK.rays=(g,x,y,w,h,ang,c,a)=>{g.save();g.translate(x,y);g.rotate(ang);const gr=g
 AK.vgrad=(g,c0,c1,W,H)=>{const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,c0);gr.addColorStop(1,c1);g.fillStyle=gr;g.fillRect(0,0,W,H)};
 AK.hash=n=>{const s=Math.sin(n*127.1)*43758.5453;return s-Math.floor(s)};
 
-/* ---------------- LENDA 1: LORELEI, A RAINHA DO CANTO (luta no ritmo) ---------------- */
+/* ---------------- LENDA 1: IARA, A SENHORA DO CANTO (luta no ritmo) ---------------- */
 {const OL='#140a08',SK={b:'#7a3e2c',s:'#4a2016',h:'#b06a4e',lip:'#5a2420'},PR='#d42a3a',PG='#2fa86a',BEAD='#3fbf7a',HR={b:'#16161c',s:'#060608',h:'#5c6880',t:'#8a94b0'},TL={a:'#34343e',b:'#202028',s:'#121218',h:'#9a9aaa'},VEIL1='rgba(140,240,255,',VEIL2='rgba(190,140,255,',CR='#e04a6a',PEARL='#fff4fb',Z=.82;
  const C0=()=>[MW*TS/2,MH*TS/2];
  const L2W=(B,lx,ly)=>{const c=Math.cos(B.tilt),s=Math.sin(B.tilt),x=lx*B.face*Z,y=ly*Z;return[B.x+x*c-y*s,B.y+x*s+y*c]};
@@ -7126,7 +7126,7 @@ AK.hash=n=>{const s=Math.sin(n*127.1)*43758.5453;return s-Math.floor(s)};
   if(B.glyphs)for(const q of pj)if(q.lgq&&!q.e&&!q.lgc){q.lgc=1;B.got=(B.got||0)+1;ftxt(p.x,p.y-20,'RESPOSTA '+B.got+'/'+B.need,'#e0b8ff')}
   phys(B,dt)}
  window.__beg_sereia=begin;
- legDef('sereia',{name:'LORELEI',title:'A RAINHA DO CANTO',short:'Lorelei',map:'Partitura Encharcada',price:60,depth:7,flag:'lgSereia',pearls:40,barc:'#c878ff',hitc:'#ffd0f0',
+ legDef('sereia',{name:'IARA',title:'A SENHORA DO CANTO',short:'Iara',map:'Partitura Encharcada',price:60,depth:7,flag:'lgSereia',pearls:40,barc:'#c878ff',hitc:'#ffd0f0',
   riddle:'Sete vezes cem braças abaixo do casco, onde a pedra virou plateia e a plateia virou pedra, alguém ainda ensaia. Não aplauda.',
   phases:['O CANTO','O CORO DAS AFOGADAS','O LAMENTO'],th:[.66,.33],shotMul:.7,swordMul:1.6,introT:7,dieT:6,light:210,cardAt:3600,loreAt:5200,
   zone:{top:'#1a2a5a',bot:'#060a1e',w1:'#3a3a62',w2:'#6a6aa0',w3:'#22223e',moss:'#7a5ac8',dark:.3,light:130},
@@ -7155,7 +7155,7 @@ AK.hash=n=>{const s=Math.sin(n*127.1)*43758.5453;return s-Math.floor(s)};
     if(ph>=1&&b===0)lgTimp(t,B[0],.35);if(ph>=2&&(b===2||b===4))lgTimp(t,B[0]+7,.22);if(ph>=2&&b%2===1)nz(t,.04,'highpass',7000,.03,musBus);
     if(bi===7&&b===4&&ph>=1)for(let k=0;k<4;k++)lgTimp(t+k*sd/4,B[0],.12+k*.05)}},
   touchDmg:1});
- ACHL.push(['lgsereia','A Última Nota','Derrote Lorelei, a Rainha do Canto (mapa: Partitura Encharcada)',m=>!!m.lgSereia]);
+ ACHL.push(['lgsereia','A Última Nota','Derrote Iara, a Senhora do Canto (mapa: Partitura Encharcada)',m=>!!m.lgSereia]);
  SKC.suit.L.push(['rainha','Traje da Rainha',['#d8c8f0','#6a5aa8','#7fe9ff'],{lg:'sereia'}]);SKC.trail.L.push(['canto','Notas do Canto',['#e0b8ff'],{lg:'sereia'}]);}
 
 /* ---------------- LENDA 2: NESSIE, A SOMBRA DO LAGO (predadora que se esconde) ---------------- */
@@ -7502,22 +7502,47 @@ function ydArt(cv,id){const d=Math.min(2,devicePixelRatio||1),W=cv.clientWidth||
   for(let k=0;k<8;k++){g.beginPath();g.moveTo(tx-30+k*8,ty+46+Math.sin(k)*2);g.lineTo(tx-24+k*8,ty+44+Math.sin(k+1)*2);g.stroke()}
   g.save();g.translate(W*.66,H*.86);g.rotate(-.25);g.lineWidth=1.6;g.beginPath();g.moveTo(-40,0);g.lineTo(40,0);g.stroke();g.fillStyle=ink;g.beginPath();g.moveTo(40,-4);g.lineTo(52,0);g.lineTo(40,4);g.closePath();g.fill();g.restore();
   g.fillStyle='#a02020';g.fillRect(W-26,0,8,H*.7);g.beginPath();g.moveTo(W-26,H*.7);g.lineTo(W-22,H*.66);g.lineTo(W-18,H*.7);g.fill();g.fillStyle='rgba(90,50,20,.25)';g.beginPath();g.arc(W*.3,H*.72,18,0,TAU);g.fill()}}
-renderMeta=function(line){if(line)YD.line=line;const pe=META.pearls,M0=META.maps||{},id=YD.sel||'sereia',D=LEGS[id],own=(M0[id]||0)>0,beat=!!META[D.flag];
- const cards=LEGO.map(k=>{const E=LEGS[k],o=(M0[k]||0)>0,b=!!META[E.flag];return'<button class="nav yd2-card'+(YD.sel===k?' sel':'')+(o?' own':'')+'" data-y="'+k+'" style="--wax:'+E.barc+'"><canvas data-art="'+k+'"></canvas><b>'+E.map+'</b><span>'+(o?'NA BOLSA':b?'VENCIDA':img('pearl',12)+' '+E.price)+'</span><u></u></button>'}).join('');
- const act=own?'<button class="btn yd2-buy off" disabled>NA BOLSA · escolha ao mergulhar</button>':'<button class="btn nav yd2-buy'+(pe<D.price?' no':'')+(YD.arm===id?' arm':'')+'" data-buy="'+id+'">'+(YD.arm===id?'CONFIRMAR':'COMPRAR')+' · '+img('pearl',14)+' '+D.price+'</button>';
- $('#metabox').innerHTML='<h2>ESTALEIRO</h2><div class="keeper"><img class="face" src="'+FACE()+'" alt=""><div class="bubble"></div></div>'+
-  '<div class="yd2-t">MAPAS DO FUNDO<small>Quem leva um mapa desce equipado. Aos mil metros, a rocha marcada se abre. Se morrer, o mar fica com ele.</small></div>'+
-  '<div class="yd2-row">'+cards+'</div>'+
-  '<div class="yd2-scroll"><i class="yd2-rod t"></i><div class="yd2-rid"><em>'+D.map+(beat?' · já vencida':'')+'</em><p>“'+D.riddle+'”</p><small>Leva: +2 de vida, +25% de dano, +1 bomba, +20 de ar, mochila e arpão reforçado.</small></div><i class="yd2-rod b"></i></div>'+
-  '<div class="bot"><span class="purse">'+img('pearl',26)+pe+'</span>'+act+'<button class="btn nav" id="mback">VOLTAR</button></div>';
- $('#metabox').querySelectorAll('canvas[data-art]').forEach(c=>ydArt(c,c.dataset.art));
- say(YD.line||YDL[id][beat&&!own?2:0],own?'':pe<D.price?'Faltam '+(D.price-pe)+' pérolas.':'');try{persDeco($('#metabox'))}catch(e){}};
+renderMeta=function(line){if(line)YD.line=line;const pe=META.pearls,M0=META.maps||{},id=YD.sel||'sereia',D=LEGS[id],own=(M0[id]||0)>0,beat=!!META[D.flag],box=$('#metabox');box.classList.add('yd2-wide');
+ const tabs=LEGO.map(k=>{const E=LEGS[k],o=(M0[k]||0)>0,b=!!META[E.flag];return'<button class="nav yd2-tab'+(YD.sel===k?' sel':'')+'" data-y="'+k+'" style="--wax:'+E.barc+'"><canvas data-art="'+k+'"></canvas><span><b>'+E.map+'</b><small>'+(o?'NA BOLSA':b?'VENCIDA · '+E.price:img('pearl',11)+' '+E.price)+'</small></span></button>'}).join('');
+ const act=own?'<button class="btn yd2-buy off" disabled>JÁ ESTÁ NA BOLSA</button>':'<button class="btn nav yd2-buy'+(pe<D.price?' no':'')+(YD.arm===id?' arm':'')+'" data-buy="'+id+'">'+(YD.arm===id?'CONFIRMAR COMPRA':'COMPRAR MAPA')+'<span>'+img('pearl',16)+' '+D.price+'</span></button>';
+ const gear=[['hfull','+2 de vida'],['harpoon','+25% de dano'],['bomb','+1 bomba'],['tank','+20 de ar']].map(([ic,t])=>'<li>'+img(ic,18)+t+'</li>').join('');
+ box.innerHTML='<h2>ESTALEIRO</h2><div class="yd2-main">'+
+  '<div class="yd2-table"><div class="yd2-hero" style="--wax:'+D.barc+'"><canvas data-art="'+id+'" class="big"></canvas><u></u></div></div>'+
+  '<div class="yd2-side"><div class="yd2-name">'+D.map+'</div><div class="yd2-st">'+(own?'NA BOLSA':beat?'LENDA JÁ VENCIDA':'NUNCA ENFRENTADA')+'</div>'+
+  '<p class="yd2-rid">“'+D.riddle+'”</p>'+
+  '<div class="yd2-gear"><em>QUEM LEVA ESSE MAPA DESCE COM</em><ul>'+gear+'<li class="w">mochila de mantimento e arpão reforçado</li></ul><small>Aos mil metros, a rocha marcada se abre. Se morrer, o mar fica com o mapa.</small></div>'+
+  act+'<div class="keeper yd2-keeper"><img class="face" src="'+FACE()+'" alt=""><div class="bubble"></div></div></div></div>'+
+  '<div class="yd2-tabs">'+tabs+'</div>'+
+  '<div class="bot"><span class="purse">'+img('pearl',26)+pe+'</span><button class="btn nav" id="mback">VOLTAR</button></div>';
+ box.querySelectorAll('canvas[data-art]').forEach(c=>ydArt(c,c.dataset.art));
+ say(YD.line||YDL[id][beat&&!own?2:0],own?'':pe<D.price?'Faltam '+(D.price-pe)+' pérolas.':'');try{persDeco(box)}catch(e){}};
 $('#metabox').onclick=ev=>{const el=ev.target.closest('[data-y],[data-buy],#mback');if(!el)return;if(el.id==='mback'){$('#meta').hidden=true;$('#title').hidden=false;titleInfo();YD.arm=null;return}
  if(el.dataset.y){if(YD.sel!==el.dataset.y){YD.sel=el.dataset.y;YD.arm=null;YD.line='';SFX.tick();renderMeta()}return}
  const id=el.dataset.buy,D=LEGS[id];META.maps=META.maps||{};if((META.maps[id]||0)>0)return;if(META.pearls<D.price){SFX.no();YD.arm=null;return renderMeta('Faltam '+(D.price-META.pearls)+' pérolas. Esse mapa é caro, mas vale cada uma.')}
  if(YD.arm!==id){YD.arm=id;SFX.tick();return renderMeta('Certeza? São '+D.price+' pérolas. Clica de novo pra confirmar.')}YD.arm=null;META.pearls-=D.price;META.maps[id]=1;saveMeta();SFX.pearl();renderMeta(YDL[id][1])};
 $('#metabox').addEventListener('navsel',e=>{const k=e.target&&e.target.dataset&&e.target.dataset.y;if(k&&YD.sel!==k){YD.sel=k;YD.arm=null;YD.line='';renderMeta()}});
-openMeta=function(){$('#title').hidden=true;meta={selKey:null};YD.arm=null;YD.line=pick(TL.yard);renderMeta();$('#meta').hidden=false};
+openMeta=function(){$('#title').hidden=true;YD.sel=YD.sel||'sereia';meta={selKey:null};YD.arm=null;YD.line=pick(TL.yard);renderMeta();$('#meta').hidden=false};
+{const st=document.createElement('style');st.textContent=`
+#metabox.yd2-wide{max-width:min(1120px,96vw);padding:24px 30px}
+.yd2-main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;margin-top:10px;align-items:start}
+.yd2-table{position:relative;padding:26px;background:radial-gradient(ellipse at 30% 20%,rgba(255,210,120,.28),transparent 60%),linear-gradient(#2a180c,#1a0e06);box-shadow:inset 0 0 0 3px #000,inset 0 0 40px rgba(0,0,0,.7),0 6px 0 #000}
+.yd2-hero{position:relative;padding:12px;background:#d9c48f;box-shadow:0 0 0 3px #000,0 14px 22px rgba(0,0,0,.6),inset 0 0 26px rgba(90,50,10,.55);transform:rotate(-1.2deg)}
+.yd2-hero canvas{display:block;width:100%;height:auto;aspect-ratio:3/2}
+.yd2-hero u{position:absolute;right:-14px;top:-14px;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff8,var(--wax) 42%,#000a);box-shadow:0 0 0 3px #000,0 3px 0 4px rgba(0,0,0,.5)}
+.yd2-side{display:flex;flex-direction:column;gap:12px}
+.yd2-name{font:italic clamp(26px,3vw,38px) 'IM Fell English',serif;color:#ffe9b8;line-height:1;text-shadow:0 3px 0 #000}
+.yd2-st{font:9px 'Press Start 2P',monospace;color:#c8a870;letter-spacing:1px}
+.yd2-rid{margin:0;padding:14px 18px;background:linear-gradient(90deg,#c9ae78,#f2e6c8 10%,#f2e6c8 90%,#c9ae78);box-shadow:0 0 0 3px #000,inset 0 0 18px rgba(90,50,10,.45);color:#2a1a0a;font:italic clamp(17px,1.6vw,21px) 'IM Fell English',serif;line-height:1.35}
+.yd2-gear em{font:8px 'Press Start 2P',monospace;color:#ffd98a;font-style:normal;letter-spacing:1px}.yd2-gear ul{list-style:none;margin:8px 0 6px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
+.yd2-gear li{display:flex;align-items:center;gap:8px;font:19px 'VT323',monospace;color:#f0e0c0}.yd2-gear li.w{grid-column:1/-1}.yd2-gear small{font:16px 'VT323',monospace;color:#c8b090;display:block;line-height:1.1}
+.yd2-buy{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;padding:14px 18px;white-space:nowrap}.yd2-buy span{display:flex;align-items:center;gap:6px;font-size:14px}.yd2-buy.no{opacity:.55}.yd2-buy.arm{background:#ffd98a;color:#2a1a08;animation:ydp .6s infinite alternate}.yd2-buy.off{opacity:.75;justify-content:center}
+@keyframes ydp{to{box-shadow:0 0 0 2px #000,0 0 18px #ffd98a}}
+.yd2-keeper{display:flex;gap:10px;align-items:flex-start;margin:0}.yd2-keeper .face{width:64px;height:64px}.yd2-keeper .bubble{min-height:64px;font-size:18px;flex:1}
+.yd2-tabs{display:flex;gap:16px;justify-content:center;margin:22px 0 6px;flex-wrap:wrap}
+.yd2-tab{display:flex;align-items:center;gap:12px;padding:8px 14px 8px 8px;background:#3a2414;border:none;box-shadow:0 0 0 3px #000,inset 0 0 0 2px #6a4424;color:#f0dcb8;cursor:pointer;min-width:230px;transition:transform .15s}
+.yd2-tab canvas{width:76px;height:auto;aspect-ratio:3/2;box-shadow:0 0 0 2px #000}.yd2-tab span{display:flex;flex-direction:column;gap:4px;text-align:left}.yd2-tab b{font:italic 18px 'IM Fell English',serif;font-weight:normal}.yd2-tab small{font:8px 'Press Start 2P',monospace;color:#d8b880;display:flex;align-items:center;gap:4px}
+.yd2-tab.sel,.yd2-tab:hover{transform:translateY(-3px);box-shadow:0 0 0 3px #000,inset 0 0 0 2px var(--wax),0 0 18px color-mix(in srgb,var(--wax) 50%,transparent)}
+@media(max-width:760px){.yd2-main{grid-template-columns:1fr}.yd2-table{padding:14px}.yd2-tab{min-width:0;flex:1}.yd2-tab canvas{width:54px}}`;document.head.appendChild(st)}
 {const st=document.createElement('style');st.textContent=`
 #metabox .yd2-t{font:10px 'Press Start 2P',monospace;color:#ffd98a;letter-spacing:1px;margin:12px 0 8px;text-shadow:0 2px 0 #000}#metabox .yd2-t small{display:block;font:16px 'VT323',monospace;color:#e8d8b8;letter-spacing:0;margin-top:5px;text-shadow:none}
 .yd2-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding:6px 0 4px}
