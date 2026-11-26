@@ -235,3 +235,8 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
   - Parry do Lago: sem sonar; todo parry fere em volta e, enquanto dura, nada te machuca
   - Na luta da Nessie o F continua sendo sonar (a foto precisa dele)
 - [x] Espada nerfada por dificuldade: fácil igual; médio metade do que era; difícil metade do médio e -10 de ar por golpe; insano quase nada e -17 de ar por golpe (também contra as lendas)
+
+## Versão 0.15.3
+- [x] Kit Conforto (liberado ao vencer Iara, Nessie e Moby Dick): Cueca de Bolinha, Careca de Óculos, Touca do Velho Lobo, Pés de Marujo, Tanque Remendado, Fumaça de Cachimbo
+- [x] Mergulhador revelado: careca, sobrancelha brava, narigão, bigodão, barba cheia que escorre com a velocidade, cachimbo; nada com os pés descalços
+- [x] Atualização automática: ao voltar pro menu o jogo confere a versão do site e, se mudou, salva na conta e recarrega furando o cache
