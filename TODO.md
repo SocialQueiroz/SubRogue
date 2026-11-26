@@ -226,3 +226,12 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] Mapa agora equipa o mergulhador (+2 vida, +25% dano, +1 bomba, +20 ar, mochila e arpão maior) e a partir dos 1000 m abre uma rocha marcada com caverna que leva à lenda
 - [x] Estaleiro só de mapas, ilustrados em sépia, enigma em pergaminho e compra com confirmação
 - [x] Tiro testa o caminho inteiro do quadro (não atravessa peixe fino), reflexo dos peixes por dificuldade, parry com janela de 0,18 s e giro mais rápido
+
+## Finalização (feedback novo) · versão 0.15.0
+- [x] Mapas mais caros (95 / 140 / 190) e peças de roupa compradas com pérolas 60% mais caras
+- [x] TECNOLOGIAS na Customização: vencer uma lenda troca o sonar (F) por um poder
+  - Cântico da Iara: anel de som que cresce em volta e fere tudo que atravessa
+  - Queda da Baleia: gasta toda a energia (impulso zera), afunda girando em órbita até o chão e explode
+  - Parry do Lago: sem sonar; todo parry fere em volta e, enquanto dura, nada te machuca
+  - Na luta da Nessie o F continua sendo sonar (a foto precisa dele)
+- [x] Espada nerfada por dificuldade: fácil igual; médio metade do que era; difícil metade do médio e -10 de ar por golpe; insano quase nada e -17 de ar por golpe (também contra as lendas)
