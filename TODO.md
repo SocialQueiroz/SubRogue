@@ -217,3 +217,12 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] MOBY DICK, a Baleia Branca (2.200 m): cemitério do Pequod, arpões com cordas (ponto fraco), eco aparável, passagem fantasma, cordas, salto, aríete, cauda, redemoinho e mordida; trilha épica com canto de baleia; Pele da Baleia Branca + Espuma Branca
 - [x] Cada lenda: abertura de cinema (barras pretas, nome, câmera), legenda de lore por fase, fragmento da história do Zeca no fim, conquista e roupa que nunca somem
 - [ ] Rodar o fim do supabase.sql no Supabase (trava que impede qualquer aparelho de apagar conquista/roupa)
+
+## Lendas v2, mapas que equipam e correções (feedback novo)
+- [x] Chefes desenhados em alta resolução numa camada própria (silhueta única sem emendas, sombreamento, física de cabelo/cordas/barbatana, molas em toda animação), cenário próprio de cada arena e minimapa escondido na luta
+- [x] Lorelei pela referência (pele escura com pintura vermelha e verde, cabelo preto liso, cauda escura de escamas) na catedral ciano com rosácea de concha e estátuas de sereia; luta no ritmo: pergunta e resposta, pauta, coro das estátuas, chicote de cabelo, encanto, última nota com cobertura; música de coral e órgão
+- [x] Nessie no lago escondido (névoa, ruínas, sal espelhado): sombra que embosca, foto com sonar, cerco, olhos na névoa, pedra do castelo, lago que sobe; música celta
+- [x] Moby Dick no cemitério do Pequod em tempestade: arrancar arpões, fantasma no escuro com relâmpagos, salto, engolir e lutar dentro da barriga; música épica
+- [x] Mapa agora equipa o mergulhador (+2 vida, +25% dano, +1 bomba, +20 ar, mochila e arpão maior) e a partir dos 1000 m abre uma rocha marcada com caverna que leva à lenda
+- [x] Estaleiro só de mapas, ilustrados em sépia, enigma em pergaminho e compra com confirmação
+- [x] Tiro testa o caminho inteiro do quadro (não atravessa peixe fino), reflexo dos peixes por dificuldade, parry com janela de 0,18 s e giro mais rápido
