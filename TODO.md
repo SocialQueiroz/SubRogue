@@ -216,7 +216,7 @@ Anotado a partir do feedback do dono do jogo. Marcar [x] quando pronto.
 - [x] NESSIE, a Sombra do Lago (1.400 m): lago de salmoura, pescoço com cinemática inversa, bote, onda, cuspe, saída do lago, chicote, nadadeira, mergulho, rugido com pedras, investida roxa e redemoinho; gaita escocesa; Escamas do Lago + Névoa do Lago
 - [x] MOBY DICK, a Baleia Branca (2.200 m): cemitério do Pequod, arpões com cordas (ponto fraco), eco aparável, passagem fantasma, cordas, salto, aríete, cauda, redemoinho e mordida; trilha épica com canto de baleia; Pele da Baleia Branca + Espuma Branca
 - [x] Cada lenda: abertura de cinema (barras pretas, nome, câmera), legenda de lore por fase, fragmento da história do Zeca no fim, conquista e roupa que nunca somem
-- [ ] Rodar o fim do supabase.sql no Supabase (trava que impede qualquer aparelho de apagar conquista/roupa)
+- [x] Trava no Supabase instalada (saves_keep_unlocks): nenhum aparelho consegue apagar conquista, roupa ou vitória de lenda; só o "Zerar progresso"
 
 ## Lendas v2, mapas que equipam e correções (feedback novo)
 - [x] Chefes desenhados em alta resolução numa camada própria (silhueta única sem emendas, sombreamento, física de cabelo/cordas/barbatana, molas em toda animação), cenário próprio de cada arena e minimapa escondido na luta
