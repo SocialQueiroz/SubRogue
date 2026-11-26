@@ -6499,7 +6499,7 @@ SKC.helm.L.push(['chapeu','Chapéu do Golfinho Safado',['#e8c020','#8a3ab0'],{gs
 {const _dd=diverDraw;diverDraw=function(g,S){const r=_dd.apply(this,arguments);if(S&&S.helm==='chapeu'){const hx=5.3,hy=-.8,F=(x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(x,y,w,h)};
   F(hx-4.6,hy-3.6,9.2,1.9,OUT);F(hx-4,hy-3.2,8,1.1,'#e8c020');F(hx-2.6,hy-6.6,5.2,3.4,OUT);F(hx-2.1,hy-6.2,4.2,2.8,'#f0cc30');F(hx-2.1,hy-6.2,4.2,.6,'#ffe680');F(hx-2.1,hy-4.4,4.2,1,'#8a3ab0')}return r}}
 /* ================= VERSÃO NO MENU ================= */
-const VERSAO='0.15.1';
+const VERSAO='0.15.2';
 {const t=$('#title');if(t){t.insertAdjacentHTML('beforeend','<div id="ver">v'+VERSAO+'</div>');const st=document.createElement('style');st.textContent='#ver{position:absolute;left:8px;top:6px;font:8px "Press Start 2P",monospace;color:#cfe8ff;opacity:.55;letter-spacing:1px;pointer-events:none;text-shadow:0 1px 0 #000;z-index:5}';document.head.appendChild(st)}}
 /* ================= MEMÓRIA DAS FENDAS: checkpoint e pressão negativa voltam pra MESMA fenda ================= */
 /* cada fenda guarda uma semente: refazer com a mesma semente dá o mesmo mapa e as mesmas coisas nos mesmos lugares.
@@ -7523,7 +7523,7 @@ function ydArt(cv,id){const d=Math.min(2,devicePixelRatio||1),W=cv.clientWidth||
 renderMeta=function(line){if(line)YD.line=line;const pe=META.pearls,M0=META.maps||{},id=YD.sel||'sereia',D=LEGS[id],own=(M0[id]||0)>0,beat=!!META[D.flag],box=$('#metabox');box.classList.add('yd2-wide');
  const tabs=LEGO.map(k=>{const E=LEGS[k],o=(M0[k]||0)>0,b=!!META[E.flag];return'<button class="nav yd2-tab'+(YD.sel===k?' sel':'')+'" data-y="'+k+'" style="--wax:'+E.barc+'"><canvas data-art="'+k+'"></canvas><span><b>'+E.map+'</b><small>'+(o?'NA BOLSA':b?'VENCIDA · '+E.price:img('pearl',11)+' '+E.price)+'</small></span></button>'}).join('');
  const act=own?'<button class="btn yd2-buy off" disabled>JÁ ESTÁ NA BOLSA</button>':'<button class="btn nav yd2-buy'+(pe<D.price?' no':'')+(YD.arm===id?' arm':'')+'" data-buy="'+id+'">'+(YD.arm===id?'CONFIRMAR COMPRA':'COMPRAR MAPA')+'<span>'+img('pearl',16)+' '+D.price+'</span></button>';
- const gear=[['hfull','+2 de vida'],['harpoon','+25% de dano'],['bomb','+1 bomba'],['tank','+20 de ar']].map(([ic,t])=>'<li>'+img(ic,18)+t+'</li>').join('');
+ const gear=[['hfull','+3 de vida'],['harpoon','+38% de dano'],['bomb','+2 bombas'],['tank','+30 de ar']].map(([ic,t])=>'<li>'+img(ic,18)+t+'</li>').join('');
  box.innerHTML='<h2>ESTALEIRO</h2><div class="yd2-main">'+
   '<div class="yd2-table"><div class="yd2-hero" style="--wax:'+D.barc+'"><canvas data-art="'+id+'" class="big"></canvas><u></u></div></div>'+
   '<div class="yd2-side"><div class="yd2-name">'+D.map+'</div><div class="yd2-st">'+(own?'NA BOLSA':beat?'LENDA JÁ VENCIDA':'NUNCA ENFRENTADA')+'</div>'+
@@ -7587,9 +7587,9 @@ Object.assign(LEGS.sereia,{riddle:'Dez vezes cem braças abaixo, onde a pedra vi
 Object.assign(LEGS.nessie,{riddle:'Dez vezes cem abaixo, procure a rocha que sua sal. Atrás dela, um lago que não cabe em terra nenhuma. O que parece um tronco tem olhos.',cave:'O TÚNEL DO SAL',caveC:'#7ab05a',caveLine:'O ar ficou pesado e salgado... no fim desse túnel tem água que não se mistura com a água.'});
 Object.assign(LEGS.moby,{riddle:'Dez vezes cem abaixo, uma rocha com um ferro cravado. Atrás dela, o branco que não é neve. Ela não esquece rosto. Nunca esqueceu nenhum.',cave:'O CAMINHO DOS OSSOS',caveC:'#e8eef4',caveLine:'Costela de baleia, corda podre, ferro de arpão... esse caminho foi feito por ela. Segue, marujo.'});
 /* começa mais forte */
-{const _rc=recalc;recalc=function(){_rc.apply(this,arguments);if(typeof p!=='undefined'&&p&&p.prep)FX.dmg=(FX.dmg||0)+.25}}
-{const _sr=startRun;startRun=function(){const r=_sr.apply(this,arguments);if(p&&p.mapC&&!p.prep){p.prep=p.mapC;p.mhp+=2;p.hp=p.mhp;p.bombs+=1;p.mo2+=20;p.o2=p.mo2;recalc();const D=LEGS[p.mapC];
-  setTimeout(()=>{if(state==='play'){banner('DESCIDA EQUIPADA','+2 vida · +25% dano · +1 bomba · +20 ar');radio('Com esse mapa eu te equipei direito, marujo: mochila de mantimento, cilindro extra e arpão reforçado. Lá pelos mil metros vai aparecer uma rocha marcada. '+D.riddle)}},2200)}return r}}
+{const _rc=recalc;recalc=function(){_rc.apply(this,arguments);if(typeof p!=='undefined'&&p&&p.prep)FX.dmg=(FX.dmg||0)+.375}}
+{const _sr=startRun;startRun=function(){const r=_sr.apply(this,arguments);if(p&&p.mapC&&!p.prep){p.prep=p.mapC;p.mhp+=3;p.hp=p.mhp;p.bombs+=2;p.mo2+=30;p.o2=p.mo2;recalc();const D=LEGS[p.mapC];
+  setTimeout(()=>{if(state==='play'){banner('DESCIDA EQUIPADA','+3 vida · +38% dano · +2 bombas · +30 ar');radio('Com esse mapa eu te equipei direito, marujo: mochila de mantimento, cilindro extra e arpão reforçado. Lá pelos mil metros vai aparecer uma rocha marcada. '+D.riddle)}},2200)}return r}}
 /* visual: mochila nas costas e arma maior */
 {const _dd=diverDraw;diverDraw=function(g,S,t,kick,mvv,rc,fire,ad,bend){const r=_dd.apply(this,arguments);if(typeof p==='undefined'||!p||!p.prep||g!==ctx)return r;const O='#0a0f1e',Rf=(x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(x,y,w,h)};
   g.save();g.translate(0,Math.sin(kick*.5)*.3);
@@ -7675,7 +7675,7 @@ function techCd(){return 14*Math.pow(.65,P('sonarcd'))*(1-Math.min(.7,F('sonarcd
 {const _w=openWard;openWard=function(){try{const S=skin();if(!S.tech)S.tech='sonar'}catch(e){}const r=_w.apply(this,arguments);if(wardCat==='tech'){const l=$('#wardbox .wlist');if(l)l.insertAdjacentHTML('afterend','<div class="techd">'+SKC.tech.L.map(it=>'<p><b>'+it[1]+'</b> '+TECHD[it[0]]+(skOwned('tech',it[0])?'':' <i>('+skReqTxt(it[3])+')</i>')+'</p>').join('')+'</div>')}return r}}
 {const st=document.createElement('style');st.textContent='.techd{margin-top:8px;font:17px VT323,monospace;color:#cfe8ff;line-height:1.1}.techd p{margin:0 0 6px}.techd b{color:#ffd98a}.techd i{color:#9aa8b8}';document.head.appendChild(st)}
 /* ================= PREÇOS: estaleiro e personalização mais caros ================= */
-LEGS.sereia.price=95;LEGS.nessie.price=140;LEGS.moby.price=190;
+LEGS.sereia.price=110;LEGS.nessie.price=160;LEGS.moby.price=220;
 for(const c in SKC)for(const it of SKC[c].L)if(it[3]&&it[3].$)it[3].$=Math.round(it[3].$*1.6/5)*5;
 /* ================= ESPADA: nerf por dificuldade =================
    fácil igual; médio metade do que era; difícil metade do médio e -10 de ar por golpe; insano quase nada e -17 de ar por golpe */
@@ -7685,6 +7685,10 @@ const SWAIR={facil:0,medio:0,dificil:10,insano:17};
 const FACADIFF={facil:1,medio:.5,dificil:.25,insano:.1};
 {const _sw=swing;swing=function(W){if(!(W&&p&&p.wp==='faca'))return _sw.apply(this,arguments);const k=FACADIFF[p.diff||(META&&META.diff)||'medio']||1,d0=W.d;W.d=d0*k;try{return _sw.apply(this,arguments)}finally{W.d=d0}}}
 {const _sw=swing;swing=function(W){const isS=W&&['sword','sabre','machado','faca'].includes(p&&p.wp);const r=_sw.apply(this,arguments);if(isS&&p){const k=SWAIR[p.diff||(META&&META.diff)||'medio']||0;if(k){p.o2=Math.max(0,p.o2-k);ftxt(p.x,p.y-12,'-'+k+' AR','#9fe8ff')}}return r}}
+
+/* ================= 0.15.2: peixe que nasce de ovo (ninho) não dá ouro nem XP (acabou o farm) ================= */
+{const _tp=tickParry;tickParry=function(dt){_tp.apply(this,arguments);if(typeof nests!=='undefined')for(const n of nests)for(const e of n.kids||[])e.egg=1}}
+{const _k=kill;kill=function(e){if(e&&e.egg&&e.S&&!e.S.__egg)e.S=Object.assign({},e.S,{g:0,xp:0,__egg:1});return _k.apply(this,arguments)}}
 
 /*LEG-END*/
 const _li=initProfiles();titleBG();if(!_li)openLogin();
