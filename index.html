@@ -6833,7 +6833,7 @@ let LGPICK=null;
  const row='<div id="lgtake" class="lgtake"><span>LEVAR UM MAPA?</span>'+['',...own].map(k=>'<button class="btn nav'+((LGPICK||'')===k?' sel on':'')+'" data-lg="'+k+'">'+(k?LEGS[k].map:'NÃO')+'</button>').join('')+'<small>Se você morrer, o mar fica com ele.</small></div>';
  const dfo=b.querySelector('.dfo');if(dfo)dfo.insertAdjacentHTML('afterend',row);b.querySelectorAll('[data-lg]').forEach(x=>x.onclick=ev=>{ev.stopPropagation();LGPICK=x.dataset.lg||null;b.querySelectorAll('[data-lg]').forEach(y=>y.classList.toggle('on',y===x));SFX.tick();if(LGPICK)say&&0})}}
 {const st=document.createElement('style');st.textContent='.lgtake{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:10px 0 2px}.lgtake span{font:9px "Press Start 2P",monospace;color:#ffd98a;margin-right:6px}.lgtake small{flex-basis:100%;text-align:center;color:#9fb4c8;font-size:15px}.lgtake .btn.on{background:#ffd98a;color:#2a1a08}';document.head.appendChild(st)}
-{const _sr=startRun;startRun=function(){const r=_sr.apply(this,arguments);if(p&&LGPICK&&(META.maps||{})[LGPICK]>0&&!p.mapC){META.maps[LGPICK]--;p.mapC=LGPICK;p.mapDone=0;saveMeta();const D=LEGS[LGPICK];setTimeout(()=>{if(state==='play')radio('Tá levando "'+D.map+'". '+D.riddle+' ...Se morrer, o mar fica com ele.')},1800)}LGPICK=null;return r}}
+{const _sr=startRun;startRun=function(){const r=_sr.apply(this,arguments);if(p&&LGPICK&&(META.maps||{})[LGPICK]>0&&!p.mapC){META.maps[LGPICK]--;p.mapC=LGPICK;p.mapDone=0;saveMeta();}LGPICK=null;return r}}
 /* roupas e conquistas das lendas */
 {const _ro=skReqOk;skReqOk=function(r){if(r&&r.lg)return!!(META&&META[LEGS[r.lg].flag]);return _ro.apply(this,arguments)}}
 {const _rt=skReqTxt;skReqTxt=function(r){if(r&&r.lg)return'vença '+LEGS[r.lg].short;return _rt.apply(this,arguments)}}
@@ -7538,6 +7538,60 @@ openMeta=function(){$('#title').hidden=true;meta={selKey:null};YD.sel=null;YD.li
 .yd-pips{display:flex;gap:2px}.yd-pips i{width:6px;height:6px;background:#4a3020;border:1px solid #000}.yd-pips i.on{background:#ffd45e}
 .yd-up .yd-pr{font:19px 'VT323',monospace;color:#ffd98a;display:flex;align-items:center;gap:3px}
 @media(max-width:560px){.yd-map{width:calc(50% - 8px)}.yd-up{width:calc(33% - 6px)}}`;document.head.appendChild(st)}
+
+/* ================= MAPAS v3: o mapa EQUIPA o mergulhador; a caverna da lenda abre aos 1000 m =================
+   Levou mapa: a descida já começa mais forte (o Tião te equipou melhor) e o mergulhador desce com mochila e arpão maior.
+   A partir dos 1000 m, na primeira fenda que não for de chefe, surge uma rocha marcada que se abre com o mapa: uma caverna
+   com um corredor de bichos que leva até a lenda. Morreu antes ou durante: o mar fica com o mapa. */
+const LGCAVE_D=10;
+for(const id of LEGO)LEGS[id].depth=999;
+Object.assign(LEGS.sereia,{riddle:'Dez vezes cem braças abaixo, onde a pedra virou plateia e a plateia virou pedra, uma rocha vai cantar quando o papel chegar perto. Não aplauda.',cave:'A GALERIA DO CANTO',caveC:'#c878ff',caveLine:'Tá ouvindo? A pedra tá cantando, marujo. Do outro lado desse corredor... é ela.'});
+Object.assign(LEGS.nessie,{riddle:'Dez vezes cem abaixo, procure a rocha que sua sal. Atrás dela, um lago que não cabe em terra nenhuma. O que parece um tronco tem olhos.',cave:'O TÚNEL DO SAL',caveC:'#7ab05a',caveLine:'O ar ficou pesado e salgado... no fim desse túnel tem água que não se mistura com a água.'});
+Object.assign(LEGS.moby,{riddle:'Dez vezes cem abaixo, uma rocha com um ferro cravado. Atrás dela, o branco que não é neve. Ela não esquece rosto. Nunca esqueceu nenhum.',cave:'O CAMINHO DOS OSSOS',caveC:'#e8eef4',caveLine:'Costela de baleia, corda podre, ferro de arpão... esse caminho foi feito por ela. Segue, marujo.'});
+/* começa mais forte */
+{const _rc=recalc;recalc=function(){_rc.apply(this,arguments);if(typeof p!=='undefined'&&p&&p.prep)FX.dmg=(FX.dmg||0)+.25}}
+{const _sr=startRun;startRun=function(){const r=_sr.apply(this,arguments);if(p&&p.mapC&&!p.prep){p.prep=p.mapC;p.mhp+=2;p.hp=p.mhp;p.bombs+=1;p.mo2+=20;p.o2=p.mo2;recalc();const D=LEGS[p.mapC];
+  setTimeout(()=>{if(state==='play'){banner('DESCIDA EQUIPADA','+2 vida · +25% dano · +1 bomba · +20 ar');radio('Com esse mapa eu te equipei direito, marujo: mochila de mantimento, cilindro extra e arpão reforçado. Lá pelos mil metros vai aparecer uma rocha marcada. '+D.riddle)}},2200)}return r}}
+/* visual: mochila nas costas e arma maior */
+{const _dd=diverDraw;diverDraw=function(g,S,t,kick,mvv,rc,fire,ad,bend){const r=_dd.apply(this,arguments);if(typeof p==='undefined'||!p||!p.prep||g!==ctx)return r;const O='#0a0f1e',Rf=(x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(x,y,w,h)};
+  g.save();g.translate(0,Math.sin(kick*.5)*.3);
+  /* mochila de lona com o rolo do mapa e um lampião */
+  Rf(-10.4,-11.2,9.6,7.6,O);Rf(-9.8,-10.6,8.4,6.4,'#7a5a32');Rf(-9.8,-10.6,8.4,1.6,'#9a7a48');Rf(-9.8,-6.4,8.4,1,'#5a4024');Rf(-6.6,-10.6,1,6.4,'#3a2a14');Rf(-3.4,-10.6,1,6.4,'#3a2a14');Rf(-6,-9,2,1.4,'#c8a040');
+  Rf(-12.6,-14.2,4,3.4,O);Rf(-12.2,-13.8,3.2,2.6,'#efe2bd');Rf(-11.4,-13.8,1,2.6,'#c83a3a');Rf(-12.2,-12.8,3.2,.6,'#c8b088');
+  const lp=Math.sin(t*3)*.8;Rf(-11.6,-4.4+lp*.2,2.6,3.2,O);Rf(-11.2,-4,1.8,2.4,'#ffd45e');Rf(-11,-4.2,1.4,.6,'#ffe9a0');
+  g.restore();
+  /* arpão-canhão maior */
+  const MEL=WP[p.wp]&&WP[p.wp].melee;if(!MEL){g.save();g.translate(1.2,1);g.rotate(ad||0);g.translate(-1.2,-1);Rf(4.6-rc,.4,13.6,3.8,O);Rf(5.2-rc,.9,12.4,2.8,'#3a4a5a');Rf(5.2-rc,.9,12.4,.9,'#9aaaba');Rf(9-rc,-1.2,4.2,1.8,O);Rf(9.4-rc,-.9,3.4,1.2,'#c8a040');Rf(17.8-rc,1.2,2.4,2.2,O);Rf(18.1-rc,1.5,1.8,1.6,'#e8fbff');if(fire>0)Rf(20-rc,1.4,2.4,2,'#fff6c0');g.restore()}
+  return r}}
+/* ---------- a rocha marcada ---------- */
+function legEntrance(id){for(let t=0;t<1500;t++){const tx=5+RI(MW-10),ty=5+RI(MH-10);let ok=true;for(let y=-3;y<=3&&ok;y++)for(let x=-3;x<=3;x++)if(x*x+y*y<=10&&map[tx+x+(ty+y)*MW]!==1){ok=false;break}if(!ok)continue;
+  if(hyp(tx*TS+8-p.x,ty*TS+8-p.y)<170||hyp(tx*TS+8-exit.x,ty*TS+8-exit.y)<120)continue;
+  let best=null,bd=99;for(let y=-8;y<=8;y++)for(let x=-8;x<=8;x++){const X=tx+x,Y=ty+y;if(X<2||Y<2||X>MW-3||Y>MH-3)continue;const i=X+Y*MW;if(!map[i]&&dm[i]>=0&&hyp(x,y)<bd){bd=hyp(x,y);best=[X,Y]}}if(!best||bd<2.5)continue;
+  for(let y=-2;y<=2;y++)for(let x=-2;x<=2;x++)if(x*x+y*y<=5)map[tx+x+(ty+y)*MW]=0;
+  let X=tx,Y=ty;const tun=[];for(let g=0;g<40&&(X!==best[0]||Y!==best[1]);g++){const dx=best[0]-X,dy=best[1]-Y;if(Math.abs(dx)>=Math.abs(dy))X+=Math.sign(dx);else Y+=Math.sign(dy);const i=X+Y*MW;if(map[i]===1){map[i]=2;tun.push([X,Y])}}
+  paint();dm=bfs(Math.floor(p.x/TS),Math.floor(p.y/TS));const m=tun[tun.length-1]||[tx,ty];return{id,x:tx*TS+8,y:ty*TS+8,mx:m[0]*TS+8,my:m[1]*TS+8,t:0,tun,open:0,said:0}}return null}
+{const _nl=newLevel;newLevel=function(){const r=_nl.apply(this,arguments);LGX.ent=null;LGX.cave=null;LGX.entTry=0;try{const id=p&&p.mapC;if(id&&!p.mapDone&&depth>=LGCAVE_D&&!BOSS_AT.includes(depth)&&!boss&&mod!==MODS.lair&&!(typeof TUT!=='undefined'&&TUT.on)){LGX.ent=legEntrance(id);if(!LGX.ent)LGX.entTry=40}}catch(e){console.warn(e)}return r}}
+{const _tp=tickParry;tickParry=function(dt){_tp.apply(this,arguments);if(LGX.entTry>0&&!LGX.ent&&state==='play'&&p&&p.mapC){LGX.entTry--;try{LGX.ent=legEntrance(p.mapC)}catch(e){}if(LGX.ent)LGX.entTry=0}}}
+{const _tp=tickParry;tickParry=function(dt){_tp.apply(this,arguments);if(!p||!dt||state!=='play')return;const E=LGX.ent;
+ if(E){E.t+=dt;const D=LEGS[E.id],dm2=hyp(p.x-E.mx,p.y-E.my),dc=hyp(p.x-E.x,p.y-E.y);if(!E.said&&Math.min(dm2,dc)<300){E.said=1;radio('O mapa tá BRILHANDO na mochila, marujo! Tem uma rocha marcada por perto... chega perto dela.')}
+  if(!E.open&&Math.min(dm2,dc)<90){E.open=1;for(const[X,Y]of E.tun){map[X+Y*MW]=0;repaintAround(X,Y);burst(X*TS+8,Y*TS+8,D.caveC,10,90,2)}shake=10;SFX.roar();dm=bfs(Math.floor(p.x/TS),Math.floor(p.y/TS));radio('O mapa abriu a rocha! Entra na caverna!')}
+  if(E.open&&dc<14){LGX.ent=null;legCaveStart(E.id)}}
+ const C=LGX.cave;if(C){C.t+=dt;if(!C.done&&hyp(p.x-C.ex,p.y-C.ey)<26){C.done=1;const id=C.id;fadeTo(()=>{LGX.cave=null;state='play';legStart(id)})}}}}
+/* ---------- a caverna (corredor até a lenda) ---------- */
+function legCaveStart(id){const D=LEGS[id];fadeTo(()=>{tutArena();boss=null;try{SRINGS=[];SNOTES=[];if(typeof WTR!=='undefined')WTR.length=0;if(typeof AMB!=='undefined')AMB.length=0;if(typeof nests!=='undefined')nests.length=0;if(typeof OENT!=='undefined')OENT=null}catch(e){}
+  co=[];map.fill(1);const rows=[8,22,36],L0=5,R0=58,P=[];const seg=(x0,y0,x1,y1)=>{const n=Math.ceil(hyp(x1-x0,y1-y0)*2);for(let i=0;i<=n;i++){const t=i/n;P.push([x0+(x1-x0)*t,y0+(y1-y0)*t])}};
+  seg(L0,rows[0],R0,rows[0]);seg(R0,rows[0],R0,rows[1]);seg(R0,rows[1],L0,rows[1]);seg(L0,rows[1],L0,rows[2]);seg(L0,rows[2],46,rows[2]);
+  const ph=R(9);P.forEach((q,i)=>{carve(Math.round(q[0]),Math.round(q[1]+Math.sin(q[0]*.3+ph)*1.2),2+(Math.sin(i*.2+ph)>.5?1:0))});for(let y=-4;y<=4;y++)for(let x=-6;x<=6;x++)if((x/6)**2+(y/4)**2<=1)map[50+x+(rows[2]+y)*MW]=0;
+  for(let x=0;x<MW;x++)for(let y=0;y<MH;y++)if(x<2||y<2||x>MW-3||y>MH-3)map[x+y*MW]=1;
+  paint();seen.fill(0);p.x=L0*TS+8;p.y=rows[0]*TS+8;p.vx=p.vy=0;p.inv=2;p.o2=p.mo2;exit.x=exit.y=-99999;dm=bfs(Math.floor(p.x/TS),Math.floor(p.y/TS));camx=p.x-VW/2;camy=p.y-VH/2;
+  const pool=Object.values(SP).filter(s=>!s.boss&&!s.neutral&&s.d<=depth&&s.d>=depth-30&&s.b!=='mine'&&!s.static);for(let i=16;i<P.length*.72;i+=9){const q=P[i],x=q[0]*TS+8,y=q[1]*TS+8;if(blocked(x,y,6))continue;const S=pick(pool);if(!S)break;const n=S.grp?Math.min(3,S.grp):1;for(let k=0;k<n;k++){const e=addE(S.id,x+R(16)-8,y+R(12)-6);if(e&&Math.random()<.5)e.ag=1}}
+  chests.push({x:P[Math.floor(P.length*.45)][0]*TS+8,y:P[Math.floor(P.length*.45)][1]*TS+8});vents.push({x:P[Math.floor(P.length*.3)][0]*TS+8,y:P[Math.floor(P.length*.3)][1]*TS+8});
+  LGX.cave={id,ex:50*TS+8,ey:rows[2]*TS+8,t:0,done:0};state='play';$('#hud').hidden=false;$('#abil').hidden=false;banner(D.cave,M(depth));setTimeout(()=>radio(D.caveLine),1600)})}
+/* desenho da rocha marcada e do fim da caverna */
+{const _dp=drawParryFx;drawParryFx=function(){_dp.apply(this,arguments);const E=LGX.ent;if(E){const D=LEGS[E.id],T=E.t,x=E.open?E.x:E.mx,y=E.open?E.y:E.my;wglow(x,y,50+Math.sin(T*2)*6,D.caveC,.5);ctx.strokeStyle=D.caveC;ctx.globalAlpha=.6+.3*Math.sin(T*3);ctx.lineWidth=1;ctx.beginPath();ctx.arc(x,y,9,0,TAU);ctx.moveTo(x-6,y);ctx.lineTo(x+6,y);ctx.moveTo(x,y-6);ctx.lineTo(x,y+6);ctx.stroke();ctx.globalAlpha=1;if(Math.random()<.2)pt.push({x:x+R(16)-8,y:y+R(16)-8,vx:R(8)-4,vy:-10,life:1,ml:1,c:D.caveC,s:1})}
+ const C=LGX.cave;if(C){const D=LEGS[C.id],T=C.t;wglow(C.ex,C.ey,70+Math.sin(T*2)*8,D.caveC,.55);for(let k=0;k<3;k++){ctx.strokeStyle=D.caveC;ctx.globalAlpha=.5-k*.12;ctx.beginPath();ctx.arc(C.ex,C.ey,10+k*7+Math.sin(T*3+k)*2,0,TAU);ctx.stroke()}ctx.globalAlpha=1}}}
+{const _hs=sceneHoles;sceneHoles=function(ox,oy){_hs.apply(this,arguments);const E=LGX.ent;if(E)hole((E.open?E.x:E.mx)+ox,(E.open?E.y:E.my)+oy,70,.9);const C=LGX.cave;if(C)hole(C.ex+ox,C.ey+oy,90,.9)}}
+{const _die=die;die=function(){LGX.ent=null;LGX.cave=null;return _die.apply(this,arguments)}}
 
 /* ================= CORREÇÕES: reflexo dos peixes por dificuldade e parry ================= */
 /* reflexo (desviar de tiro): fácil e médio estavam fáceis demais, difícil certo, insano de menos */
